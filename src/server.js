@@ -26,7 +26,7 @@ app.use('/resources', resourcesRouter);
 
 // default index route
 app.get('/', (req, res) => {
-  res.send("Welcome to Granite State Backend!");
+  res.send('Welcome to Granite State Backend!');
 });
 
 // START THE SERVER
