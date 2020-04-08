@@ -4,6 +4,9 @@ import cors from 'cors';
 import path from 'path';
 import morgan from 'morgan';
 
+import usersRouter from './routers/user_routers';
+import resourcesRouter from './routers/resource_routers';
+
 // initialize
 const app = express();
 
@@ -17,6 +20,9 @@ app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+// declare routers
+app.use('/users', usersRouter);
+app.use('/resources', resourcesRouter);
 
 // default index route
 app.get('/', (req, res) => {
