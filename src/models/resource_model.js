@@ -11,6 +11,6 @@ ResourceSchema.set('toJSON', {
   virtuals: true,
 });
 
-const ResourceModel = mongoose.model('User', ResourceSchema);
+const ResourceModel = mongoose.model('Resource', ResourceSchema);
 
 export default ResourceModel;
