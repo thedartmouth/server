@@ -7,29 +7,30 @@ server (/)
 │
 ├── /users
 │   ├── /
-│   │   ├── GET -> get all users
+│   │   ├── GET -> get all users (x)
 │   │
 │   ├── /:id
-│   │   ├── GET -> check token
-│   │   ├── POST -> create token from credentials
-│   │   ├── PUT -> update user
-│   │   ├── DELETE -> remove user
+│   │   ├── GET -> check token (x)
+│   │   ├── POST -> create token from credentials (x)
+│   │   ├── PUT -> update user (x)
+│   │   ├── DELETE -> remove user (x)
 │   │
 │   ├── /signin
-│   │   ├── POST -> sign user in to admin panel
+│   │   ├── POST -> sign user in to admin panel (x)  #IMPORTANT: i did this in route /admin/verify
 │   │
 │   ├── /verify/:id
-│   │   ├── GET -> verify user token for automatic signing in
+│   │   ├── GET -> verify user token for automatic signing in ()
+|   |
 │
 ├── /resources
 │   ├── /
-│   │   ├── GET -> get all resources
-│   │   ├── POST -> create a resource
+│   │   ├── GET -> get all resources (x)
+│   │   ├── POST -> create a resource (x)
 │   │
-│   ├── /:id
-│   │   ├── GET -> get specific resource
-│   │   ├── PUT -> update specific resource
-│   │   ├── DELETE -> delete specific resource
+│   ├── /:id                                       // in progress (inquiries with token management)
+│   │   ├── GET -> get specific resource ()
+│   │   ├── PUT -> update specific resource ()
+│   │   ├── DELETE -> delete specific resource ()
 ```
 
 ## Authentication Flow
