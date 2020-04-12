@@ -59,13 +59,20 @@ router.route('/')
 //     admin.auth().verifyIdToken(req.params.id)
 //     // create user
 //       .then((decodedToken) => {
-//         User.create(decodedToken.uid, req.body)
-//           .then((result) => {
-//             res.send(result);
-//           })
-//           .catch((error) => {
-//             res.status(500).send(error.message);
-//           });
+//         const User = new User();
+
+//         user._id = uid;
+//         user.email = fields.email ? fields.email : undefined;
+//         user.first_name = fields.first_name ? fields.first_name : '';
+//         user.last_name = fields.last_name ? fields.last_name : undefined;
+//         user.phone_number = fields.phone_number ? fields.phone_number : undefined;
+//         user.zip_code = fields.zip_code ? fields.zip_code : undefined;
+//         user.date_account_created = Date.now();
+//         user.stripe_id = fields.stripe_id ? fields.stripe_id : undefined;
+//         user.admin_user = false;
+//         user.push_notification_registration_tokens = fields.push_notification_registration_tokens ? fields.push_notification_registration_tokens : [];
+
+//         user.save(); // omitted code for save();
 //       })
 //       // authentication of token failed
 //       .catch((error) => {
@@ -77,7 +84,7 @@ router.route('/')
 //     admin.auth().verifyIdToken(req.params.id)
 //     // update user
 //       .then((decodedToken) => {
-//         User.update(decodedToken.uid, req.body)
+//         User.updateOne(decodedToken.uid, req.body)
 //           .then(() => {
 //             // grab user object
 //             User.read(decodedToken.uid)
@@ -104,20 +111,16 @@ router.route('/')
 //   .delete((req, res) => {
 //     // authenticate user token
 //     admin.auth().verifyIdToken(req.params.id)
-//     // create user
+//     // delete user
 //       .then((decodedToken) => {
-//         User.del(decodedToken.uid)
-//           .then((result) => {
-//             res.send(result);
+//         User.deleteOne(decodedToken.uid)
+//           .then() => {
+//             resolve('User with id: ${uid} was successfully deleted`);
 //           })
 //           .catch((error) => {
-//             res.status(500).send(error.message);
+//             reject(error);
 //           });
 //       })
-//       // authentication of token failed
-//       .catch((error) => {
-//         res.status(401).send(error.message);
-//       });
 //   });
 
 // router.route('/admin/verify')

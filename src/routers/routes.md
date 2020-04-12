@@ -16,10 +16,10 @@ server (/)
 │   │   ├── DELETE -> remove user (x)
 │   │
 │   ├── /signin
-│   │   ├── POST -> sign user in to admin panel (x)  #IMPORTANT: i did this in route /admin/verify
+│   │   ├── POST -> sign user in to admin panel (x)  #IMPORTANT: we will be using password for admin code
 │   │
 │   ├── /verify/:id
-│   │   ├── GET -> verify user token for automatic signing in ()
+│   │   ├── GET -> verify user token for automatic signing in ()  
 |   |
 │
 ├── /resources
