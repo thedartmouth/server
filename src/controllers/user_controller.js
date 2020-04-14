@@ -1,21 +1,8 @@
-// import * as firebase from 'firebase';
-// import * as admin from 'firebase-admin';
 import User from '../models/user_model';
 
 // Create functions to manage user data
-// Uncommented functions still need to be copied into router to reduce code
-
-// const signedInWithEmailPassword = (email) => {
-//   return new Promise((resolve, reject) => {
-//     firebase.auth().fetchSignInMethodsForEmail(email)
-//       .then((signInMethods) => {
-//         resolve(signInMethods.indexOf(firebase.auth.EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD) !== -1);
-//       })
-//       .catch((error) => {
-//         reject(error);
-//       });
-//   });
-// };
+// These functions were not copied into user_routers because they are large and/or
+// they are used more than once
 
 // grab and return a reference to a user object, if properly authenticated
 const read = (uid) => {
@@ -34,95 +21,6 @@ const read = (uid) => {
       });
   });
 };
-
-// const isAdminUser = (uid) => {
-//   return new Promise((resolve, reject) => {
-//     read(uid)
-//       .then((user) => {
-//         resolve(user.admin_user);
-//       })
-//       .catch((error) => {
-//         reject(error);
-//       });
-//   });
-// };
-
-// const isAdminToken = (token) => {
-//   return new Promise((resolve, reject) => {
-//     admin.auth().verifyIdToken(token)
-//       .then((decodedToken) => {
-//         isAdminUser(decodedToken.uid)
-//           .then((ans) => {
-//             resolve(ans);
-//           })
-//           .catch((error) => {
-//             reject(error);
-//           });
-//       })
-//       .catch((error) => {
-//         reject(error);
-//       });
-//   });
-// };
-
-// // update given fields of user object and confirm success, if properly authenticated
-// const update = (uid, fields) => {
-//   return new Promise((resolve, reject) => {
-//     read(uid)
-//       .then((oldUser) => {
-//         User.updateOne({ _id: uid }, fields)
-//           .then(() => {
-//             // get new user object with order stripe data attached
-//             read(uid)
-//               .then((updatedUser) => {
-//                 resolve(updatedUser);
-//               })
-//               .catch((error) => {
-//                 reject(error);
-//               });
-//           })
-//           .catch((error) => {
-//             reject(error);
-//           });
-//       })
-//       .catch((error) => {
-//         reject(error);
-//       });
-//   });
-// };
-
-// // create and return a reference to a user object, if properly authenticated
-// const create = (uid, fields) => {
-//   return new Promise((resolve, reject) => {
-//     const user = new User();
-
-//     user._id = uid;
-//     user.email = fields.email ? fields.email : undefined;
-//     user.first_name = fields.first_name ? fields.first_name : '';
-//     user.last_name = fields.last_name ? fields.last_name : undefined;
-//     user.phone_number = fields.phone_number ? fields.phone_number : undefined;
-//     user.zip_code = fields.zip_code ? fields.zip_code : undefined;
-//     user.date_account_created = Date.now();
-//     user.stripe_id = fields.stripe_id ? fields.stripe_id : undefined;
-//     user.admin_user = false;
-//     user.push_notification_registration_tokens = fields.push_notification_registration_tokens ? fields.push_notification_registration_tokens : [];
-
-//     user.save(); // omitted code for save();
-//   });
-// };
-
-// delete user object and confirm success, if properly authenticated
-// const del = (uid) => {
-//   return new Promise((resolve, reject) => {
-//     User.deleteOne({ _id: uid })
-//       .then(() => {
-//         resolve(`User with id: ${uid} was successfully deleted`);
-//       })
-//       .catch((error) => {
-//         reject(error);
-//       });
-//   });
-// };
 
 // grab and return a reference to all user objects
 const getAllUsers = () => {
@@ -155,9 +53,8 @@ const getAllUsers = () => {
   });
 };
 
-
 // export all functions
 
 export {
-  signedInWithEmailPassword, read, isAdminToken, isAdminUser, create, update, del, getAllUsers,
+  read, getAllUsers,
 };

@@ -20,19 +20,6 @@ const read = (uid) => {
   });
 };
 
-// create and return a reference to a user object, if properly authenticated
-const create = (uid, fields) => {
-  return new Promise((resolve, reject) => {
-    const resource = new Resource();
-
-    resource._id = uid;
-    resource.date_account_created = Date.now();
-    resource.stripe_id = fields.stripe_id ? fields.stripe_id : undefined;
-
-    resource.save();
-  });
-};
-
 // grab and return a reference to all user objects
 const getAllResources = () => {
   return new Promise((resolve, reject) => {
@@ -64,45 +51,6 @@ const getAllResources = () => {
   });
 };
 
-// update given fields of user object and confirm success, if properly authenticated
-const update = (uid, fields) => {
-  return new Promise((resolve, reject) => {
-    read(uid)
-      .then((oldResource) => {
-        Resource.updateOne({ _id: uid }, fields)
-          .then(() => {
-            // get new resource object with order stripe data attached
-            read(uid)
-              .then((updatedResource) => {
-                resolve(updatedResource);
-              })
-              .catch((error) => {
-                reject(error);
-              });
-          })
-          .catch((error) => {
-            reject(error);
-          });
-      })
-      .catch((error) => {
-        reject(error);
-      });
-  });
-};
-
-// delete resource object and confirm success, if properly authenticated
-const del = (uid) => {
-  return new Promise((resolve, reject) => {
-    Resource.deleteOne({ _id: uid })
-      .then(() => {
-        resolve(`Resource with id: ${uid} was successfully deleted`);
-      })
-      .catch((error) => {
-        reject(error);
-      });
-  });
-};
-
 export {
-  read, create, getAllResources, del, update,
+  read, getAllResources, // pass update to router
 };

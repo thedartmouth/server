@@ -19,7 +19,7 @@ server (/)
 │   │   ├── POST -> sign user in to admin panel (x)  #IMPORTANT: we will be using password for admin code
 │   │
 │   ├── /verify/:id
-│   │   ├── GET -> verify user token for automatic signing in ()  
+│   │   ├── GET -> verify user token for automatic signing in ()   # I think it is already in the /:id code
 |   |
 │
 ├── /resources
@@ -27,10 +27,10 @@ server (/)
 │   │   ├── GET -> get all resources (x)
 │   │   ├── POST -> create a resource (x)
 │   │
-│   ├── /:id                                       // in progress (inquiries with token management)
-│   │   ├── GET -> get specific resource ()
-│   │   ├── PUT -> update specific resource ()
-│   │   ├── DELETE -> delete specific resource ()
+│   ├── /:id                                       // advanced (inquiries with token and id management)
+│   │   ├── GET -> get specific resource (x)
+│   │   ├── PUT -> update specific resource (x)
+│   │   ├── DELETE -> delete specific resource (x)
 ```
 
 ## Authentication Flow
