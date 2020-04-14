@@ -27,9 +27,9 @@ router.route('/')
         })
         .filter((e, i) => { return numPerPage * (page - 1) <= i && i < numPerPage * page; }); // numPerPage * page, (numPerPage + 1) * page
 
-      console.log('Results length:', tempArray.length);
+      console.log('Filtered array length:', tempArray.length);
 
-      res.send(tempArray);
+      res.send({ results: tempArray, numResults: response.data.length });
     }).catch((error) => {
       res.json(error);
     });
