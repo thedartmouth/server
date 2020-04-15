@@ -53,7 +53,7 @@ router.route('/:id')
   .put((req, res) => {
     Resource.updateOne({ _id: req.params.id }, req.body)
       .then(() => {
-        // fetch resource object and send
+        // Fetch resource object and send
         Resource.findById(req.params.id)
           .then((resource) => {
             res.send(resource);
