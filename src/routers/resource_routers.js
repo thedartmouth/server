@@ -12,24 +12,12 @@ router.route('/')
     }).catch((error) => {
       res.status(500).json({ error });
     });
-
-    // Resource.getAllResources()
-    //   .then((result) => {
-    //     res.send(result);
-    //   })
-    //   .catch((error) => {
-    //     res.status(500).send(error.message);
-    //   });
   })
   .post((req, res) => {
     // create resource
     // res.send('test response');
     new Promise((resolve, reject) => { // req = user
       const resource = new Resource();
-
-      // title: String,
-      // description: String,
-      // date_resource_created: Date,
 
       resource.title = req.body.title;
       resource.description = req.body.title;
@@ -43,32 +31,30 @@ router.route('/')
         res.send(result);
       })
       .catch((error) => {
-        res.status(500).send(error.message);
+        res.status(500).send(error);
       });
   });
 
-router.route('/id:')
+router.route('/:id')
   .get((req, res) => {
-    // get specific resource (provide unique token for id)
-    Resource.read(req.params.id)
+    Resource.findById(req.params.id)
       .then((resource) => {
         res.send(resource);
       })
       .catch((error) => {
         if (error.message && error.message.startsWith('Resource with id:')) {
-          res.status(404).send(error.message);
+          res.status(404).send(error);
         } else {
-          res.status(500).send(error.message);
+          res.status(500).send(error);
         }
       });
   })
-
   .put((req, res) => {
     // update specific resource
-    Resource.updateOne(req.params.id, req.body)
+    Resource.updateOne({ _id: req.params.id }, req.body)
       .then(() => {
         // grab resource object
-        Resource.read(req.params.id)
+        Resource.findById(req.params.id)
           .then((resource) => {
             res.send(resource);
           })
@@ -87,17 +73,9 @@ router.route('/id:')
 
   .delete((req, res) => {
     // delete specific resource
-    new Promise((resolve, reject) => {
-      Resource.deleteOne({ _id: req.params.id })
-        .then(() => {
-          resolve(`Resource with id: ${req.params.id} was successfully deleted`);
-        })
-        .catch((error) => {
-          reject(error);
-        });
-    })
-      .then((result) => {
-        res.send(result);
+    Resource.deleteOne({ _id: req.params.id })
+      .then(() => {
+        res.send(`Resource with id: ${req.params.id} was successfully deleted`);
       })
       .catch((error) => {
         res.send(error);
