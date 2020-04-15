@@ -1,5 +1,6 @@
 import express from 'express';
-import * as Resource from '../controllers/resource_controller';
+// import * as Resource from '../controllers/resource_controller';
+import Resource from '../models/resource_model';
 
 const router = express();
 
@@ -12,24 +13,31 @@ router.route('/')
       res.status(500).json({ error });
     });
 
-    Resource.getAllResources()
-      .then((result) => {
-        res.send(result);
-      })
-      .catch((error) => {
-        res.status(500).send(error.message);
-      });
+    // Resource.getAllResources()
+    //   .then((result) => {
+    //     res.send(result);
+    //   })
+    //   .catch((error) => {
+    //     res.status(500).send(error.message);
+    //   });
   })
   .post((req, res) => {
-  // create resource
+    // create resource
+    // res.send('test response');
     new Promise((resolve, reject) => { // req = user
       const resource = new Resource();
 
-      resource._id = req.params.id;
-      resource.date_account_created = Date.now();
-      resource.stripe_id = req.fields.stripe_id ? req.fields.stripe_id : undefined;
+      // title: String,
+      // description: String,
+      // date_resource_created: Date,
 
-      resource.save();
+      resource.title = req.body.title;
+      resource.description = req.body.title;
+      resource.date_account_created = Date.now();
+
+      resource.save()
+        .then(() => { return resolve(); })
+        .catch((error) => { return reject(error); });
     })
       .then((result) => {
         res.send(result);

@@ -1,7 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 
 const UserSchema = new Schema({
-  _id: { type: String, unique: true }, // taken from firebase uid
   email: String,
   first_name: String,
   last_name: String,
