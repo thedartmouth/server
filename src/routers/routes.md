@@ -7,29 +7,30 @@ server (/)
 │
 ├── /users
 │   ├── /
-│   │   ├── GET -> get all users
+│   │   ├── GET -> get all users (x)
 │   │
 │   ├── /:id
-│   │   ├── GET -> check token
-│   │   ├── POST -> create token from credentials
-│   │   ├── PUT -> update user
-│   │   ├── DELETE -> remove user
+│   │   ├── GET -> check token (x)
+│   │   ├── POST -> create token from credentials (x)
+│   │   ├── PUT -> update user (x)
+│   │   ├── DELETE -> remove user (x)
 │   │
 │   ├── /signin
-│   │   ├── POST -> sign user in to admin panel
+│   │   ├── POST -> sign user in to admin panel (x)  #IMPORTANT: we will be using password for admin code
 │   │
 │   ├── /verify/:id
-│   │   ├── GET -> verify user token for automatic signing in
+│   │   ├── GET -> verify user token for automatic signing in ()   # I think it is already in the /:id code
+|   |
 │
 ├── /resources
 │   ├── /
-│   │   ├── GET -> get all resources
-│   │   ├── POST -> create a resource
+│   │   ├── GET -> get all resources (x)
+│   │   ├── POST -> create a resource (x)
 │   │
-│   ├── /:id
-│   │   ├── GET -> get specific resource
-│   │   ├── PUT -> update specific resource
-│   │   ├── DELETE -> delete specific resource
+│   ├── /:id                                       // advanced (inquiries with token and id management)
+│   │   ├── GET -> get specific resource (x)
+│   │   ├── PUT -> update specific resource (x)
+│   │   ├── DELETE -> delete specific resource (x)
 ```
 
 ## Authentication Flow

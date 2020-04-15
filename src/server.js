@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import path from 'path';
 import morgan from 'morgan';
+import mongoose from 'mongoose';
 
 import usersRouter from './routers/user_routers';
 import resourcesRouter from './routers/resource_routers';
@@ -27,6 +28,19 @@ app.use('/resources', resourcesRouter);
 // default index route
 app.get('/', (req, res) => {
   res.send('Welcome to Granite State Backend!');
+});
+
+// DB Setup
+const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost/granite-state';
+const mongooseOptions = {
+  useNewUrlParser: true,
+  useCreateIndex: true,
+  loggerLevel: 'error',
+};
+mongoose.connect(mongoURI, mongooseOptions).then(() => {
+  console.log('Connected to Database');
+}).catch((err) => {
+  console.log('Not Connected to Database ERROR! ', err);
 });
 
 // START THE SERVER
