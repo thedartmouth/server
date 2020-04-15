@@ -6,6 +6,8 @@ const router = express();
 
 // find and return all resources
 router.route('/')
+
+  // Get all resources
   .get((req, res) => {
     Resource.find({}).then((resources) => {
       res.send(resources);
@@ -13,29 +15,26 @@ router.route('/')
       res.status(500).json({ error });
     });
   })
+
+  // Create new resource
   .post((req, res) => {
-    // create resource
-    // res.send('test response');
-    new Promise((resolve, reject) => { // req = user
-      const resource = new Resource();
+    const resource = new Resource();
 
-      resource.title = req.body.title;
-      resource.description = req.body.title;
-      resource.date_account_created = Date.now();
+    resource.title = req.body.title;
+    resource.description = req.body.title;
+    resource.date_account_created = Date.now();
 
-      resource.save()
-        .then(() => { return resolve(); })
-        .catch((error) => { return reject(error); });
-    })
-      .then((result) => {
-        res.send(result);
-      })
-      .catch((error) => {
+    resource.save()
+      .then((savedResource) => {
+        res.send(savedResource);
+      }).catch((error) => {
         res.status(500).send(error);
       });
   });
 
 router.route('/:id')
+
+  // Get resource by id
   .get((req, res) => {
     Resource.findById(req.params.id)
       .then((resource) => {
@@ -49,11 +48,12 @@ router.route('/:id')
         }
       });
   })
+
+  // Update resource by id
   .put((req, res) => {
-    // update specific resource
     Resource.updateOne({ _id: req.params.id }, req.body)
       .then(() => {
-        // grab resource object
+        // fetch resource object and send
         Resource.findById(req.params.id)
           .then((resource) => {
             res.send(resource);
@@ -71,8 +71,8 @@ router.route('/:id')
       });
   })
 
+  // Delete resource by id
   .delete((req, res) => {
-    // delete specific resource
     Resource.deleteOne({ _id: req.params.id })
       .then(() => {
         res.send(`Resource with id: ${req.params.id} was successfully deleted`);
