@@ -7,6 +7,7 @@ import mongoose from 'mongoose';
 
 import usersRouter from './routers/user_routers';
 import resourcesRouter from './routers/resource_routers';
+import searchRouter from './routers/search_router';
 
 // initialize
 const app = express();
@@ -24,6 +25,7 @@ app.use(bodyParser.json());
 // declare routers
 app.use('/users', usersRouter);
 app.use('/resources', resourcesRouter);
+app.use('/search', searchRouter);
 
 // default index route
 app.get('/', (req, res) => {
