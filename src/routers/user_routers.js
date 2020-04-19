@@ -1,7 +1,6 @@
 import express from 'express';
 import User from '../models/user_model';
 
-import requireAuth from '../authentication/requireAuth';
 import { tokenForUser } from '../controllers/user_controller';
 
 const router = express();

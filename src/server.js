@@ -9,6 +9,8 @@ import usersRouter from './routers/user_routers';
 import resourcesRouter from './routers/resource_routers';
 import searchRouter from './routers/search_router';
 
+import requireAuth from './authentication/requireAuth';
+
 // initialize
 const app = express();
 
@@ -23,9 +25,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 // declare routers
-app.use('/users', usersRouter);
-app.use('/resources', resourcesRouter);
-app.use('/search', searchRouter);
+app.use('/users', requireAuth, usersRouter); // NOTE: Completely secured to users
+app.use('/resources', resourcesRouter); // NOTE: Partially secured to users
+app.use('/search', searchRouter); // NOTE: Not secured
 
 // default index route
 app.get('/', (req, res) => {

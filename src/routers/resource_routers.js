@@ -1,6 +1,7 @@
 import express from 'express';
-// import * as Resource from '../controllers/resource_controller';
 import Resource from '../models/resource_model';
+
+import requireAuth from '../authentication/requireAuth';
 
 const router = express();
 
@@ -16,8 +17,8 @@ router.route('/')
     });
   })
 
-  // Create new resource
-  .post((req, res) => {
+  // Create new resource (SECURE)
+  .post(requireAuth, (req, res) => {
     const resource = new Resource();
 
     resource.title = req.body.title;
@@ -49,8 +50,8 @@ router.route('/:id')
       });
   })
 
-  // Update resource by id
-  .put((req, res) => {
+  // Update resource by id (SECURE)
+  .put(requireAuth, (req, res) => {
     Resource.updateOne({ _id: req.params.id }, req.body)
       .then(() => {
         // Fetch resource object and send
@@ -71,8 +72,8 @@ router.route('/:id')
       });
   })
 
-  // Delete resource by id
-  .delete((req, res) => {
+  // Delete resource by id, SECURE
+  .delete(requireAuth, (req, res) => {
     Resource.deleteOne({ _id: req.params.id })
       .then(() => {
         res.send(`Resource with id: ${req.params.id} was successfully deleted`);
