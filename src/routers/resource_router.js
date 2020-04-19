@@ -1,6 +1,6 @@
 import express from 'express';
-import Resource from '../models/resource_model';
 
+import Resource from '../models/resource_model';
 import requireAuth from '../authentication/requireAuth';
 
 const router = express();
