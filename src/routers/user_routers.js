@@ -1,7 +1,7 @@
 import express from 'express';
-// import * as User from '../controllers/user_controller';
+
 import User from '../models/user_model';
-// Expected passport module for admin authentication
+// import { tokenForUser } from '../controllers/user_controller';
 
 const router = express();
 
@@ -82,9 +82,5 @@ router.route('/:id')
         res.send(error);
       });
   });
-
-// TODO: Add signin token generation
-router.route('/signin');
-
 
 export default router;
