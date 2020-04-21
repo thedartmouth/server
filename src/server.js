@@ -5,7 +5,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import mongoose from 'mongoose';
 
-import authRouter from './routers/auth-router';
+import authRouter from './routers/auth_router';
 import usersRouter from './routers/user_routers';
 import resourcesRouter from './routers/resource_router';
 import searchRouter from './routers/search_router';
