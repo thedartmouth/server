@@ -40,6 +40,7 @@ app.get('/', (req, res) => {
 const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost/granite-state';
 const mongooseOptions = {
   useNewUrlParser: true,
+  useUnifiedTopology: true,
   useCreateIndex: true,
   loggerLevel: 'error',
 };
