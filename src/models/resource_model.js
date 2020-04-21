@@ -3,6 +3,7 @@ import mongoose, { Schema } from 'mongoose';
 const ResourceSchema = new Schema({
   title: String,
   description: String,
+  value: Number,
   date_resource_created: Date,
 });
 

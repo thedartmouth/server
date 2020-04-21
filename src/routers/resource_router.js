@@ -23,6 +23,7 @@ router.route('/')
 
     resource.title = req.body.title;
     resource.description = req.body.description;
+    resource.value = req.body.value;
     resource.date_account_created = Date.now();
 
     resource.save()
@@ -30,6 +31,17 @@ router.route('/')
         res.send(savedResource);
       }).catch((error) => {
         res.status(500).send(error);
+      });
+  })
+
+  // Delete all resources (SECURE, TESTING ONLY)
+  .delete(requireAuth, (req, res) => {
+    Resource.deleteMany({ })
+      .then(() => {
+        res.send('Successfully deleted all resources.');
+      })
+      .catch((error) => {
+        res.send(error);
       });
   });
 
