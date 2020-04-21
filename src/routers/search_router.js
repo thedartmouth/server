@@ -6,12 +6,13 @@ const router = express();
 
 router.route('/')
   .get((req, res) => {
-    // Test link: http://localhost:9090/search?query=22&page=1
     console.log('Params:', req.query);
+
     const {
       query, filters, sort,
     } = req.query;
 
+    // Parse strings to numbers
     const page = parseInt(req.query.page, 10);
     const numPerPage = parseInt(req.query.numperpage, 10);
 
