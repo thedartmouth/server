@@ -22,7 +22,7 @@ router.route('/')
     const resource = new Resource();
 
     resource.title = req.body.title;
-    resource.description = req.body.title;
+    resource.description = req.body.description;
     resource.date_account_created = Date.now();
 
     resource.save()
