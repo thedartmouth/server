@@ -1,35 +1,45 @@
 import express from 'express';
 
-// TODO: Remove axios
-import axios from 'axios';
+import { search } from '../controllers/search_controller';
 
 const router = express();
 
 router.route('/')
+
+  // Main query-based search
   .get((req, res) => {
-    // Test link: http://localhost:9090/search?query=22&page=1
     console.log('Params:', req.query);
-    const {
-      query, filters, sort,
-    } = req.query;
 
-    const page = parseInt(req.query.page, 10);
-    const numPerPage = parseInt(req.query.numperpage, 10);
+    // Add any additional filters here. NOTE: Shorten these for cleanliness in URL
+    const { query, maxValue } = req.query; // Params that don't need defaults
+    const sort = req.query.sort || 'a'; // Params that need defaults
 
-    // Get test JSON from jsonplaceholder and send to frontend for display
-    axios.get('https://jsonplaceholder.typicode.com/posts').then((response) => {
-      const tempArray = (response.data || []).slice()
-        // .filter()
-        .sort((a, b) => {
-          if (a.title < b.title) return (sort === 'a' ? -1 : 1);
-          if (a.title > b.title) return (sort === 'a' ? 1 : -1);
-          return 0;
-        })
-        .filter((e, i) => { return numPerPage * (page - 1) <= i && i < numPerPage * page; }); // numPerPage * page, (numPerPage + 1) * page
+    // Parse strings to numbers
+    const page = parseInt(req.query.page, 10) || 1;
+    const numPerPage = parseInt(req.query.numperpage, 10) || 10;
 
-      console.log('Filtered array length:', tempArray.length);
+    const queryObject = {
+      $and: [
+        // Query title and description if query sting exists
+        query ? {
+          $or: [
+            { title: { $regex: new RegExp(query, 'i') } }, // Note: regexp can become inefficient for large collections, look into indexing
+            { description: { $regex: new RegExp(query, 'i') } }, // See here: https://stackoverflow.com/questions/7101703/how-do-i-make-case-insensitive-queries-on-mongodb
+          ],
+        } : {},
+        {
+          $and: [
+            maxValue ? { value: { $lte: maxValue } } : {}, // Only implement if maxValue is defined
+            // Implement additional filters here
+          ],
+        },
+      ],
+    };
 
-      res.send({ results: tempArray, numResults: response.data.length });
+    // Call search() controller with generated parameters
+    console.log(queryObject, sort, page, numPerPage);
+    search(queryObject, sort, page, numPerPage).then((results) => {
+      res.send({ results, numResults: results.length });
     }).catch((error) => {
       res.json(error);
     });
