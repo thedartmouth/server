@@ -21,14 +21,18 @@ router.route('/')
   .post((req, res) => {
     const user = new User();
 
+    console.log(req.body);
+
     user.first_name = req.body.first_name;
     user.last_name = req.body.last_name;
     user.email = req.body.email;
+    user.password = req.body.password;
 
     user.save()
       .then((savedUser) => {
         res.send(savedUser);
       }).catch((error) => {
+        console.error(error);
         res.status(500).send(error);
       });
   });
