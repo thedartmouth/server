@@ -1,4 +1,5 @@
 import express from 'express';
+import validator from 'email-validator';
 
 import { tokenForUser } from '../controllers/user_controller';
 import requireSignin from '../authentication/requireSignin';
@@ -19,9 +20,8 @@ router.route('/signup')
       }
 
       // Validate email and password
-      if (!email) {
-        // TODO: Validate email formatting
-        res.status(409).send({ message: 'Please enter an email address' });
+      if (!email || !validator.validate(email)) {
+        res.status(409).send({ message: 'Please enter a valid email address' });
       } else if (!password) {
         res.status(409).send({ message: 'Please enter a password' });
       }
