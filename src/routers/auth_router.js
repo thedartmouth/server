@@ -13,7 +13,7 @@ router.route('/signup')
       email, password, firstName, lastName,
     } = req.body;
 
-    return User.findOne({ email }).then((user) => {
+    User.findOne({ email }).then((user) => {
       // Check if a user already has this email address
       if (user) {
         return res.status(409).send({ message: 'Email address already associated to a user' });
@@ -21,9 +21,9 @@ router.route('/signup')
 
       // Validate email and password
       if (!email || !validator.validate(email)) {
-        res.status(409).send({ message: 'Please enter a valid email address' });
+        return res.status(409).send({ message: 'Please enter a valid email address' });
       } else if (!password) {
-        res.status(409).send({ message: 'Please enter a password' });
+        return res.status(409).send({ message: 'Please enter a password' });
       }
 
       // Make a new user from passed data
@@ -41,10 +41,10 @@ router.route('/signup')
           delete json.password;
           res.send({ token: tokenForUser(savedUser), user: json });
         }).catch((error) => {
-          res.status(500).send(error);
+          return res.status(500).send(error);
         });
     }).catch((error) => {
-      res.status(500).send(error);
+      return res.status(500).send(error);
     });
   });
 
@@ -54,7 +54,7 @@ router.route('/signin')
     // This information is loaded by passport
     const json = req.user.toJSON();
     delete json.password;
-    res.send({ token: tokenForUser(json), user: json });
+    return res.send({ token: tokenForUser(json), user: json });
   });
 
 export default router;
