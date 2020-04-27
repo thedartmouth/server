@@ -39,9 +39,9 @@ router.route('/')
     // Call search() controller with generated parameters
     console.log(queryObject, sort, page, numPerPage);
     search(queryObject, sort, page, numPerPage).then((results) => {
-      res.send({ results, numResults: results.length });
+      return res.send({ results, numResults: results.length });
     }).catch((error) => {
-      res.json(error);
+      return res.json(error);
     });
   });
 

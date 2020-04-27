@@ -11,9 +11,9 @@ router.route('/')
   // Get all resources
   .get((req, res) => {
     Resource.find({}).then((resources) => {
-      res.send(resources);
+      return res.send(resources);
     }).catch((error) => {
-      res.status(500).json({ error });
+      return res.status(500).json({ error });
     });
   })
 
@@ -28,9 +28,9 @@ router.route('/')
 
     resource.save()
       .then((savedResource) => {
-        res.send(savedResource);
+        return res.send(savedResource);
       }).catch((error) => {
-        res.status(500).send(error);
+        return res.status(500).send(error);
       });
   })
 
@@ -38,10 +38,10 @@ router.route('/')
   .delete(requireAuth, (req, res) => {
     Resource.deleteMany({ })
       .then(() => {
-        res.send('Successfully deleted all resources.');
+        return res.send('Successfully deleted all resources.');
       })
       .catch((error) => {
-        res.send(error);
+        return res.send(error);
       });
   });
 
@@ -51,13 +51,13 @@ router.route('/:id')
   .get((req, res) => {
     Resource.findById(req.params.id)
       .then((resource) => {
-        res.send(resource);
+        return res.send(resource);
       })
       .catch((error) => {
         if (error.message && error.message.startsWith('Resource with id:')) {
-          res.status(404).send(error);
+          return res.status(404).send(error);
         } else {
-          res.status(500).send(error);
+          return res.status(500).send(error);
         }
       });
   })
@@ -69,18 +69,18 @@ router.route('/:id')
         // Fetch resource object and send
         Resource.findById(req.params.id)
           .then((resource) => {
-            res.send(resource);
+            return res.send(resource);
           })
           .catch((error) => {
             if (error.message.startsWith('Resource with id:')) {
-              res.status(404).send(error.message);
+              return res.status(404).send(error.message);
             } else {
-              res.status(500).send(error.message);
+              return res.status(500).send(error.message);
             }
           });
       })
       .catch((error) => {
-        res.status(500).send(error);
+        return res.status(500).send(error);
       });
   })
 
@@ -88,10 +88,10 @@ router.route('/:id')
   .delete(requireAuth, (req, res) => {
     Resource.deleteOne({ _id: req.params.id })
       .then(() => {
-        res.send(`Resource with id: ${req.params.id} was successfully deleted`);
+        return res.send(`Resource with id: ${req.params.id} was successfully deleted`);
       })
       .catch((error) => {
-        res.send(error);
+        return res.send(error);
       });
   });
 
