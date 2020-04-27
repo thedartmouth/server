@@ -13,7 +13,7 @@ router.route('/')
     Resource.find({}).then((resources) => {
       return res.send(resources);
     }).catch((error) => {
-      return res.status(500).json({ error });
+      return res.status(500).json(error);
     });
   })
 
@@ -38,7 +38,7 @@ router.route('/')
   .delete(requireAuth, (req, res) => {
     Resource.deleteMany({ })
       .then(() => {
-        return res.send('Successfully deleted all resources.');
+        return res.send({ message: 'Successfully deleted all resources.' });
       })
       .catch((error) => {
         return res.send(error);
@@ -73,9 +73,9 @@ router.route('/:id')
           })
           .catch((error) => {
             if (error.message.startsWith('Resource with id:')) {
-              return res.status(404).send(error.message);
+              return res.status(404).json({ message: error.message });
             } else {
-              return res.status(500).send(error.message);
+              return res.status(500).json({ message: error.message });
             }
           });
       })
@@ -88,7 +88,7 @@ router.route('/:id')
   .delete(requireAuth, (req, res) => {
     Resource.deleteOne({ _id: req.params.id })
       .then(() => {
-        return res.send(`Resource with id: ${req.params.id} was successfully deleted`);
+        return res.send({ message: `Resource with id: ${req.params.id} was successfully deleted` });
       })
       .catch((error) => {
         return res.send(error);

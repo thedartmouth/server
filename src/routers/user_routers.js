@@ -80,10 +80,10 @@ router.route('/:id')
   .delete((req, res) => {
     User.deleteOne({ _id: req.params.id })
       .then(() => {
-        return res.send(`User with id: ${req.params.id} was successfully deleted`);
+        return res.send({ message: `User with id: ${req.params.id} was successfully deleted` });
       })
       .catch((error) => {
-        return res.send(error);
+        return res.status(500).send(error);
       });
   });
 

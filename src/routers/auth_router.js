@@ -16,14 +16,14 @@ router.route('/signup')
     User.findOne({ email }).then((user) => {
       // Check if a user already has this email address
       if (user) {
-        return res.status(409).send({ message: 'Email address already associated to a user' });
+        return res.status(409).json({ message: 'Email address already associated to a user' });
       }
 
       // Validate email and password
       if (!email || !validator.validate(email)) {
-        return res.status(409).send({ message: 'Please enter a valid email address' });
+        return res.status(409).json({ message: 'Please enter a valid email address' });
       } else if (!password) {
-        return res.status(409).send({ message: 'Please enter a password' });
+        return res.status(409).json({ message: 'Please enter a password' });
       }
 
       // Make a new user from passed data
@@ -39,19 +39,19 @@ router.route('/signup')
         .then((savedUser) => {
           const json = savedUser.toJSON();
           delete json.password;
-          res.send({ token: tokenForUser(savedUser), user: json });
+          res.status(201).json({ token: tokenForUser(savedUser), user: json });
         }).catch((error) => {
-          return res.status(500).send(error);
+          return res.status(500).json(error);
         });
     }).catch((error) => {
-      return res.status(500).send(error);
+      return res.status(500).json(error);
     });
   });
 
 // Send user object and server will send back authToken and user object
 router.route('/signin')
   .post(requireSignin, (req, res) => {
-    // This information is loaded by passport
+    // This information is loaded or rejected by passport
     const json = req.user.toJSON();
     delete json.password;
     return res.send({ token: tokenForUser(json), user: json });
