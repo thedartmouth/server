@@ -54,7 +54,7 @@ router.route('/signin')
     // This information is loaded or rejected by passport
     const json = req.user.toJSON();
     delete json.password;
-    return res.send({ token: tokenForUser(json), user: json });
+    return res.json({ token: tokenForUser(json), user: json });
   });
 
 export default router;

@@ -11,17 +11,15 @@ router.route('/')
   // Get all users
   .get((req, res) => {
     User.find({}).then((users) => {
-      return res.send(users);
+      return res.json(users);
     }).catch((error) => {
-      return res.status(500).send(error);
+      return res.status(500).json(error);
     });
   })
 
   // Create new user
   .post((req, res) => {
     const user = new User();
-
-    console.log(req.body);
 
     user.first_name = req.body.first_name;
     user.last_name = req.body.last_name;
@@ -30,10 +28,9 @@ router.route('/')
 
     user.save()
       .then((savedUser) => {
-        return res.send(savedUser);
+        return res.json(savedUser);
       }).catch((error) => {
-        console.error(error);
-        return res.status(500).send(error);
+        return res.status(500).json(error);
       });
   });
 
@@ -43,13 +40,13 @@ router.route('/:id')
   .get((req, res) => {
     User.findById(req.params.id)
       .then((user) => {
-        return res.send(user);
+        return res.json(user);
       })
       .catch((error) => {
         if (error.message && error.message.startsWith('User with id:')) {
-          return res.status(404).send(error.message);
+          return res.status(404).json(error.message);
         } else {
-          return res.status(500).send(error.message);
+          return res.status(500).json(error.message);
         }
       });
   })
@@ -61,29 +58,33 @@ router.route('/:id')
         // Fetch user object and send
         User.findById(req.params.id)
           .then((resource) => {
-            return res.send(resource);
+            return res.json(resource);
           })
           .catch((error) => {
             if (error.message.startsWith('User with id:')) {
-              return res.status(404).send(error.message);
+              return res.status(404).json(error.message);
             } else {
-              return res.status(500).send(error.message);
+              return res.status(500).json(error.message);
             }
           });
       })
       .catch((error) => {
-        return res.status(500).send(error);
+        return res.status(500).json(error);
       });
   })
 
   // Delete user by id
   .delete((req, res) => {
     User.deleteOne({ _id: req.params.id })
-      .then(() => {
-        return res.send({ message: `User with id: ${req.params.id} was successfully deleted` });
+      .then((result) => {
+        if (result.deletedCount === 1) { // Successful deletion
+          return res.json(Object.assign({ message: `User with id: ${req.params.id} was successfully deleted` }, result));
+        } else {
+          return res.status(500).json(Object.assign({ message: 'Resource not able to be deleted' }, result));
+        }
       })
       .catch((error) => {
-        return res.status(500).send(error);
+        return res.status(500).json(error);
       });
   });
 
