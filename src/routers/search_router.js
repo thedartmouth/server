@@ -8,8 +8,6 @@ router.route('/')
 
   // Main query-based search
   .get((req, res) => {
-    console.log('Params:', req.query);
-
     // Add any additional filters here. NOTE: Shorten these for cleanliness in URL
     const { query, maxValue } = req.query; // Params that don't need defaults
     const sort = req.query.sort || 'a'; // Params that need defaults
@@ -37,11 +35,10 @@ router.route('/')
     };
 
     // Call search() controller with generated parameters
-    console.log(queryObject, sort, page, numPerPage);
     search(queryObject, sort, page, numPerPage).then((results) => {
-      return res.send({ results, numResults: results.length });
+      return res.json({ results, numResults: results.length });
     }).catch((error) => {
-      return res.json(error);
+      return res.status(500).json(error);
     });
   });
 
