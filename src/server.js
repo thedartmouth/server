@@ -27,7 +27,7 @@ app.use(bodyParser.json());
 
 // declare routers
 app.use('/auth', authRouter); // NOTE: Not secured
-app.use('/users', usersRouter); // NOTE: Completely secured to users
+app.use('/users', requireAuth, usersRouter); // NOTE: Completely secured to users
 app.use('/resources', resourcesRouter); // NOTE: Partially secured to users
 app.use('/search', searchRouter); // NOTE: Not secured
 
