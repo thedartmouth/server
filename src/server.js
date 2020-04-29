@@ -78,6 +78,11 @@ mongoose.connect(mongoURI, mongooseOptions).then(() => {
 //   }
 // });
 
+// Custom 404 middleware
+app.use((req, res) => {
+  res.status(404).json({ message: 'The route you\'ve requested doesn\'t exist' });
+});
+
 // START THE SERVER
 // =============================================================================
 const port = process.env.PORT || 9090;
