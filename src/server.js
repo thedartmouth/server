@@ -11,8 +11,6 @@ import searchRouter from './routers/search_router';
 
 import requireAuth from './authentication/requireAuth';
 
-import User from './models/user_model';
-
 // initialize
 const app = express();
 
