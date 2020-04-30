@@ -33,6 +33,7 @@ const localLogin = new LocalStrategy(localOptions, (email, password, done) => {
 
 passport.use(localLogin);
 
+// Create function to transmit result of authenticate() call to user or next middleware
 const requireSignin = function (req, res, next) {
   // eslint-disable-next-line prefer-arrow-callback
   passport.authenticate('local', { session: false }, function (err, user, info) {
