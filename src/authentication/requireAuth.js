@@ -1,3 +1,4 @@
+/* eslint-disable func-names */
 import passport from 'passport';
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 import dotenv from 'dotenv';
@@ -28,5 +29,19 @@ const jwtLogin = new JwtStrategy(jwtOptions, (payload, done) => {
 
 passport.use(jwtLogin);
 
-const requireAuth = passport.authenticate('jwt', { session: false });
+const requireAuth = function (req, res, next) {
+  // eslint-disable-next-line prefer-arrow-callback
+  passport.authenticate('jwt', { session: false }, function (err, user, info) {
+  // Return any existing errors
+    if (err) { return next(err); }
+
+    // If no user found, return appropriate error message
+    if (!user) { return res.status(401).json({ message: info.message || 'Error authenticating email and password' }); }
+
+    req.user = user;
+
+    return next();
+  })(req, res, next);
+};
+
 export default requireAuth;

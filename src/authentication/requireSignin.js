@@ -36,24 +36,16 @@ passport.use(localLogin);
 const requireSignin = function (req, res, next) {
   // eslint-disable-next-line prefer-arrow-callback
   passport.authenticate('local', { session: false }, function (err, user, info) {
-    console.log('user', err, user, info, req.user);
-
     // Return any existing errors
     if (err) { return next(err); }
 
     // If no user found, return appropriate error message
     if (!user) { return res.status(401).json({ message: info.message || 'Error authenticating email and password' }); }
 
-    // eslint-disable-next-line prefer-arrow-callback
-    req.logIn(user, function (error) {
-      if (err) { return next(error); }
-      return next(null, user);
-    });
+    req.user = user;
 
-    // // Send user object
-    // res.json({ user });
-
-    return next(err, user);
+    return next();
   })(req, res, next);
 };
+
 export default requireSignin;
