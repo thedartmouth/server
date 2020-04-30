@@ -46,6 +46,7 @@ const mongooseOptions = {
 
 // Connect the database
 mongoose.connect(mongoURI, mongooseOptions).then(() => {
+  mongoose.Promise = global.Promise; // configures mongoose to use ES6 Promises
   console.log('Connected to Database');
 }).catch((err) => {
   console.log('Not Connected to Database ERROR! ', err);
