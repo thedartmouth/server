@@ -7,7 +7,6 @@ export function search(queryObject, sort, page, numPerPage) {
       .skip((page - 1) * numPerPage) // Start at the beginning of the "page"
       .limit(numPerPage) // Limit to the end of the "page"
       .then((results) => {
-        console.log('results', results);
         resolve(results);
       })
       .catch((error) => {
