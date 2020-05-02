@@ -11,8 +11,6 @@ import searchRouter from './routers/search_router';
 
 import requireAuth from './authentication/requireAuth';
 
-import User from './models/user_model';
-
 // initialize
 const app = express();
 
@@ -48,6 +46,7 @@ const mongooseOptions = {
 
 // Connect the database
 mongoose.connect(mongoURI, mongooseOptions).then(() => {
+  mongoose.Promise = global.Promise; // configures mongoose to use ES6 Promises
   console.log('Connected to Database');
 }).catch((err) => {
   console.log('Not Connected to Database ERROR! ', err);

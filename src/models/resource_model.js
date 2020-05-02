@@ -1,10 +1,10 @@
 import mongoose, { Schema } from 'mongoose';
 
 const ResourceSchema = new Schema({
-  title: String,
-  description: String,
-  value: Number,
-  date_resource_created: Date,
+  title: { type: String, default: 'Untitled' },
+  description: { type: String, default: '' },
+  value: { type: Number, default: null },
+  date_resource_created: { type: Date, default: Date.now() }, // default JSON date format for JS: https://stackoverflow.com/a/15952652/10256611
 });
 
 const ResourceModel = mongoose.model('Resource', ResourceSchema);
