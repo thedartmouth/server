@@ -11,7 +11,7 @@ import searchRouter from './routers/search_router';
 
 import requireAuth from './authentication/requireAuth';
 
-// import User from './models/user_model';
+import * as constants from './constants';
 
 // initialize
 const app = express();
@@ -34,11 +34,10 @@ app.use('/search', searchRouter); // NOTE: Not secured
 
 // default index route
 app.get('/', (req, res) => {
-  res.send('Welcome to Granite State Backend!');
+  res.send('Welcome to backend!');
 });
 
 // DB Setup
-const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost/granite-state';
 const mongooseOptions = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -47,7 +46,7 @@ const mongooseOptions = {
 };
 
 // Connect the database
-mongoose.connect(mongoURI, mongooseOptions).then(() => {
+mongoose.connect(constants.MONGODB_URI, mongooseOptions).then(() => {
   mongoose.Promise = global.Promise; // configures mongoose to use ES6 Promises
   console.log('Connected to Database');
 }).catch((err) => {
@@ -86,7 +85,6 @@ app.use((req, res) => {
 
 // START THE SERVER
 // =============================================================================
-const port = process.env.PORT || 9090;
-app.listen(port);
+app.listen(constants.PORT);
 
-console.log(`listening on: ${port}`);
+console.log(`listening on: ${constants.PORT}`);

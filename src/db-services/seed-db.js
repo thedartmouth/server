@@ -1,11 +1,14 @@
 import mongoose from 'mongoose';
 import readline from 'readline';
+
 import UserModel from '../models/user_model';
 import ResourceModel from '../models/resource_model';
+
 import seedData from './seed-data.json';
 
+import * as constants from '../constants';
+
 // DB Setup
-const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost/granite-state';
 const mongooseOptions = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -68,11 +71,11 @@ const seedResources = (entries) => {
 const seedDB = () => {
   return new Promise((resolve) => {
   // Connect the database
-    mongoose.connect(mongoURI, mongooseOptions).then(() => {
+    mongoose.connect(constants.MONGODB_URI, mongooseOptions).then(() => {
       console.log('Connected to Database');
       mongoose.connection.db.dropDatabase(() => {
         mongoose.connection.close(() => {
-          mongoose.connect(mongoURI).then(() => {
+          mongoose.connect(constants.MONGODB_URI).then(() => {
             Promise.all(
               seedData.map((schemaSet) => {
                 return new Promise((resolve, reject) => {
