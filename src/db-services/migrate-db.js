@@ -19,7 +19,8 @@ const mongooseOptions = {
  */
 const processResource = (originalResource) => {
   return new Promise((resolve, reject) => {
-    if (originalResource) { // fits criteria to be modified
+    if (originalResource.value === 1) { // fits criteria to be modified
+      originalResource.title = 'MODIFIED';
       resolve(originalResource);
     } else reject(originalResource);
   });
@@ -44,7 +45,7 @@ const migrateResources = () => {
           });
         }),
       ).then((modifiedResources) => {
-        console.log(`Modified ${modifiedCount} new Resource documents`, modifiedResources);
+        console.log(`Modified ${modifiedCount} Resource documents`, modifiedResources);
         resolve(modifiedResources);
       }).catch((modifyingError) => { reject(modifyingError); });
     });
@@ -56,8 +57,10 @@ const migrateResources = () => {
  * @param {UserModel} originalUser
  */
 const processUser = (originalUser) => {
+  console.log(originalUser);
   return new Promise((resolve, reject) => {
-    if (originalUser) { // fits criteria to be modified
+    if (originalUser.first_name === 'FIRST_AUTOGEN_1') { // fits criteria to be modified
+      originalUser.first_name = 'MODIFIED';
       resolve(originalUser);
     } else reject(originalUser);
   });
@@ -72,8 +75,9 @@ const migrateUsers = () => {
     Users.find({}).then((users) => {
       Promise.all(
         users.map((user) => {
+          console.log(user);
           return new Promise((resolve, reject) => {
-            Resources.findById(user._id).then((toUpdateUser) => {
+            Users.findById(user._id).then((toUpdateUser) => {
               processUser(toUpdateUser).then((updatedUser) => {
                 modifiedCount += 1;
                 updatedUser.save().then((modifiedUser) => { return resolve(modifiedUser); });
@@ -82,7 +86,7 @@ const migrateUsers = () => {
           });
         }),
       ).then((modifiedUsers) => {
-        console.log(`Modified ${modifiedCount} new Resource documents`, modifiedUsers);
+        console.log(`Modified ${modifiedCount} User documents`, modifiedUsers);
         resolve(modifiedUsers);
       }).catch((modifyingError) => { reject(modifyingError); });
     });
@@ -97,7 +101,7 @@ const migrateDB = () => {
   return new Promise((resolve) => {
     mongoose.connect(constants.MONGODB_URI, mongooseOptions).then(() => {
       console.log('Connected to Database');
-      Promise.all([migrateResources, migrateUsers]).then(() => {
+      Promise.all(migrateUsers, migrateResources).then(() => {
         console.log('Migration complete. Safe to exit.');
         resolve();
       }).catch((migrationError) => { throw new Error(migrationError); });
@@ -109,9 +113,8 @@ const migrateDB = () => {
   });
 };
 
-
 const cli = readline.createInterface({ input: process.stdin, output: process.stdout });
-cli.question(`Seeding the DB will delete all data connected to ${constants.MONGODB_URI}, are you sure? (Y/N)`, async (answer) => {
+cli.question(`Migrating the DB will modify the data connected to ${constants.MONGODB_URI}, are you sure? (Y/N)`, async (answer) => {
   cli.close();
   switch (answer) {
     case 'Y':
