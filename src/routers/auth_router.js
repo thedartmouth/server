@@ -1,9 +1,9 @@
 import express from 'express';
 import validator from 'email-validator';
 
-import { tokenForUser } from '../controllers/user_controller';
-import requireSignin from '../authentication/requireSignin';
-import User from '../models/user_model';
+import { userController } from '../controllers';
+import { requireSignin } from '../authentication';
+import { Users } from '../models';
 
 const router = express();
 
@@ -13,7 +13,7 @@ router.route('/signup')
       email, password, firstName, lastName,
     } = req.body;
 
-    User.findOne({ email }).then((user) => {
+    Users.findOne({ email }).then((user) => {
       // Check if a user already has this email address
       if (user) {
         return res.status(409).json({ message: 'Email address already associated to a user' });
@@ -27,7 +27,7 @@ router.route('/signup')
       }
 
       // Make a new user from passed data
-      const newUser = new User({
+      const newUser = new Users({
         email: email.toLowerCase(),
         password,
         first_name: firstName,
@@ -39,7 +39,7 @@ router.route('/signup')
         .then((savedUser) => {
           const json = savedUser.toJSON();
           delete json.password;
-          res.status(201).json({ token: tokenForUser(savedUser), user: json });
+          res.status(201).json({ token: userController.tokenForUser(savedUser), user: json });
         }).catch((error) => {
           return res.status(500).json(error);
         });
@@ -54,7 +54,7 @@ router.route('/signin')
     // This information is loaded or rejected by passport
     const json = req.user.toJSON();
     delete json.password;
-    return res.json({ token: tokenForUser(json), user: json });
+    return res.json({ token: userController.tokenForUser(json), user: json });
   });
 
 export default router;
