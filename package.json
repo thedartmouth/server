@@ -1,10 +1,14 @@
 {
-  "name": "granite-state-backend",
+  "name": "crud-template-backend",
   "version": "1.0.0",
-  "description": "",
-  "author": "",
+  "description": "DALI Lab CRUD template",
   "main": "src/server.js",
-  "license": "UNLICENSED",
+  "repository": "https://github.com/dali-lab/crud-template-backend",
+  "author": "Adam McQuilkin <Adam.J.Mcquilkin.22@Dartmouth.edu>",
+  "contributors": [
+    "Alex Lopez <Alejandro.A.Lopez.Cochachi.23@Dartmouth.edu>"
+  ],
+  "license": "MIT",
   "scripts": {
     "test": "eslint src/**.js",
     "dev": "nodemon src/server.js --exec babel-node",
