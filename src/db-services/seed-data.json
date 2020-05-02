@@ -1,0 +1,36 @@
+[
+  {
+    "schema": "User",
+    "data": [
+      {
+        "first_name": "FIRST_AUTOGEN_1",
+        "last_name": "LAST_AUTOGEN_1",
+        "email": "AUTOGEN_1@TEST.COM",
+        "password": "PASSWORD"
+      },
+      {
+        "first_name": "FIRST_AUTOGEN_2",
+        "last_name": "LAST_AUTOGEN_2",
+        "email": "AUTOGEN_2@TEST.COM",
+        "password": "PASSWORD"
+      }
+    ]
+  },
+  {
+    "schema": "Resource",
+    "data": [
+      {
+        "title": "TITLE_AUTOGEN_1",
+        "description": "DESCRIPTION_AUTOGEN_1",
+        "value": 1,
+        "date_resource_created": "2012-04-23T18:25:43.511Z"
+      },
+      {
+        "title": "TITLE_AUTOGEN_1",
+        "description": "DESCRIPTION_AUTOGEN_1",
+        "value": 2,
+        "date_resource_created": "2012-04-23T18:25:43.511Z"
+      }
+    ]
+  }
+]
