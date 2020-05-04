@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import * as constants from '../constants';
 import { Resources } from '../models';
+
 /**
  * Populates all possible first-layer fields of a Mongo Document.
  * @param {Document} document
