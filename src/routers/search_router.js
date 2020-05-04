@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { search } from '../controllers/search_controller';
+import { searchController } from '../controllers';
 
 const router = express();
 
@@ -35,7 +35,7 @@ router.route('/')
     };
 
     // Call search() controller with generated parameters
-    search(queryObject, sort, page, numPerPage).then((results) => {
+    searchController.search(queryObject, sort, page, numPerPage).then((results) => {
       return res.json({ results, numResults: results.length });
     }).catch((error) => {
       return res.status(500).json(error);

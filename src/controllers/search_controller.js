@@ -95,3 +95,7 @@ export function soundex(queryString, maxLength = 4) {
 
   return outputString;
 }
+
+const searchController = { search, soundex };
+
+export default searchController;

@@ -1,1 +1,3 @@
-// import Resource from '../models/resource_model';
+const resourceController = {};
+
+export default resourceController;
