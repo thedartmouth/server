@@ -16,7 +16,8 @@
     "build": "babel src -d dist",
     "prod": "yarn build; node dist/server.js",
     "seedDB": "babel-node src/db-services/seed-db.js",
-    "migrateDB": "babel-node src/db-services/migrate-db.js"
+    "migrateDB": "babel-node src/db-services/migrate-db.js",
+    "testPopulate": "babel-node src/controllers/populate.js"
   },
   "dependencies": {
     "axios": "^0.19.2",
