@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import readline from 'readline';
 
-import { Users, Resources } from '../models';
+import { Users, Resources, SubResources } from '../models';
 
 import seedData from './seed-data.json';
 
@@ -63,6 +63,45 @@ const seedResources = (entries) => {
   });
 };
 
+const linkDocuments = () => {
+  return new Promise((resolve) => {
+    SubResources.find({}).then((subResources) => {
+      Resources.find({}).then((resources) => {
+        Promise.all(resources.map((resource) => {
+          return new Promise((resolve) => {
+            Resources.findById(resource._id).then((resourceToModify) => {
+              resourceToModify.child_resources = subResources.map((subResource) => { return subResource._id; });
+              resourceToModify.save().then((modifiedResource) => { return resolve(modifiedResource._id); });
+            });
+          });
+        })).then((modifiedResources) => {
+          Users.find({}).then((users) => {
+            Promise.all(users.map((user) => {
+              return new Promise((resolve) => {
+                Users.findById(user._id).then((userToModify) => {
+                  userToModify.resource = modifiedResources[0]._id;
+                  userToModify.save().then((modifiedUser) => { return resolve(modifiedUser._id); });
+                });
+              });
+            })).then(() => {
+              Promise.all(subResources.map((subResource) => {
+                return new Promise((resolve) => {
+                  SubResources.findById(subResource._id).then((subResourceToModify) => {
+                    subResourceToModify.parent_resource = modifiedResources[0]._id;
+                    subResourceToModify.save().then(() => { return resolve(); });
+                  });
+                });
+              })).then(() => {
+                resolve();
+              });
+            });
+          });
+        });
+      });
+    });
+  });
+};
+
 /**
  * Main seed script.
  * Connects to current mongoURI, drops the database, and then re-populates with default values.
@@ -91,8 +130,11 @@ const seedDB = () => {
                 });
               }),
             ).then(() => {
-              console.log('Seeding complete. Safe to exit.');
-              resolve();
+              console.log('Seeding complete.');
+              linkDocuments().then(() => {
+                console.log('Newly seeded documents linked for testing. Safe to exit.');
+                resolve();
+              });
             }).catch((seedingError) => { throw new Error(seedingError); });
           }).catch((connectionError) => {
             throw new Error(connectionError);
