@@ -1,7 +1,7 @@
 import express from 'express';
 
-import User from '../models/user_model';
-// import { tokenForUser } from '../controllers/user_controller';
+import { Users } from '../models';
+// import { userController } from '../controllers';
 
 const router = express();
 
@@ -10,7 +10,7 @@ router.route('/')
 
   // Get all users
   .get((req, res) => {
-    User.find({}).then((users) => {
+    Users.find({}).then((users) => {
       return res.json(users);
     }).catch((error) => {
       return res.status(500).json(error);
@@ -19,7 +19,7 @@ router.route('/')
 
   // Create new user
   .post((req, res) => {
-    const user = new User();
+    const user = new Users();
 
     user.first_name = req.body.first_name;
     user.last_name = req.body.last_name;
@@ -38,7 +38,7 @@ router.route('/:id')
 
   // Get user by id
   .get((req, res) => {
-    User.findById(req.params.id)
+    Users.findById(req.params.id)
       .then((user) => {
         return res.json(user);
       })
@@ -53,10 +53,10 @@ router.route('/:id')
 
   // Update user by id
   .put((req, res) => {
-    User.updateOne({ _id: req.params.id }, req.body)
+    Users.updateOne({ _id: req.params.id }, req.body)
       .then(() => {
         // Fetch user object and send
-        User.findById(req.params.id)
+        Users.findById(req.params.id)
           .then((resource) => {
             return res.json(resource);
           })
@@ -75,7 +75,7 @@ router.route('/:id')
 
   // Delete user by id
   .delete((req, res) => {
-    User.deleteOne({ _id: req.params.id })
+    Users.deleteOne({ _id: req.params.id })
       .then((result) => {
         if (result.deletedCount === 1) { // Successful deletion
           return res.json(Object.assign({ message: `User with id: ${req.params.id} was successfully deleted` }, result));
