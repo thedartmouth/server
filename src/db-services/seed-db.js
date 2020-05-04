@@ -105,7 +105,6 @@ const seedDB = () => {
   });
 };
 
-
 const cli = readline.createInterface({ input: process.stdin, output: process.stdout });
 cli.question(`Seeding the DB will delete all data connected to ${constants.MONGODB_URI}, are you sure? (Y/N)`, async (answer) => {
   cli.close();
