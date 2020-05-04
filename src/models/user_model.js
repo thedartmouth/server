@@ -7,6 +7,7 @@ const UserSchema = new Schema({
   password: { type: String, required: true },
   first_name: String,
   last_name: String,
+  resource: { type: Schema.Types.ObjectId, ref: 'Resource' },
 }, {
   toObject: {
     virtuals: true,
