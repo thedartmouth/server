@@ -27,12 +27,12 @@ const processResource = (originalResource) => {
 };
 
 /**
-  * Executes asynchronous database seeding with default values for ResourceSchema.
+  * Executes asynchronous database migration with procedure defined in processResource for ResourceSchema.
   */
 const migrateResources = () => {
   return new Promise((resolve, reject) => {
     let modifiedCount = 0;
-    Resources.find({}).then((resources) => {
+    Resources.find({}).exec().then((resources) => {
       Promise.all(
         resources.map((resource) => {
           return new Promise((resolve, reject) => {
@@ -40,12 +40,15 @@ const migrateResources = () => {
               processResource(toUpdateResource).then((updatedResource) => {
                 modifiedCount += 1;
                 updatedResource.save().then((modifiedResource) => { return resolve(modifiedResource); });
-              });
+              }).catch(() => { return resolve(null); });
             }).catch((findError) => { return reject(findError); });
           });
         }),
       ).then((modifiedResources) => {
-        console.log(`Modified ${modifiedCount} Resource documents`, modifiedResources);
+        console.log(`Modified ${modifiedCount} Resource documents.`);
+        modifiedResources.forEach((modifiedResource) => {
+          if (modifiedResource) console.log(modifiedResource);
+        });
         resolve(modifiedResources);
       }).catch((modifyingError) => { reject(modifyingError); });
     });
@@ -57,7 +60,6 @@ const migrateResources = () => {
  * @param {UserModel} originalUser
  */
 const processUser = (originalUser) => {
-  console.log(originalUser);
   return new Promise((resolve, reject) => {
     if (originalUser.first_name === 'FIRST_AUTOGEN_1') { // fits criteria to be modified
       originalUser.first_name = 'MODIFIED';
@@ -67,31 +69,34 @@ const processUser = (originalUser) => {
 };
 
 /**
-  * Executes asynchronous database seeding with default values for UserSchema.
+  * Executes asynchronous database migration with procedure defined in processUser for UserSchema.
   */
 const migrateUsers = () => {
   return new Promise((resolve, reject) => {
     let modifiedCount = 0;
-    Users.find({}).then((users) => {
+    Users.find({}).exec().then((users) => {
       Promise.all(
         users.map((user) => {
-          console.log(user);
           return new Promise((resolve, reject) => {
             Users.findById(user._id).then((toUpdateUser) => {
               processUser(toUpdateUser).then((updatedUser) => {
                 modifiedCount += 1;
                 updatedUser.save().then((modifiedUser) => { return resolve(modifiedUser); });
-              });
+              }).catch(() => { return resolve(null); });
             }).catch((findError) => { return reject(findError); });
           });
         }),
       ).then((modifiedUsers) => {
-        console.log(`Modified ${modifiedCount} User documents`, modifiedUsers);
+        console.log(`Modified ${modifiedCount} User documents.`);
+        modifiedUsers.forEach((modifiedUser) => {
+          if (modifiedUser) console.log(modifiedUser);
+        });
         resolve(modifiedUsers);
       }).catch((modifyingError) => { reject(modifyingError); });
     });
   });
 };
+
 
 /**
  * Main migration script.
@@ -100,8 +105,9 @@ const migrateUsers = () => {
 const migrateDB = () => {
   return new Promise((resolve) => {
     mongoose.connect(constants.MONGODB_URI, mongooseOptions).then(() => {
-      console.log('Connected to Database');
-      Promise.all(migrateUsers, migrateResources).then(() => {
+      mongoose.Promise = global.Promise; // configures mongoose to use ES6 Promises
+      console.log('Connected to Database.');
+      Promise.all([migrateUsers(), migrateResources()]).then(() => {
         console.log('Migration complete. Safe to exit.');
         resolve();
       }).catch((migrationError) => { throw new Error(migrationError); });
