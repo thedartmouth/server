@@ -48,4 +48,11 @@ const testPopulateAll = () => {
   });
 };
 
-testPopulateAll();
+/**
+ * Only executes the testing of populateAll if this module was run independently.
+ */
+if (typeof require !== 'undefined' && require.main === module) {
+  testPopulateAll();
+}
+
+export default populateAll;
