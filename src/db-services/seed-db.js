@@ -48,12 +48,12 @@ const seedResources = (entries) => {
     Promise.all(
       entries.map((entry) => {
         return new Promise((resolve, reject) => {
-          const newUser = new Resources();
-          newUser.title = entry.title;
-          newUser.description = entry.description;
-          newUser.value = entry.value;
-          newUser.date_resource_created = entry.date_resource_created;
-          newUser.save().then((savedResource) => { return resolve(savedResource); }).catch((savingError) => { return reject(savingError); });
+          const newResource = new Resources();
+          newResource.title = entry.title;
+          newResource.description = entry.description;
+          newResource.value = entry.value;
+          newResource.date_resource_created = entry.date_resource_created;
+          newResource.save().then((savedResource) => { return resolve(savedResource); }).catch((savingError) => { return reject(savingError); });
         });
       }),
     ).then((savedResources) => {
@@ -63,6 +63,33 @@ const seedResources = (entries) => {
   });
 };
 
+/**
+  * Executes asynchronous database seeding with default values for SubResourceSchema.
+  * @param {SubResourcesSchema} entries
+  */
+const seedSubResources = (entries) => {
+  return new Promise((resolve, reject) => {
+    Promise.all(
+      entries.map((entry) => {
+        return new Promise((resolve, reject) => {
+          const newSubResource = new SubResources();
+          newSubResource.title = entry.title;
+          newSubResource.description = entry.description;
+          newSubResource.value = entry.value;
+          newSubResource.date_resource_created = entry.date_resource_created;
+          newSubResource.save().then((savedSubResource) => { return resolve(savedSubResource); }).catch((savingError) => { return reject(savingError); });
+        });
+      }),
+    ).then((savedSubResources) => {
+      console.log(`Seeded ${entries.length} new SubResource documents`, savedSubResources);
+      resolve(savedSubResources);
+    }).catch((seedingError) => { reject(seedingError); });
+  });
+};
+
+/**
+ * Links together all documents that have fields which reference other documents.
+ */
 const linkDocuments = () => {
   return new Promise((resolve) => {
     SubResources.find({}).then((subResources) => {
@@ -123,6 +150,9 @@ const seedDB = () => {
                       break;
                     case 'Resource':
                       seedResources(schemaSet.data).then((seededData) => { return resolve(seededData); }).catch((seedingError) => { return reject(seedingError); });
+                      break;
+                    case 'SubResource':
+                      seedSubResources(schemaSet.data).then((seededData) => { return resolve(seededData); }).catch((seedingError) => { return reject(seedingError); });
                       break;
                     default:
                       reject(new Error('Invalid schema type specified in input data.'));
