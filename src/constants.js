@@ -1,4 +1,6 @@
+import packageInfo from '../package.json';
+
 export const PORT = process.env.PORT || 9090;
-export const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost/granite-state';
-export const SELF_URL = process.env.NODE_ENV === 'development' ? `localhost:${9090}` : 'https://www.google.com';
-export const APP_URL = process.env.NODE_ENV === 'development' ? `localhost:${8080}` : 'https://d-planner.com';
+export const MONGODB_URI = process.env.MONGODB_URI || packageInfo.localDatabaseURI;
+export const SELF_URL = process.env.NODE_ENV === 'development' ? `localhost:${9090}` : packageInfo.productionURL;
+export const APP_URL = process.env.NODE_ENV === 'development' ? `localhost:${8080}` : packageInfo.productionClientURL;
