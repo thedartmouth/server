@@ -64,30 +64,6 @@ const seedListings = (entries) => {
 };
 
 /**
-  * Executes asynchronous database seeding with default values for SubListingSchema.
-  * @param {SubListingsSchema} entries
-  */
-const seedSubListings = (entries) => {
-  return new Promise((resolve, reject) => {
-    Promise.all(
-      entries.map((entry) => {
-        return new Promise((resolve, reject) => {
-          const newSubListing = new SubListings();
-          newSubListing.title = entry.title;
-          newSubListing.description = entry.description;
-          newSubListing.value = entry.value;
-          newSubListing.date_listing_created = entry.date_listing_created;
-          newSubListing.save().then((savedSubListing) => { return resolve(savedSubListing); }).catch((savingError) => { return reject(savingError); });
-        });
-      }),
-    ).then((savedSubListings) => {
-      console.log(`Seeded ${entries.length} new SubListing documents`, savedSubListings);
-      resolve(savedSubListings);
-    }).catch((seedingError) => { reject(seedingError); });
-  });
-};
-
-/**
  * Links together all documents that have fields which reference other documents.
  */
 const linkDocuments = () => {
@@ -150,9 +126,6 @@ const seedDB = () => {
                       break;
                     case 'Listing':
                       seedListings(schemaSet.data).then((seededData) => { return resolve(seededData); }).catch((seedingError) => { return reject(seedingError); });
-                      break;
-                    case 'SubListing':
-                      seedSubListings(schemaSet.data).then((seededData) => { return resolve(seededData); }).catch((seedingError) => { return reject(seedingError); });
                       break;
                     default:
                       reject(new Error('Invalid schema type specified in input data.'));
