@@ -7,7 +7,15 @@ const UserSchema = new Schema({
   password: { type: String, required: true },
   first_name: String,
   last_name: String,
-  resource: { type: Schema.Types.ObjectId, ref: 'Resource' },
+
+  owned_listings: { type: Schema.Types.ObjectId, ref: 'Listing' },
+
+  account_approved: { type: Schema.Types.Boolean, default: false },
+
+  account_suspended: { type: Schema.Types.Boolean, default: false },
+  suspension_message: String,
+
+  is_admin: { type: Schema.Types.Boolean, default: false },
 }, {
   toObject: {
     virtuals: true,

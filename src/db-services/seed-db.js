@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import readline from 'readline';
 
-import { Users, Resources, SubResources } from '../models';
+import { Users, Listings, SubListings } from '../models';
 
 import seedData from './seed-data.json';
 
@@ -40,49 +40,49 @@ const seedUsers = (entries) => {
 };
 
 /**
-  * Executes asynchronous database seeding with default values for ResourceSchema.
-  * @param {ResourceSchema} entries
+  * Executes asynchronous database seeding with default values for ListingSchema.
+  * @param {ListingSchema} entries
   */
-const seedResources = (entries) => {
+const seedListings = (entries) => {
   return new Promise((resolve, reject) => {
     Promise.all(
       entries.map((entry) => {
         return new Promise((resolve, reject) => {
-          const newResource = new Resources();
-          newResource.title = entry.title;
-          newResource.description = entry.description;
-          newResource.value = entry.value;
-          newResource.date_resource_created = entry.date_resource_created;
-          newResource.save().then((savedResource) => { return resolve(savedResource); }).catch((savingError) => { return reject(savingError); });
+          const newListing = new Listings();
+          newListing.title = entry.title;
+          newListing.description = entry.description;
+          newListing.value = entry.value;
+          newListing.date_listing_created = entry.date_listing_created;
+          newListing.save().then((savedListing) => { return resolve(savedListing); }).catch((savingError) => { return reject(savingError); });
         });
       }),
-    ).then((savedResources) => {
-      console.log(`Seeded ${entries.length} new Resource documents`, savedResources);
-      resolve(savedResources);
+    ).then((savedListings) => {
+      console.log(`Seeded ${entries.length} new Listing documents`, savedListings);
+      resolve(savedListings);
     }).catch((seedingError) => { reject(seedingError); });
   });
 };
 
 /**
-  * Executes asynchronous database seeding with default values for SubResourceSchema.
-  * @param {SubResourcesSchema} entries
+  * Executes asynchronous database seeding with default values for SubListingSchema.
+  * @param {SubListingsSchema} entries
   */
-const seedSubResources = (entries) => {
+const seedSubListings = (entries) => {
   return new Promise((resolve, reject) => {
     Promise.all(
       entries.map((entry) => {
         return new Promise((resolve, reject) => {
-          const newSubResource = new SubResources();
-          newSubResource.title = entry.title;
-          newSubResource.description = entry.description;
-          newSubResource.value = entry.value;
-          newSubResource.date_resource_created = entry.date_resource_created;
-          newSubResource.save().then((savedSubResource) => { return resolve(savedSubResource); }).catch((savingError) => { return reject(savingError); });
+          const newSubListing = new SubListings();
+          newSubListing.title = entry.title;
+          newSubListing.description = entry.description;
+          newSubListing.value = entry.value;
+          newSubListing.date_listing_created = entry.date_listing_created;
+          newSubListing.save().then((savedSubListing) => { return resolve(savedSubListing); }).catch((savingError) => { return reject(savingError); });
         });
       }),
-    ).then((savedSubResources) => {
-      console.log(`Seeded ${entries.length} new SubResource documents`, savedSubResources);
-      resolve(savedSubResources);
+    ).then((savedSubListings) => {
+      console.log(`Seeded ${entries.length} new SubListing documents`, savedSubListings);
+      resolve(savedSubListings);
     }).catch((seedingError) => { reject(seedingError); });
   });
 };
@@ -92,30 +92,30 @@ const seedSubResources = (entries) => {
  */
 const linkDocuments = () => {
   return new Promise((resolve) => {
-    SubResources.find({}).then((subResources) => {
-      Resources.find({}).then((resources) => {
-        Promise.all(resources.map((resource) => {
+    SubListings.find({}).then((subListings) => {
+      Listings.find({}).then((listings) => {
+        Promise.all(listings.map((listing) => {
           return new Promise((resolve) => {
-            Resources.findById(resource._id).then((resourceToModify) => {
-              resourceToModify.child_resources = subResources.map((subResource) => { return subResource._id; });
-              resourceToModify.save().then((modifiedResource) => { return resolve(modifiedResource._id); });
+            Listings.findById(listing._id).then((listingToModify) => {
+              listingToModify.child_listings = subListings.map((subListing) => { return subListing._id; });
+              listingToModify.save().then((modifiedListing) => { return resolve(modifiedListing._id); });
             });
           });
-        })).then((modifiedResources) => {
+        })).then((modifiedListings) => {
           Users.find({}).then((users) => {
             Promise.all(users.map((user) => {
               return new Promise((resolve) => {
                 Users.findById(user._id).then((userToModify) => {
-                  userToModify.resource = modifiedResources[0]._id;
+                  userToModify.listing = modifiedListings[0]._id;
                   userToModify.save().then((modifiedUser) => { return resolve(modifiedUser._id); });
                 });
               });
             })).then(() => {
-              Promise.all(subResources.map((subResource) => {
+              Promise.all(subListings.map((subListing) => {
                 return new Promise((resolve) => {
-                  SubResources.findById(subResource._id).then((subResourceToModify) => {
-                    subResourceToModify.parent_resource = modifiedResources[0]._id;
-                    subResourceToModify.save().then(() => { return resolve(); });
+                  SubListings.findById(subListing._id).then((subListingToModify) => {
+                    subListingToModify.parent_listing = modifiedListings[0]._id;
+                    subListingToModify.save().then(() => { return resolve(); });
                   });
                 });
               })).then(() => {
@@ -148,11 +148,11 @@ const seedDB = () => {
                     case 'User':
                       seedUsers(schemaSet.data).then((seededData) => { return resolve(seededData); }).catch((seedingError) => { return reject(seedingError); });
                       break;
-                    case 'Resource':
-                      seedResources(schemaSet.data).then((seededData) => { return resolve(seededData); }).catch((seedingError) => { return reject(seedingError); });
+                    case 'Listing':
+                      seedListings(schemaSet.data).then((seededData) => { return resolve(seededData); }).catch((seedingError) => { return reject(seedingError); });
                       break;
-                    case 'SubResource':
-                      seedSubResources(schemaSet.data).then((seededData) => { return resolve(seededData); }).catch((seedingError) => { return reject(seedingError); });
+                    case 'SubListing':
+                      seedSubListings(schemaSet.data).then((seededData) => { return resolve(seededData); }).catch((seedingError) => { return reject(seedingError); });
                       break;
                     default:
                       reject(new Error('Invalid schema type specified in input data.'));
