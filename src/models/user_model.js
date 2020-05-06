@@ -5,16 +5,29 @@ import bcrypt from 'bcryptjs';
 const UserSchema = new Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  first_name: String,
-  last_name: String,
 
-  owned_listings: { type: Schema.Types.ObjectId, ref: 'Listing' },
+  profile_photo_url: { type: String, default: '' },
+  account_name: { type: String, default: '' },
+  account_location: { type: String, default: '' },
+  account_description: { type: String, default: '' },
+  account_tags: [{ type: String, default: '' }],
+
+  primary_contact: { type: String, default: '' },
+  primary_phone_number: { type: String, default: '' },
+  primary_contact_email: { type: String, default: '' },
+  primary_website_url: { type: String, default: '' },
+
+  secondary_contact: { type: String, default: '' },
+  secondary_phone_number: { type: String, default: '' },
+  secondary_contact_email: { type: String, default: '' },
+  secondary_website_url: { type: String, default: '' },
+
+  created_date: { type: Date, default: Date.now() },
+  owned_listings: [{ type: Schema.Types.ObjectId, ref: 'Listing' }],
 
   account_approved: { type: Schema.Types.Boolean, default: false },
-
   account_suspended: { type: Schema.Types.Boolean, default: false },
-  suspension_message: String,
-
+  suspension_message: { type: String, default: '' },
   is_admin: { type: Schema.Types.Boolean, default: false },
 }, {
   toObject: {
@@ -58,10 +71,6 @@ UserSchema.methods.comparePassword = function (password, callback) {
     }
   });
 };
-
-UserSchema.virtual('full_name').get(function () {
-  return `${this.first_name} ${this.last_name}`;
-});
 
 const UserModel = mongoose.model('User', UserSchema);
 
