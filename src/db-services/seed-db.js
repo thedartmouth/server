@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import readline from 'readline';
 
-import { Users, Listings, SubListings } from '../models';
+import { Users, Listings } from '../models';
 
 import seedData from './seed-data.json';
 
@@ -25,11 +25,18 @@ const seedUsers = (entries) => {
       entries.map((entry) => {
         return new Promise((resolve, reject) => {
           const newUser = new Users();
-          newUser.first_name = entry.first_name;
-          newUser.last_name = entry.last_name;
-          newUser.email = entry.email;
-          newUser.password = entry.password;
-          newUser.save().then((savedUser) => { return resolve(savedUser); }).catch((savingError) => { return reject(savingError); });
+
+          Object.entries(entry).forEach(([key, value]) => {
+            try {
+              newUser[key] = entry[key];
+            } catch (error) {
+              console.error(error);
+            }
+          });
+
+          newUser.save()
+            .then((savedUser) => { return resolve(savedUser); })
+            .catch((savingError) => { return reject(savingError); });
         });
       }),
     ).then((newUsers) => {
@@ -49,11 +56,14 @@ const seedListings = (entries) => {
       entries.map((entry) => {
         return new Promise((resolve, reject) => {
           const newListing = new Listings();
-          newListing.title = entry.title;
-          newListing.description = entry.description;
-          newListing.value = entry.value;
-          newListing.date_listing_created = entry.date_listing_created;
-          newListing.save().then((savedListing) => { return resolve(savedListing); }).catch((savingError) => { return reject(savingError); });
+
+          Object.entries(entry).forEach(([key, value]) => {
+            newListing[key] = entry[key];
+          });
+
+          newListing.save()
+            .then((savedListing) => { return resolve(savedListing); })
+            .catch((savingError) => { return reject(savingError); });
         });
       }),
     ).then((savedListings) => {
@@ -68,36 +78,24 @@ const seedListings = (entries) => {
  */
 const linkDocuments = () => {
   return new Promise((resolve) => {
-    SubListings.find({}).then((subListings) => {
-      Listings.find({}).then((listings) => {
-        Promise.all(listings.map((listing) => {
-          return new Promise((resolve) => {
-            Listings.findById(listing._id).then((listingToModify) => {
-              listingToModify.child_listings = subListings.map((subListing) => { return subListing._id; });
-              listingToModify.save().then((modifiedListing) => { return resolve(modifiedListing._id); });
-            });
+    Listings.find({}).then((listings) => {
+      Promise.all(listings.map((listing) => {
+        return new Promise((resolve) => {
+          Listings.findById(listing._id).then((listingToModify) => {]
+            listingToModify.save().then((modifiedListing) => { return resolve(modifiedListing._id); });
           });
-        })).then((modifiedListings) => {
-          Users.find({}).then((users) => {
-            Promise.all(users.map((user) => {
-              return new Promise((resolve) => {
-                Users.findById(user._id).then((userToModify) => {
-                  userToModify.listing = modifiedListings[0]._id;
-                  userToModify.save().then((modifiedUser) => { return resolve(modifiedUser._id); });
-                });
-              });
-            })).then(() => {
-              Promise.all(subListings.map((subListing) => {
-                return new Promise((resolve) => {
-                  SubListings.findById(subListing._id).then((subListingToModify) => {
-                    subListingToModify.parent_listing = modifiedListings[0]._id;
-                    subListingToModify.save().then(() => { return resolve(); });
-                  });
-                });
-              })).then(() => {
-                resolve();
+        });
+      })).then((modifiedListings) => {
+        Users.find({}).then((users) => {
+          Promise.all(users.map((user) => {
+            return new Promise((resolve) => {
+              Users.findById(user._id).then((userToModify) => {
+                userToModify.listing = modifiedListings[0]._id;
+                userToModify.save().then((modifiedUser) => { return resolve(modifiedUser._id); });
               });
             });
+          })).then(() => {
+            resolve();
           });
         });
       });

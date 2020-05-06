@@ -6,7 +6,8 @@
         "first_name": "FIRST_AUTOGEN_1",
         "last_name": "LAST_AUTOGEN_1",
         "email": "AUTOGEN_1@TEST.COM",
-        "password": "PASSWORD"
+        "password": "PASSWORD",
+        "is_admin": true
       },
       {
         "first_name": "FIRST_AUTOGEN_2",
