@@ -12,7 +12,7 @@ function removePassword(user) {
 
 function redactUser(user) {
   delete user.created_date;
-  delete user.owned_listings;
+  // delete user.owned_listings;
 
   delete user.account_approved;
   delete user.account_suspended;
