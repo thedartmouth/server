@@ -81,7 +81,7 @@ const linkDocuments = () => {
     Listings.find({}).then((listings) => {
       Promise.all(listings.map((listing) => {
         return new Promise((resolve) => {
-          Listings.findById(listing._id).then((listingToModify) => {]
+          Listings.findById(listing._id).then((listingToModify) => {
             listingToModify.save().then((modifiedListing) => { return resolve(modifiedListing._id); });
           });
         });

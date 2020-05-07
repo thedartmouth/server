@@ -28,6 +28,7 @@ const UserSchema = new Schema({
   account_approved: { type: Schema.Types.Boolean, default: false },
   account_suspended: { type: Schema.Types.Boolean, default: false },
   suspension_message: { type: String, default: '' },
+  // scopes: [{ type: String }], // UNIMPLEMENTED
   is_admin: { type: Schema.Types.Boolean, default: false },
 }, {
   toObject: {
