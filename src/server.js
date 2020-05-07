@@ -8,8 +8,7 @@ import {
   authRouter, userRouter, listingRouter, searchRouter,
 } from './routers';
 
-import { requireAuth } from './authentication';
-
+import * as Auth from './authentication';
 import * as constants from './constants';
 
 // initialize
@@ -27,7 +26,7 @@ app.use(bodyParser.json());
 
 // declare routers
 app.use('/auth', authRouter); // NOTE: Not secured
-app.use('/users', requireAuth, userRouter); // NOTE: Completely secured to users
+app.use('/users', Auth.requireAdmin, userRouter); // NOTE: Completely secured to users
 app.use('/listings', listingRouter); // NOTE: Partially secured to users
 app.use('/search', searchRouter); // NOTE: Not secured
 
