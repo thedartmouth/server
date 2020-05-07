@@ -1,4 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
+// import { Users } from '.';
 
 const ListingSchema = new Schema({
   title: { type: String, default: 'Untitled' },
@@ -24,6 +25,10 @@ const ListingSchema = new Schema({
   end_date: { type: Date, default: null },
   expiration_date: { type: Date, default: null },
 });
+
+// ListingSchema.virtual('listing_image_url').get(() => {
+//   Users;
+// });
 
 const ListingModel = mongoose.model('Listing', ListingSchema);
 

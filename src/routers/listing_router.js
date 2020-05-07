@@ -1,7 +1,7 @@
 import express from 'express';
 
 import { Listings } from '../models';
-import { requireAuth } from '../authentication';
+import { requireAuth, requireAdmin } from '../authentication';
 
 const router = express();
 
@@ -9,8 +9,9 @@ const router = express();
 router.route('/')
 
   // Get all listings
-  .get((req, res) => {
-    Listings.find({}).then((listings) => {
+  .get(requireAuth, (req, res) => {
+    console.log('user', req.user);
+    Listings.find({}).populate('organization').then((listings) => {
       return res.json(listings);
     }).catch((error) => {
       return res.status(500).json(error);
@@ -21,10 +22,13 @@ router.route('/')
   .post(requireAuth, (req, res) => {
     const listing = new Listings();
 
-    listing.title = req.body.title;
-    listing.description = req.body.description;
-    listing.value = req.body.value;
-    listing.date_account_created = Date.now();
+    Object.keys(req.body).forEach(([key, value]) => {
+      listing[key] = value;
+    });
+
+    // listing.title = req.body.title;
+    // listing.description = req.body.description;
+    // listing.date_account_created = Date.now();
 
     listing.save()
       .then((savedListing) => {
