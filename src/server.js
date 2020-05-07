@@ -5,7 +5,7 @@ import morgan from 'morgan';
 import mongoose from 'mongoose';
 
 import {
-  authRouter, userRouter, resourceRouter, searchRouter,
+  authRouter, userRouter, listingRouter, searchRouter,
 } from './routers';
 
 import { requireAuth } from './authentication';
@@ -15,7 +15,7 @@ import * as constants from './constants';
 // initialize
 const app = express();
 
-// enable/disable cross origin resource sharing if necessary
+// enable/disable cross origin listing sharing if necessary
 app.use(cors());
 
 // enable/disable http request logging
@@ -28,7 +28,7 @@ app.use(bodyParser.json());
 // declare routers
 app.use('/auth', authRouter); // NOTE: Not secured
 app.use('/users', requireAuth, userRouter); // NOTE: Completely secured to users
-app.use('/resources', resourceRouter); // NOTE: Partially secured to users
+app.use('/listings', listingRouter); // NOTE: Partially secured to users
 app.use('/search', searchRouter); // NOTE: Not secured
 
 // default index route
