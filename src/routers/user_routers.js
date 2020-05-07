@@ -34,14 +34,13 @@ router.route('/')
     user.email = req.body.email;
     user.password = req.body.password;
 
-    user.save()
-      .then((savedUser) => {
-        savedUser = savedUser.toObject();
-        savedUser = userController.redactUser(savedUser);
-        return res.json(savedUser);
-      }).catch((error) => {
-        return res.status(500).json(error);
-      });
+    user.save().then((savedUser) => {
+      savedUser = savedUser.toObject();
+      savedUser = userController.redactUser(savedUser);
+      return res.json(savedUser);
+    }).catch((error) => {
+      return res.status(500).json(error);
+    });
   });
 
 router.route('/:id')
@@ -68,12 +67,13 @@ router.route('/:id')
     Users.updateOne({ _id: req.params.id }, req.body)
       .then(() => {
         // Fetch user object and send
-        Users.findById(req.params.id)
-          .then((updatedUser) => {
-            updatedUser = updatedUser.toObject();
-            updatedUser = userController.redactUser(updatedUser);
-            return res.json(updatedUser);
-          });
+        Users.findById(req.params.id).then((updatedUser) => {
+          updatedUser = updatedUser.toObject();
+          updatedUser = userController.redactUser(updatedUser);
+          return res.json(updatedUser);
+        }).catch((error) => {
+          return res.status(500).json(error);
+        });
       })
       .catch((error) => {
         if (error.name === 'CastError' && error.path === '_id') {

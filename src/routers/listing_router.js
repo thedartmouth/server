@@ -22,13 +22,12 @@ router.route('/')
   .post(requireAuth, (req, res) => {
     const listing = new Listings();
 
-    console.log('req.body', req.body);
-
     Object.keys(req.body).forEach((key) => {
       listing[key] = req.body[key];
     });
 
     listing.save().then((tempSavedListing) => {
+      // Fetch listing object and send
       Listings.findById(tempSavedListing._id).populate('organization').then((savedListing) => {
         return res.json(listingController.populateAndRedact(savedListing));
       }).catch((error) => {
