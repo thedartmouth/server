@@ -37,8 +37,8 @@ router.route('/signup')
       // Save the user then transmit to frontend
       return newUser.save()
         .then((savedUser) => {
-          const json = savedUser.toJSON();
-          delete json.password;
+          let json = savedUser.toJSON();
+          json = userController.removePassword(json);
           res.status(201).json({ token: userController.tokenForUser(savedUser), user: json });
         }).catch((error) => {
           return res.status(500).json(error);
@@ -52,8 +52,8 @@ router.route('/signup')
 router.route('/signin')
   .post(requireSignin, (req, res) => {
     // This information is loaded or rejected by passport
-    const json = req.user.toJSON();
-    delete json.password;
+    let json = req.user.toJSON();
+    json = userController.removePassword(json);
     return res.json({ token: userController.tokenForUser(json), user: json });
   });
 

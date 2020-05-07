@@ -27,12 +27,12 @@ const jwtAuthLogin = new JwtStrategy(jwtOptions, (payload, done) => {
   });
 });
 
-passport.use(jwtAuthLogin);
+passport.use('jwt-auth', jwtAuthLogin);
 
 // Create function to transmit result of authenticate() call to user or next middleware
 const requireAuth = function (req, res, next) {
   // eslint-disable-next-line prefer-arrow-callback
-  passport.authenticate('jwt', { session: false }, function (err, user, info) {
+  passport.authenticate('jwt-auth', { session: false }, function (err, user, info) { // Needs to be a function
   // Return any existing errors
     if (err) { return next(err); }
 

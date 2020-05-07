@@ -27,12 +27,12 @@ const jwtAdminLogin = new JwtStrategy(jwtOptions, (payload, done) => {
   });
 });
 
-passport.use(jwtAdminLogin);
+passport.use('jwt-admin', jwtAdminLogin);
 
 // Create function to transmit result of authenticate() call to user or next middleware
 const requireAdmin = function (req, res, next) {
   // eslint-disable-next-line prefer-arrow-callback
-  passport.authenticate('jwt', { session: false }, function (err, user, info) {
+  passport.authenticate('jwt-admin', { session: false }, function (err, user, info) {
   // Return any existing errors
     if (err) { return next(err); }
 
