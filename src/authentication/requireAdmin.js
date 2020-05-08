@@ -12,7 +12,7 @@ const jwtOptions = {
   secretOrKey: process.env.AUTH_SECRET,
 };
 
-const jwtLogin = new JwtStrategy(jwtOptions, (payload, done) => {
+const jwtAdminLogin = new JwtStrategy(jwtOptions, (payload, done) => {
   // See if the token matches any user document in the DB
   // Done function in the form -> "done(resulting error, resulting user)"
   User.findById(payload.sub, (err, user) => {
@@ -27,12 +27,12 @@ const jwtLogin = new JwtStrategy(jwtOptions, (payload, done) => {
   });
 });
 
-passport.use(jwtLogin);
+passport.use('jwt-admin', jwtAdminLogin);
 
 // Create function to transmit result of authenticate() call to user or next middleware
 const requireAdmin = function (req, res, next) {
   // eslint-disable-next-line prefer-arrow-callback
-  passport.authenticate('jwt', { session: false }, function (err, user, info) {
+  passport.authenticate('jwt-admin', { session: false }, function (err, user, info) {
   // Return any existing errors
     if (err) { return next(err); }
 

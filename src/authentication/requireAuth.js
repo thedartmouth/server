@@ -12,7 +12,7 @@ const jwtOptions = {
   secretOrKey: process.env.AUTH_SECRET,
 };
 
-const jwtLogin = new JwtStrategy(jwtOptions, (payload, done) => {
+const jwtAuthLogin = new JwtStrategy(jwtOptions, (payload, done) => {
   // See if the token matches any user document in the DB
   // Done function in the form -> "done(resulting error, resulting user)"
   User.findById(payload.sub, (err, user) => {
@@ -27,17 +27,17 @@ const jwtLogin = new JwtStrategy(jwtOptions, (payload, done) => {
   });
 });
 
-passport.use(jwtLogin);
+passport.use('jwt-auth', jwtAuthLogin);
 
 // Create function to transmit result of authenticate() call to user or next middleware
 const requireAuth = function (req, res, next) {
   // eslint-disable-next-line prefer-arrow-callback
-  passport.authenticate('jwt', { session: false }, function (err, user, info) {
+  passport.authenticate('jwt-auth', { session: false }, function (err, user, info) { // Needs to be a function
   // Return any existing errors
     if (err) { return next(err); }
 
     // If no user found, return appropriate error message
-    if (!user) { return res.status(401).json({ message: info.message || 'Error authenticating email and password' }); }
+    if (!user) { return res.status(401).json({ message: info ? info.message : 'Error authenticating email and password' }); }
 
     req.user = user;
 

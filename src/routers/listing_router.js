@@ -1,95 +1,115 @@
+/* eslint-disable consistent-return */
 import express from 'express';
 
-import { Listings } from '../models';
-import { requireAuth } from '../authentication';
+import { Users, Listings } from '../models';
+import * as constants from '../constants';
+import { listingController } from '../controllers';
+import { requireAuth, requireAdmin } from '../authentication';
 
 const router = express();
 
-// find and return all listings
+// Manage general listings
 router.route('/')
 
-  // Get all listings
-  .get((req, res) => {
-    Listings.find({}).then((listings) => {
-      return res.json(listings);
+  // Find and return all owned listings
+  .get(requireAuth, (req, res) => {
+    Listings.find({
+      _id: {
+        $in: req.user.owned_listings || [],
+      },
+    }).then((listings) => {
+      return res.json(listingController.populateAndRedactMultiple(listings));
     }).catch((error) => {
       return res.status(500).json(error);
     });
   })
 
-  // Create new listing (SECURE)
+  // Create new listing attached to authorized account
   .post(requireAuth, (req, res) => {
     const listing = new Listings();
 
-    listing.title = req.body.title;
-    listing.description = req.body.description;
-    listing.value = req.body.value;
-    listing.date_account_created = Date.now();
+    Object.keys(req.body).forEach((key) => {
+      listing[key] = req.body[key];
+    });
 
-    listing.save()
-      .then((savedListing) => {
-        return res.json(savedListing);
+    listing.save().then((tempSavedListing) => {
+      Users.updateOne({ _id: req.user._id }, { $addToSet: { owned_listings: tempSavedListing._id } }).then((user) => {
+        console.log('new user', user);
+      }).catch((error) => {
+        return res.json(error);
+      });
+
+      // Fetch listing object and send
+      Listings.findById(tempSavedListing._id).populate(constants.USER_STRING).then((savedListing) => {
+        return res.json(listingController.populateAndRedact(savedListing));
       }).catch((error) => {
         return res.status(500).json(error);
       });
-  })
-
-  // Delete all listings (SECURE, TESTING ONLY)
-  .delete(requireAuth, (req, res) => {
-    Listings.deleteMany({ })
-      .then(() => {
-        return res.json({ message: 'Successfully deleted all listings.' });
-      })
-      .catch((error) => {
-        return res.status(500).json(error);
-      });
+    }).catch((error) => {
+      return res.status(500).json(error);
+    });
   });
+
+// // Delete all listings (SECURE, TESTING ONLY)
+// .delete(requireAdmin, (req, res) => {
+//   Listings.deleteMany({ }).then(() => {
+//     return res.json({ message: 'Successfully deleted all listings.' });
+//   })
+//     .catch((error) => {
+//       return res.status(500).json(error);
+//     });
+// });
 
 router.route('/:id')
 
-  // Get listing by id
-  .get((req, res) => {
-    Listings.findById(req.params.id)
-      .then((listing) => {
-        return res.json(listing);
-      })
-      .catch((error) => {
-        if (error.message && error.message.startsWith('Listing with id:')) {
-          return res.status(404).json(error);
-        } else {
-          return res.status(500).json(error);
-        }
-      });
+  // Get listing by id if owned or admin
+  .get(requireAuth, (req, res) => {
+    // Check if user is able to access resource
+    if (req.user.is_admin || !req.user.owned_listings.includes(req.params.id)) {
+      return res.status(403).json({ message: 'You are not authorized to access this resource' });
+    }
+
+    Listings.findById(req.params.id).populate(constants.USER_STRING).then((listing) => {
+      return res.json(listingController.populateAndRedact(listing));
+    }).catch((error) => {
+      if (error.message && error.message.startsWith('Listing with id:')) {
+        return res.status(404).json(error);
+      } else {
+        return res.status(500).json(error);
+      }
+    });
   })
 
   // Update listing by id (SECURE)
   .put(requireAuth, (req, res) => {
-    Listings.updateOne({ _id: req.params.id }, req.body)
-      .then(() => {
-        // Fetch listing object and send
-        Listings.findById(req.params.id)
-          .then((listing) => {
-            return res.json(listing);
-          })
-          .catch((error) => {
-            if (error.message.startsWith('Listing with id:')) {
-              return res.status(404).json({ message: error.message });
-            } else {
-              return res.status(500).json({ message: error.message });
-            }
-          });
+    // Check if user is able to access resource
+    if (req.user.is_admin || !req.user.owned_listings.includes(req.params.id)) {
+      return res.status(403).json({ message: 'You are not authorized to access this resource' });
+    }
+
+    Listings.updateOne({ _id: req.params.id }, req.body).then(() => {
+      // Fetch listing object and send
+      Listings.findById(req.params.id).populate(constants.USER_STRING).then((listing) => {
+        return res.json(listingController.populateAndRedact(listing));
       })
+        .catch((error) => {
+          if (error.message.startsWith('Listing with id:')) {
+            return res.status(404).json({ message: error.message });
+          } else {
+            return res.status(500).json({ message: error.message });
+          }
+        });
+    })
       .catch((error) => {
         return res.status(500).json(error);
       });
   })
 
   // Delete listing by id, SECURE
-  .delete(requireAuth, (req, res) => {
-    Listings.deleteOne({ _id: req.params.id })
-      .then(() => {
-        return res.json({ message: `Listing with id: ${req.params.id} was successfully deleted` });
-      })
+  .delete(requireAdmin, (req, res) => {
+    Listings.deleteOne({ _id: req.params.id }).then(() => {
+      return res.json({ message: `Listing with id: ${req.params.id} was successfully deleted` });
+    })
       .catch((error) => {
         return res.json(error);
       });

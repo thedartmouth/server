@@ -1,6 +1,7 @@
 import express from 'express';
 
 import { Users } from '../models';
+import { userController } from '../controllers';
 
 const router = express();
 
@@ -13,7 +14,7 @@ router.route('/')
       Promise.all(users.map((user) => {
         return new Promise((resolve) => {
           user = user.toObject();
-          delete user.password;
+          user = userController.redactUser(user);
           resolve(user);
         });
       })).then((cleanedUsers) => {
@@ -33,14 +34,13 @@ router.route('/')
     user.email = req.body.email;
     user.password = req.body.password;
 
-    user.save()
-      .then((savedUser) => {
-        savedUser = savedUser.toObject();
-        delete savedUser.password;
-        return res.json(savedUser);
-      }).catch((error) => {
-        return res.status(500).json(error);
-      });
+    user.save().then((savedUser) => {
+      savedUser = savedUser.toObject();
+      savedUser = userController.redactUser(savedUser);
+      return res.json(savedUser);
+    }).catch((error) => {
+      return res.status(500).json(error);
+    });
   });
 
 router.route('/:id')
@@ -50,7 +50,7 @@ router.route('/:id')
     Users.findById(req.params.id)
       .then((user) => {
         user = user.toObject();
-        delete user.password;
+        user = userController.redactUser(user);
         return res.json(user);
       })
       .catch((error) => {
@@ -67,12 +67,13 @@ router.route('/:id')
     Users.updateOne({ _id: req.params.id }, req.body)
       .then(() => {
         // Fetch user object and send
-        Users.findById(req.params.id)
-          .then((updatedUser) => {
-            updatedUser = updatedUser.toObject();
-            delete updatedUser.password;
-            return res.json(updatedUser);
-          });
+        Users.findById(req.params.id).then((updatedUser) => {
+          updatedUser = updatedUser.toObject();
+          updatedUser = userController.redactUser(updatedUser);
+          return res.json(updatedUser);
+        }).catch((error) => {
+          return res.status(500).json(error);
+        });
       })
       .catch((error) => {
         if (error.name === 'CastError' && error.path === '_id') {
