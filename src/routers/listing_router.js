@@ -17,7 +17,7 @@ router.route('/')
       _id: {
         $in: req.user.owned_listings || [],
       },
-    }).then((listings) => {
+    }).populate(constants.USER_STRING).then((listings) => {
       return res.json(listingController.populateAndRedactMultiple(listings));
     }).catch((error) => {
       return res.status(500).json(error);
@@ -65,7 +65,7 @@ router.route('/:id')
   // Get listing by id if owned or admin
   .get(requireAuth, (req, res) => {
     // Check if user is able to access resource
-    if (req.user.is_admin || !req.user.owned_listings.includes(req.params.id)) {
+    if (!req.user.is_admin && !req.user.owned_listings.includes(req.params.id)) {
       return res.status(403).json({ message: 'You are not authorized to access this resource' });
     }
 
@@ -83,7 +83,7 @@ router.route('/:id')
   // Update listing by id (SECURE)
   .put(requireAuth, (req, res) => {
     // Check if user is able to access resource
-    if (req.user.is_admin || !req.user.owned_listings.includes(req.params.id)) {
+    if (!req.user.is_admin && !req.user.owned_listings.includes(req.params.id)) {
       return res.status(403).json({ message: 'You are not authorized to access this resource' });
     }
 
