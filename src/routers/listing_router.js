@@ -34,7 +34,7 @@ router.route('/')
 
     listing.save().then((tempSavedListing) => {
       Users.updateOne({ _id: req.user._id }, { $addToSet: { owned_listings: tempSavedListing._id } }).then((user) => {
-        console.log('new user', user);
+        // Empty
       }).catch((error) => {
         return res.json(error);
       });
