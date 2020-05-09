@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 import express from 'express';
 
 import { Users } from '../models';
