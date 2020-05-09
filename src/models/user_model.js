@@ -7,7 +7,7 @@ const UserSchema = new Schema({
   password: { type: String, required: true },
 
   profile_photo_url: { type: String, default: '' },
-  account_name: { type: String, default: '' },
+  account_name: { type: String, default: '', unique: true },
   account_location: { type: String, default: '' },
   account_description: { type: String, default: '' },
   account_tags: [{ type: String, default: '' }],
@@ -72,6 +72,14 @@ UserSchema.methods.comparePassword = function (password, callback) {
     }
   });
 };
+
+UserSchema.virtual('url').get(function () {
+  if (this.is_admin) {
+    return '';
+  } else {
+    return this.account_name ? this.account_name.toLowerCase().split(' ').join('-') : this._id;
+  }
+});
 
 const UserModel = mongoose.model('User', UserSchema);
 

@@ -5,10 +5,9 @@ import morgan from 'morgan';
 import mongoose from 'mongoose';
 
 import {
-  authRouter, userRouter, listingRouter, searchRouter,
+  authRouter, constantsRouter, listingRouter, searchRouter, userRouter,
 } from './routers';
 
-import { requireAdmin } from './authentication';
 import * as constants from './constants';
 
 // initialize
@@ -25,10 +24,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 // declare routers
-app.use('/auth', authRouter); // NOTE: Not secured
-app.use('/users', requireAdmin, userRouter); // NOTE: Completely secured to users
-app.use('/listings', listingRouter); // NOTE: Partially secured to users
-app.use('/search', searchRouter); // NOTE: Not secured
+app.use('/auth', authRouter);
+app.use('/constants', constantsRouter);
+app.use('/listings', listingRouter);
+app.use('/search', searchRouter);
+app.use('/users', userRouter);
 
 // default index route
 app.get('/', (req, res) => {
