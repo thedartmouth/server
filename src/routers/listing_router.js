@@ -13,7 +13,8 @@ router.route('/')
 
   // Find and return all owned listings
   .get(requireAuth, (req, res) => {
-    Listings.find({
+    console.log('req.user', req.user);
+    Listings.find(req.user.is_admin ? {} : {
       _id: {
         $in: req.user.owned_listings || [],
       },
