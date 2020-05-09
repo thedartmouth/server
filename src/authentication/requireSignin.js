@@ -41,7 +41,7 @@ const requireSignin = function (req, res, next) {
     if (err) { return next(err); }
 
     // If no user found, return appropriate error message
-    if (!user) { return res.status(401).json({ message: info.message || 'Error authenticating email and password' }); }
+    if (!user) { return res.status(401).json({ message: info.message || 'Authentication Error: Not authorized to perform this request' }); }
 
     req.user = user;
 
