@@ -73,6 +73,14 @@ UserSchema.methods.comparePassword = function (password, callback) {
   });
 };
 
+UserSchema.virtual('url').get(function () {
+  if (this.is_admin) {
+    return '';
+  } else {
+    return this.account_name ? this.account_name.toLowerCase().split(' ').join('-') : this._id;
+  }
+});
+
 const UserModel = mongoose.model('User', UserSchema);
 
 export default UserModel;
