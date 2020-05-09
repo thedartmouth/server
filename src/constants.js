@@ -8,7 +8,7 @@ export const APP_URL = process.env.NODE_ENV === 'development' ? `localhost:${808
 export const USER_STRING = 'organization';
 
 export const UNPROTECTED_USER_FIELDS = [
-  // Need to be verified
+  // Need to be verified, TODO
   // 'email',
   // 'password',
 
