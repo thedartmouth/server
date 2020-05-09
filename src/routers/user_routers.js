@@ -27,17 +27,27 @@ router.route('/')
 
   // Create new user
   .post((req, res) => {
-    const user = new Users();
+    Users.findOne({ email: req.body.email }).then((u) => {
+      // Check if a user already has this email address
+      if (u) {
+        return res.status(409).json({ message: 'Email address already associated to a user' });
+      }
 
-    user.first_name = req.body.first_name;
-    user.last_name = req.body.last_name;
-    user.email = req.body.email;
-    user.password = req.body.password;
+      const user = new Users();
 
-    user.save().then((savedUser) => {
-      savedUser = savedUser.toObject();
-      savedUser = userController.redactUser(savedUser);
-      return res.json(savedUser);
+      user.first_name = req.body.first_name;
+      user.last_name = req.body.last_name;
+      user.email = req.body.email;
+      user.password = req.body.password;
+
+      user.save().then((savedUser) => {
+        savedUser = savedUser.toObject();
+        savedUser = userController.redactUser(savedUser);
+        return res.json(savedUser);
+      }).catch((error) => {
+        console.log('error', error);
+        return res.status(500).json(error);
+      });
     }).catch((error) => {
       return res.status(500).json(error);
     });
