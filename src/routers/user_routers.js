@@ -1,7 +1,10 @@
 import express from 'express';
 
 import { Users } from '../models';
+import { requireAuth, requireAdmin } from '../authentication';
 import { userController } from '../controllers';
+
+import * as constants from '../constants';
 
 const router = express();
 
@@ -9,7 +12,7 @@ const router = express();
 router.route('/')
 
   // Get all users
-  .get((req, res) => {
+  .get(requireAdmin, (req, res) => {
     Users.find({}).then((users) => {
       Promise.all(users.map((user) => {
         return new Promise((resolve) => {
@@ -26,7 +29,7 @@ router.route('/')
   })
 
   // Create new user
-  .post((req, res) => {
+  .post(requireAdmin, (req, res) => {
     Users.findOne({ email: req.body.email }).then((u) => {
       // Check if a user already has this email address
       if (u) {
@@ -45,7 +48,6 @@ router.route('/')
         savedUser = userController.redactUser(savedUser);
         return res.json(savedUser);
       }).catch((error) => {
-        console.log('error', error);
         return res.status(500).json(error);
       });
     }).catch((error) => {
@@ -57,45 +59,60 @@ router.route('/:id')
 
   // Get user by ID
   .get((req, res) => {
-    Users.findById(req.params.id)
-      .then((user) => {
-        user = user.toObject();
-        user = userController.redactUser(user);
-        return res.json(user);
-      })
-      .catch((error) => {
-        if (error.message && error.message.startsWith('User with id:')) {
-          return res.status(404).json(error.message);
-        } else {
-          return res.status(500).json(error.message);
-        }
-      });
+    Users.findById(req.params.id).then((user) => {
+      user = user.toObject();
+      user = userController.redactUser(user);
+      return res.json(user);
+    }).catch((error) => {
+      if (error.message && error.message.startsWith('User with id:')) {
+        return res.status(404).json(error.message);
+      } else {
+        return res.status(500).json(error.message);
+      }
+    });
   })
 
   // Update user by ID
-  .put((req, res) => {
-    Users.updateOne({ _id: req.params.id }, req.body)
-      .then(() => {
-        // Fetch user object and send
-        Users.findById(req.params.id).then((updatedUser) => {
-          updatedUser = updatedUser.toObject();
-          updatedUser = userController.redactUser(updatedUser);
-          return res.json(updatedUser);
-        }).catch((error) => {
-          return res.status(500).json(error);
-        });
-      })
-      .catch((error) => {
-        if (error.name === 'CastError' && error.path === '_id') {
-          return res.status(404).json(error.message);
-        } else {
-          return res.status(500).json(error);
+  .put(requireAuth, (req, res) => {
+    // Only admins and same organization account can update organization pages
+    // eslint-disable-next-line eqeqeq
+    if (!req.user.is_admin && req.user._id != req.params.id) {
+      return res.status(403).json({ message: 'You are not authorized to access this user' });
+    }
+
+    let validUpdates = {};
+    if (!req.user.is_admin) {
+      // Only include a key is a user is allowed to modify each requested field
+      Object.keys(req.body).forEach((k) => {
+        if (constants.UNPROTECTED_USER_FIELDS.includes(k)) {
+          validUpdates[k] = req.body[k];
         }
       });
+    } else {
+      // Admins can change all fields
+      validUpdates = req.body;
+    }
+
+    Users.updateOne({ _id: req.params.id }, validUpdates).then(() => {
+      // Fetch user object and send
+      Users.findById(req.params.id).then((updatedUser) => {
+        updatedUser = updatedUser.toObject();
+        updatedUser = userController.redactUser(updatedUser);
+        return res.json(updatedUser);
+      }).catch((error) => {
+        return res.status(500).json(error);
+      });
+    }).catch((error) => {
+      if (error.name === 'CastError' && error.path === '_id') {
+        return res.status(404).json(error.message);
+      } else {
+        return res.status(500).json(error);
+      }
+    });
   })
 
   // Delete user by ID
-  .delete((req, res) => {
+  .delete(requireAdmin, (req, res) => {
     Users.deleteOne({ _id: req.params.id })
       .then((result) => {
         if (result.deletedCount === 1) { // Successful deletion
