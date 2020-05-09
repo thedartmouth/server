@@ -32,6 +32,10 @@ router.route('/')
       listing[key] = req.body[key];
     });
 
+    if (!listing[constants.USER_STRING]) {
+      listing[constants.USER_STRING] = req.user._id;
+    }
+
     listing.save().then((tempSavedListing) => {
       Users.updateOne({ _id: req.user._id }, { $addToSet: { owned_listings: tempSavedListing._id } }).then((user) => {
         // Empty
