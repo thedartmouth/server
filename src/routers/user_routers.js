@@ -30,23 +30,33 @@ router.route('/')
 
   // Create new user
   .post(requireAdmin, (req, res) => {
-    Users.findOne({ email: req.body.email }).then((u) => {
-      // Check if a user already has this email address
-      if (u) {
+    if (!req.body.email || !req.body.account_name) {
+      return res.status(400).json({ message: 'Bad request: include \'email\' and \'account_name\' fields' });
+    }
+
+    Users.findOne({ email: req.body.email }).then((ue) => {
+      if (ue) { // Check for unique email
         return res.status(409).json({ message: 'Email address already associated to a user' });
       }
 
-      const user = new Users();
+      Users.findOne({ account_name: req.body.account_name }).then((ua) => {
+        if (ua) { // Check for unique account name
+          return res.status(409).json({ message: 'Account name already associated to a user' });
+        }
 
-      user.first_name = req.body.first_name;
-      user.last_name = req.body.last_name;
-      user.email = req.body.email;
-      user.password = req.body.password;
+        const user = new Users();
 
-      user.save().then((savedUser) => {
-        savedUser = savedUser.toObject();
-        savedUser = userController.redactUser(savedUser);
-        return res.json(savedUser);
+        Object.keys(req.body).forEach((key) => {
+          user[key] = req.body[key];
+        });
+
+        user.save().then((savedUser) => {
+          savedUser = savedUser.toObject();
+          savedUser = userController.redactUser(savedUser);
+          return res.json(savedUser);
+        }).catch((error) => {
+          return res.status(500).json(error);
+        });
       }).catch((error) => {
         return res.status(500).json(error);
       });
