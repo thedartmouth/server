@@ -16,6 +16,13 @@ router.route('/')
     const page = parseInt(req.query.page, 10) || 1;
     const numPerPage = parseInt(req.query.numperpage, 10) || 10;
 
+    // Generate arrays from csv string URL parameters
+    // const lengthString = req.query.length ? req.query.length.split(',').filter((e) => { return !!e; }) : [];
+    const weeklyCommitString = req.query.weeklyCommit ? req.query.weeklyCommit.split(',').filter((e) => { return !!e; }) : undefined;
+    const ageString = req.query.age ? req.query.age.split(',').filter((e) => { return !!e; }) : undefined;
+    const educationString = req.query.education ? req.query.education.split(',').filter((e) => { return !!e; }) : undefined;
+    const focusString = req.query.focus ? req.query.focus.split(',').filter((e) => { return !!e; }) : undefined;
+
     const queryObject = {
       $and: [
         // Query title and description if query sting exists
@@ -28,7 +35,12 @@ router.route('/')
         {
           $and: [
             maxValue ? { value: { $lte: maxValue } } : {}, // Only implement if maxValue is defined
+
             // Implement additional filters here
+            weeklyCommitString ? { time_commitment: weeklyCommitString } : {},
+            ageString ? { age_restrictions: ageString } : {},
+            educationString ? { education_requirement: educationString } : {},
+            focusString ? { focus_area: { $in: focusString } } : {}, // Checking in array
           ],
         },
       ],
