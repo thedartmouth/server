@@ -1,11 +1,13 @@
-import Resource from '../models/resource_model';
+import Listing from '../models/listing_model';
+import * as constants from '../constants';
 
 export function search(queryObject, sort, page, numPerPage) {
   return new Promise((resolve, reject) => {
-    Resource.find(queryObject) // Return all results (within limits) if no query
+    Listing.find(queryObject) // Return all results (within limits) if no query
       .sort({ title: sort === 'a' ? -1 : 1 }) // Sort by title
       .skip((page - 1) * numPerPage) // Start at the beginning of the "page"
       .limit(numPerPage) // Limit to the end of the "page"
+      .populate(constants.USER_STRING)
       .then((results) => {
         resolve(results);
       })
@@ -18,9 +20,9 @@ export function search(queryObject, sort, page, numPerPage) {
 
 /**
  * NOT IMPLEMENTED, phoenetic search algorithm, can index DB by sound-alike words for spelling checking
- * Would need to be implemented both within resource collection and within search() function
+ * Would need to be implemented both within listing collection and within search() function
  *
- * Resources:
+ * Listings:
  * https://en.wikipedia.org/wiki/Soundex
  * http://www.creativyst.com/Doc/Articles/SoundEx1/SoundEx1.htm
  * https://howtodoinjava.com/algorithm/implement-phonetic-search-using-soundex-algorithm/

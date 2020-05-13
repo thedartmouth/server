@@ -2,7 +2,7 @@
 
 An overview of the basic route layout of this server
 
-```
+```(text)
 server (/)
 │
 ├── /users
@@ -22,15 +22,15 @@ server (/)
 │   │   ├── GET -> verify user token for automatic signing in ()   # I think it is already in the /:id code
 |   |
 │
-├── /resources
+├── /listings
 │   ├── /
-│   │   ├── GET -> get all resources (x)
-│   │   ├── POST -> create a resource (x)
+│   │   ├── GET -> get all listings (x)
+│   │   ├── POST -> create a listing (x)
 │   │
 │   ├── /:id                                       // advanced (inquiries with token and id management)
-│   │   ├── GET -> get specific resource (x)
-│   │   ├── PUT -> update specific resource (x)
-│   │   ├── DELETE -> delete specific resource (x)
+│   │   ├── GET -> get specific listing (x)
+│   │   ├── PUT -> update specific listing (x)
+│   │   ├── DELETE -> delete specific listing (x)
 ```
 
 ## Authentication Flow

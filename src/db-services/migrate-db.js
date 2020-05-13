@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import readline from 'readline';
 
-import { Users, Resources } from '../models';
+import { Users, Listings } from '../models';
 
 import * as constants from '../constants';
 
@@ -14,49 +14,49 @@ const mongooseOptions = {
 };
 
 /**
- * Executes a modification only if a certain criteria is met. Returns a Promise that resolves the updated resource along with whether it was modified.
- * @param {ResourceModel} originalResource
+ * Executes a modification only if a certain criteria is met. Returns a Promise that resolves the updated listing along with whether it was modified.
+ * @param {ListingModel} originalListing
  */
-const processResource = (originalResource) => {
+const processListing = (originalListing) => {
   return new Promise((resolve, reject) => {
-    if (originalResource.value === 1) { // fits criteria to be modified
-      originalResource.title = 'MODIFIED';
-      resolve(originalResource);
-    } else reject(originalResource);
+    if (originalListing.value === 1) { // fits criteria to be modified
+      originalListing.title = 'MODIFIED';
+      resolve(originalListing);
+    } else reject(originalListing);
   });
 };
 
 /**
-  * Executes asynchronous database migration with procedure defined in processResource for ResourceSchema.
+  * Executes asynchronous database migration with procedure defined in processListing for ListingSchema.
   */
-const migrateResources = () => {
+const migrateListings = () => {
   return new Promise((resolve, reject) => {
     let modifiedCount = 0;
-    Resources.find({}).exec().then((resources) => {
+    Listings.find({}).exec().then((listings) => {
       Promise.all(
-        resources.map((resource) => {
+        listings.map((listing) => {
           return new Promise((resolve, reject) => {
-            Resources.findById(resource._id).then((toUpdateResource) => {
-              processResource(toUpdateResource).then((updatedResource) => {
+            Listings.findById(listing._id).then((toUpdateListing) => {
+              processListing(toUpdateListing).then((updatedListing) => {
                 modifiedCount += 1;
-                updatedResource.save().then((modifiedResource) => { return resolve(modifiedResource); });
+                updatedListing.save().then((modifiedListing) => { return resolve(modifiedListing); });
               }).catch(() => { return resolve(null); });
             }).catch((findError) => { return reject(findError); });
           });
         }),
-      ).then((modifiedResources) => {
-        console.log(`Modified ${modifiedCount} Resource documents.`);
-        modifiedResources.forEach((modifiedResource) => {
-          if (modifiedResource) console.log(modifiedResource);
+      ).then((modifiedListings) => {
+        console.log(`Modified ${modifiedCount} Listing documents.`);
+        modifiedListings.forEach((modifiedListing) => {
+          if (modifiedListing) console.log(modifiedListing);
         });
-        resolve(modifiedResources);
+        resolve(modifiedListings);
       }).catch((modifyingError) => { reject(modifyingError); });
     });
   });
 };
 
 /**
- * Executes a modification only if a certain criteria is met. Returns a Promise that resolves the updated resource along with whether it was modified.
+ * Executes a modification only if a certain criteria is met. Returns a Promise that resolves the updated listing along with whether it was modified.
  * @param {UserModel} originalUser
  */
 const processUser = (originalUser) => {
@@ -107,7 +107,7 @@ const migrateDB = () => {
     mongoose.connect(constants.MONGODB_URI, mongooseOptions).then(() => {
       mongoose.Promise = global.Promise; // configures mongoose to use ES6 Promises
       console.log('Connected to Database.');
-      Promise.all([migrateUsers(), migrateResources()]).then(() => {
+      Promise.all([migrateUsers(), migrateListings()]).then(() => {
         console.log('Migration complete. Safe to exit.');
         resolve();
       }).catch((migrationError) => { throw new Error(migrationError); });

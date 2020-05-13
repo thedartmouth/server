@@ -12,27 +12,27 @@ const jwtOptions = {
   secretOrKey: process.env.AUTH_SECRET,
 };
 
-const jwtAuthLogin = new JwtStrategy(jwtOptions, (payload, done) => {
+const jwtAdminLogin = new JwtStrategy(jwtOptions, (payload, done) => {
   // See if the token matches any user document in the DB
   // Done function in the form -> "done(resulting error, resulting user)"
   User.findById(payload.sub, (err, user) => {
     // This logic can be modified to check for user attributes
     if (err) {
       return done(err, false); // Error return
-    } else if (user) {
+    } else if (user && user.is_admin) {
       return done(null, user); // Valid user return
     } else {
-      return done(null, false); // Catch no valid user return
+      return done(null, false); // Catch not admin return
     }
   });
 });
 
-passport.use('jwt-auth', jwtAuthLogin);
+passport.use('jwt-admin', jwtAdminLogin);
 
 // Create function to transmit result of authenticate() call to user or next middleware
-const requireAuth = function (req, res, next) {
+const requireAdmin = function (req, res, next) {
   // eslint-disable-next-line prefer-arrow-callback
-  passport.authenticate('jwt-auth', { session: false }, function (err, user, info) { // Needs to be a function
+  passport.authenticate('jwt-admin', { session: false }, function (err, user, info) {
   // Return any existing errors
     if (err) { return next(err); }
 
@@ -45,4 +45,4 @@ const requireAuth = function (req, res, next) {
   })(req, res, next);
 };
 
-export default requireAuth;
+export default requireAdmin;

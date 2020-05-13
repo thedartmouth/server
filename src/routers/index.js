@@ -1,8 +1,9 @@
 import authRouter from './auth_router';
-import userRouter from './user_routers';
-import resourceRouter from './resource_router';
+import constantsRouter from './constants_router';
+import listingRouter from './listing_router';
 import searchRouter from './search_router';
+import userRouter from './user_router';
 
 export {
-  authRouter, userRouter, resourceRouter, searchRouter,
+  authRouter, constantsRouter, listingRouter, searchRouter, userRouter,
 };
