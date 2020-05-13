@@ -13,7 +13,7 @@ export const UNPROTECTED_USER_FIELDS = [
   // 'password',
 
   'profile_photo_url',
-  'account_name',
+  'account',
   'account_location',
   'account_description',
 
