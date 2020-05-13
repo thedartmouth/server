@@ -31,8 +31,8 @@ router.route('/')
 
   // Create new user
   .post(requireAdmin, (req, res) => {
-    if (!req.body.email || !req.body.account_name) {
-      return res.status(400).json({ message: 'Bad request: include \'email\' and \'account_name\' fields' });
+    if (!req.body.email || !req.body.name) {
+      return res.status(400).json({ message: 'Bad request: include \'email\' and \'name \' fields' });
     }
 
     Users.findOne({ email: req.body.email }).then((ue) => {
@@ -40,7 +40,7 @@ router.route('/')
         return res.status(409).json({ message: 'Email address already associated to a user' });
       }
 
-      Users.findOne({ account_name: req.body.account_name }).then((ua) => {
+      Users.findOne({ name: req.body.name }).then((ua) => {
         if (ua) { // Check for unique account name
           return res.status(409).json({ message: 'Account name already associated to a user' });
         }
