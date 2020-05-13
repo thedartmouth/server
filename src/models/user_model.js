@@ -6,16 +6,9 @@ const UserSchema = new Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
 
-  profile_photo_url: { type: String, default: '' },
-  account_name: { type: String, default: '', unique: true },
-  account_location: { type: String, default: '' },
-  account_description: { type: String, default: '' },
-  account_tags: [{ type: String, default: '' }],
+  name: { type: String, default: '', unique: true },
 
-  primary_contact: { type: String, default: '' },
-  primary_phone_number: { type: String, default: '' },
   primary_contact_email: { type: String, default: '' },
-  primary_website_url: { type: String, default: '' },
 
   secondary_contact: { type: String, default: '' },
   secondary_phone_number: { type: String, default: '' },
@@ -23,12 +16,7 @@ const UserSchema = new Schema({
   secondary_website_url: { type: String, default: '' },
 
   created_date: { type: Date, default: Date.now() },
-  owned_listings: [{ type: Schema.Types.ObjectId, ref: 'Listing' }],
 
-  account_approved: { type: Schema.Types.Boolean, default: false },
-  account_suspended: { type: Schema.Types.Boolean, default: false },
-  suspension_message: { type: String, default: '' },
-  // scopes: [{ type: String }], // UNIMPLEMENTED
   is_admin: { type: Schema.Types.Boolean, default: false },
 }, {
   toObject: {
@@ -77,7 +65,7 @@ UserSchema.virtual('url').get(function () {
   if (this.is_admin) {
     return '';
   } else {
-    return this.account_name ? this.account_name.toLowerCase().split(' ').join('-') : this._id;
+    return this.name ? this.name.toLowerCase().split(' ').join('-') : this._id;
   }
 });
 
