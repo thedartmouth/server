@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
+import { Articles } from '../models';
 import * as constants from '../constants';
-import { Listings } from '../models';
 
 /**
  * Populates all possible first-layer fields of a Mongo Document.
@@ -38,9 +38,8 @@ const testPopulateAll = () => {
     mongoose.Promise = global.Promise; // configures mongoose to use ES6 Promises
     console.log('Connected to Database');
 
-    Listings.findById('5eaf8d1c7e000cec1c6598e1').then((foundListing) => {
-      populateAll(foundListing).then((populatedListing) => {
-        console.log(populatedListing);
+    Articles.findById('5eaf8d1c7e000cec1c6598e1').then((foundArticle) => {
+      populateAll(foundArticle).then((populatedArticle) => {
       }).catch((error) => { return console.log(error); });
     });
   }).catch((err) => {

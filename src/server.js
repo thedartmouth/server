@@ -5,7 +5,7 @@ import morgan from 'morgan';
 import mongoose from 'mongoose';
 
 import {
-  authRouter, constantsRouter, listingRouter, searchRouter, userRouter,
+  articleRouter, authRouter, constantsRouter, searchRouter, userRouter,
 } from './routers';
 
 import * as constants from './constants';
@@ -26,9 +26,9 @@ app.use(bodyParser.json());
 // declare routers
 app.use('/auth', authRouter);
 app.use('/constants', constantsRouter);
-app.use('/listings', listingRouter);
 app.use('/search', searchRouter);
 app.use('/users', userRouter);
+app.use('/articles', articleRouter);
 
 // default index route
 app.get('/', (req, res) => {
@@ -50,31 +50,6 @@ mongoose.connect(constants.MONGODB_URI, mongooseOptions).then(() => {
 }).catch((err) => {
   console.log('Not Connected to Database ERROR! ', err);
 });
-
-// // Reset database route
-// // WARNING: NOT CONFIGURED FOR DEPLOYMENT
-// app.use('/reset', (req, res) => {
-//   if (req.headers.key === LOAD_KEY_HERE) { // Configure or add additional logic (preferably from .env file)
-//     mongoose.connection.db.dropDatabase(() => {
-//       mongoose.connection.close(() => {
-//         mongoose.connect(mongoURI).then(() => {
-//           const authUser = new User();
-
-//           authUser.first_name = 'FIRST_AUTOGEN';
-//           authUser.last_name = 'LAST_AUTOGEN';
-//           authUser.email = 'AUTOGEN@TEST.COM'; // Configure this
-//           authUser.password = 'PASSWORD'; // Configure this
-
-//           authUser.save().then((savedUser) => {
-//             res.json({ message: `Reset database, created new user with id ${savedUser._id}`, user: savedUser });
-//           });
-//         });
-//       });
-//     });
-//   } else {
-//     res.status(401).json({ message: 'You are not authorized to perform this request' });
-//   }
-// });
 
 // Custom 404 middleware
 app.use((req, res) => {

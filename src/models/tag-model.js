@@ -1,9 +1,9 @@
 import mongoose, { Schema } from 'mongoose';
 
 const TagSchema = new Schema({
-  name: {type: String},
+  name: { type: String },
   interested_users: [
-    {type: Schema.Types.ObjectId, ref: 'User' },
+    { type: Schema.Types.ObjectId, ref: 'User' },
   ],
 });
 

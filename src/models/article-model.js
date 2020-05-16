@@ -5,7 +5,7 @@ const ArticleSchema = new Schema({
   web_url: {type: String},
   category: [{type: Schema.Types.ObjectId, ref: 'Category' }],
   tags: [{type: Schema.Types.ObjectId, ref: 'Tag' }],
-  headline: {type: String},
+  headline: { type: String },
   image_url: {type: String},
   content: { type: String },
   associated_polls: [

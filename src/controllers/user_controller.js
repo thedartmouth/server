@@ -12,30 +12,6 @@ function removePassword(user) {
 
 function redactUser(user) {
   delete user.created_date;
-  // delete user.owned_listings;
-
-  delete user.account_approved;
-  delete user.account_suspended;
-  delete user.suspension_message;
-  delete user.password;
-  return user;
-}
-
-function getListingUser(user) {
-  delete user.created_date;
-  delete user.owned_listings;
-
-  delete user.account_location;
-  delete user.account_description;
-
-  delete user.account_tags;
-  delete user.is_admin;
-
-  delete user.secondary_contact;
-  delete user.secondary_phone_number;
-  delete user.secondary_contact_email;
-  delete user.secondary_website_url;
-
   delete user.account_approved;
   delete user.account_suspended;
   delete user.suspension_message;
@@ -44,7 +20,7 @@ function getListingUser(user) {
 }
 
 const userController = {
-  tokenForUser, removePassword, redactUser, getListingUser,
+  tokenForUser, removePassword, redactUser,
 };
 
 export default userController;

@@ -5,9 +5,9 @@ import { userController } from '../controllers';
 import { requireSignin } from '../authentication';
 import { Users } from '../models';
 
-const router = express();
+const authRouter = express();
 
-router.route('/signup')
+authRouter.route('/signup')
   .post((req, res) => {
     const {
       email, password, firstName, lastName,
@@ -49,7 +49,7 @@ router.route('/signup')
   });
 
 // Send user object and server will send back authToken and user object
-router.route('/signin')
+authRouter.route('/signin')
   .post(requireSignin, (req, res) => {
     // This information is loaded or rejected by passport
     let json = req.user.toJSON();
@@ -57,4 +57,4 @@ router.route('/signin')
     return res.json({ token: userController.tokenForUser(json), user: json });
   });
 
-export default router;
+export default authRouter;

@@ -2,9 +2,9 @@ import express from 'express';
 
 import { searchController } from '../controllers';
 
-const router = express();
+const searchRouter = express();
 
-router.route('/')
+searchRouter.route('/')
 
   // Main query-based search
   .get((req, res) => {
@@ -54,4 +54,4 @@ router.route('/')
     });
   });
 
-export default router;
+export default searchRouter;

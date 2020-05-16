@@ -4,7 +4,7 @@
   "description": "DALI Lab CRUD template",
   "productionURL": "https://your-api-url.here",
   "productionClientURL": "https://your-app-url.here",
-  "localDatabaseURI": "mongodb://localhost/granite-state",
+  "localDatabaseURI": "mongodb://localhost/the-dartmouth",
   "main": "src/server.js",
   "repository": "https://github.com/dali-lab/crud-template-backend",
   "author": "Adam McQuilkin <Adam.J.Mcquilkin.22@Dartmouth.edu>",

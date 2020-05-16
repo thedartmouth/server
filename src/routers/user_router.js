@@ -7,10 +7,10 @@ import { userController } from '../controllers';
 
 import * as constants from '../constants';
 
-const router = express();
+const userRouter = express();
 
 // find and return all users
-router.route('/')
+userRouter.route('/')
 
   // Get all users
   .get(requireAdmin, (req, res) => {
@@ -66,7 +66,7 @@ router.route('/')
     });
   });
 
-router.route('/:id')
+userRouter.route('/:id')
 
   // Get user by ID
   .get((req, res) => {
@@ -137,4 +137,4 @@ router.route('/:id')
       });
   });
 
-export default router;
+export default userRouter;
