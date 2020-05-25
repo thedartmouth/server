@@ -6,6 +6,8 @@ function fetchArticles() {
   });
 }
 
+// createArticle(ceo_article) from the frontend
+
 function incrementViewCount(articleID) {
   Articles.findById(articleID).then((foundArticle) => {
     foundArticle.views += 1.0;
@@ -14,5 +16,7 @@ function incrementViewCount(articleID) {
     });
   });
 }
+
+// bookmarkArticle()
 
 export { fetchArticles, incrementViewCount };

@@ -1,7 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
 
 const ArticleSchema = new Schema({
-  CEOID: { type: String },
+  CEOID: { type: String }, // references SNWorks, is not _id
   webURL: { type: String },
   category: [{ type: Schema.Types.ObjectId, ref: 'Category' }],
   tags: [{ type: Schema.Types.ObjectId, ref: 'Tag' }],
