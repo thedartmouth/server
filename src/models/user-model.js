@@ -5,19 +5,10 @@ import bcrypt from 'bcryptjs';
 const UserSchema = new Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-
   name: { type: String, default: '', unique: true },
-
-  primary_contact_email: { type: String, default: '' },
-
-  secondary_contact: { type: String, default: '' },
-  secondary_phone_number: { type: String, default: '' },
-  secondary_contact_email: { type: String, default: '' },
-  secondary_website_url: { type: String, default: '' },
-
   created_date: { type: Date, default: Date.now() },
-
   is_admin: { type: Schema.Types.Boolean, default: false },
+  bookmarkedArticles: { type: Schema.Types.ObjectId, ref: 'Article' },
 }, {
   toObject: {
     virtuals: true,

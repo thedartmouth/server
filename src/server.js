@@ -32,7 +32,7 @@ app.use('/articles', articleRouter);
 
 // default index route
 app.get('/', (req, res) => {
-  res.send('Welcome to backend!');
+  res.send('Welcome to hihihih!');
 });
 
 // DB Setup
@@ -48,7 +48,7 @@ mongoose.connect(constants.MONGODB_URI, mongooseOptions).then(() => {
   mongoose.Promise = global.Promise; // configures mongoose to use ES6 Promises
   console.log('Connected to Database');
 }).catch((err) => {
-  console.log('Not Connected to Database ERROR! ', err);
+  console.log('Not Connected to Database ERROR!  ', err);
 });
 
 // Custom 404 middleware
