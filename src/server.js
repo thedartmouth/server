@@ -26,7 +26,6 @@ app.use(bodyParser.json());
 // declare routers
 app.use('/auth', authRouter);
 app.use('/constants', constantsRouter);
-app.use('/search', searchRouter);
 app.use('/users', userRouter);
 app.use('/articles', articleRouter);
 
