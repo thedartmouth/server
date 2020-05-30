@@ -5,7 +5,7 @@ import morgan from 'morgan';
 import mongoose from 'mongoose';
 
 import {
-  articleRouter, authRouter, constantsRouter, searchRouter, userRouter,
+  articleRouter, authRouter, constantsRouter, userRouter,
 } from './routers';
 
 import * as constants from './constants';
