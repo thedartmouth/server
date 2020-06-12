@@ -1,11 +1,11 @@
-import { Articles, Users } from '../models';
+import { Articles } from '../models';
 
 async function fetchArticles() {
   return Articles.find({});
 }
 
 // createArticle(ceo_article) from the frontend
-async function createArticle(ceo_article) {
+async function createArticle(ceoArticle) {
   // what's the data type of ceo_article? is it the exact same as our article model?
   // is it just an article CEOID?
   const newArticle = new Articles({

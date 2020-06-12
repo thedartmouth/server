@@ -8,33 +8,32 @@ async function fetchPolls() {
   });
 }
 
-// Assumes answers passed in as list 
+// Assumes answers passed in as list
 function createPoll(question, answerChoices, articleID) {
-  let voteMap = new Map(answerChoices.map(answer => [answer, 0])); // this currently returns an array 
-  let thisPoll = new Polls();
-  thisPoll.answers = voteMap; 
-  thisPoll.question = question; 
-  // thisPoll.Id = articleID; 
+  const voteMap = new Map(answerChoices.map((answer) => { return [answer, 0]; })); // this currently returns an array
+  const thisPoll = new Polls();
+  thisPoll.answers = voteMap;
+  thisPoll.question = question;
+  // thisPoll.Id = articleID;
 
   thisPoll.save().then((savedPoll) => {
-    return savedPoll; 
-  }); 
+    return savedPoll;
+  });
 }
 
 
-// lets user answer poll 
+// lets user answer poll
 function answerPoll(articleID, userID, answerChoice) {
   Polls.findById(articleID).then((foundPoll) => {
-    if(foundPoll.usersVoted.indexOf(userID) > -1){ // already in users voted list
-      console.log("Already Voted")
-    }
-    else {
-      foundPoll.answers.set(answerChoice, answers.get(answerChoice) + 1); // Increments vote by 1 
-      foundPoll.usersVoted.add(userID) // Prevents double voting 
+    if (foundPoll.usersVoted.indexOf(userID) > -1) { // already in users voted list
+      console.log('Already Voted');
+    } else {
+      foundPoll.answers.set(answerChoice, answers.get(answerChoice) + 1); // Increments vote by 1
+      foundPoll.usersVoted.add(userID); // Prevents double voting
       foundPoll.save().then((savedPoll) => {
         return savedPoll;
-      }); 
-    } 
+      });
+    }
   });
 }
 
