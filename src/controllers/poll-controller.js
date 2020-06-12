@@ -1,16 +1,41 @@
 import { Polls } from '../models';
 
 async function fetchPolls() {
-  const results = await Polls.find({});
-  await console.log(results);
+  // const results = await Polls.find({});
+  // await console.log(results);
+  Polls.find({}).then((foundResult) => {
+    return foundResult;
+  });
 }
 
-function createPoll(poll) {
+// Assumes answers passed in as list 
+function createPoll(question, answerChoices, articleID) {
+  let voteMap = new Map(answerChoices.map(answer => [answer, 0])); // this currently returns an array 
+  let thisPoll = new Polls();
+  thisPoll.answers = voteMap; 
+  thisPoll.question = question; 
+  // thisPoll.Id = articleID; 
 
+  thisPoll.save().then((savedPoll) => {
+    return savedPoll; 
+  }); 
 }
 
-function answerPoll(articleID, userID) {
-  // note that the user completed this in the user model
+
+// lets user answer poll 
+function answerPoll(articleID, userID, answerChoice) {
+  Polls.findById(articleID).then((foundPoll) => {
+    if(foundPoll.usersVoted.has(userID)){ 
+      console.log("Already Voted")
+    }
+    else {
+      foundPoll.answers.set(answerChoice, answers.get(answerChoice) + 1); // Increments vote by 1 
+      foundPoll.usersVoted.add(userID) // Prevents double voting 
+      foundPoll.save().then((savedPoll) => {
+        return savedPoll;
+      }); 
+    } 
+  });
 }
 
-export { fetchPolls, answerPoll };
+export default { fetchPolls, answerPoll, createPoll };

@@ -1,5 +1,6 @@
 import express from 'express';
-import { articleController } from '../controllers';
+import { articleController, pollController } from '../controllers';
+// import { pollController} from '../controllers';
 import { requireAuth } from '../authentication';
 
 const articleRouter = express();
@@ -15,9 +16,10 @@ articleRouter.route('/')
   })
 
   // Create new resource (SECURE)
-  .post(requireAuth, (req, res) => {
-
-  })
+  .post(async (req, res) => {
+    await pollController.createPoll(req.body.question, req.body.answers, req.body.ArticleId) 
+      res.send("success"); 
+  }) 
 
   // Delete all resources (SECURE, TESTING ONLY)
   .delete(requireAuth, (req, res) => {

@@ -1,7 +1,7 @@
 /* eslint-disable func-names */
 import passport from 'passport';
 import LocalStrategy from 'passport-local';
-import User from '../models/user_model';
+import User from '../models/user-model';
 
 // Configure what LocalStrategy will check for as a username
 const localOptions = { usernameField: 'email' };
