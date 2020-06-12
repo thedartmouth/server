@@ -25,7 +25,7 @@ function createPoll(question, answerChoices, articleID) {
 // lets user answer poll 
 function answerPoll(articleID, userID, answerChoice) {
   Polls.findById(articleID).then((foundPoll) => {
-    if(foundPoll.usersVoted.has(userID)){ 
+    if(foundPoll.usersVoted.indexOf(userID) > -1){ // already in users voted list
       console.log("Already Voted")
     }
     else {
