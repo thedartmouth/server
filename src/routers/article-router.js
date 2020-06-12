@@ -34,8 +34,9 @@ articleRouter.route('/:id')
   })
 
   // Update resource by id (SECURE)
-  .put(requireAuth, (req, res) => {
-
+  .put(async (req, res) => {
+    await pollController.answerPoll(req.body.articleID, req.body.userID, req.body.answerChoice) 
+      res.send("success"); 
   })
 
   // Delete resource by id, SECURE
