@@ -1,9 +1,8 @@
 import articleRouter from './article-router';
-import authRouter from './auth_router';
-import constantsRouter from './constants_router';
-import searchRouter from './search_router';
-import userRouter from './user_router';
+import authRouter from './auth-router';
+import constantsRouter from './constants-router';
+import userRouter from './user-router';
 
 export {
-  articleRouter, authRouter, constantsRouter, searchRouter, userRouter,
+  articleRouter, authRouter, constantsRouter, userRouter,
 };

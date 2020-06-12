@@ -13,20 +13,12 @@ const userRouter = express();
 userRouter.route('/')
 
   // Get all users
-  .get(requireAdmin, (req, res) => {
-    Users.find({}).then((users) => {
-      Promise.all(users.map((user) => {
-        return new Promise((resolve) => {
-          user = user.toObject();
-          user = userController.redactUser(user);
-          resolve(user);
-        });
-      })).then((cleanedUsers) => {
-        return res.json(cleanedUsers);
-      });
-    }).catch((error) => {
-      return res.status(500).json(error);
-    });
+  .get(requireAdmin, async (req, res) => {
+    try {
+      res.json(userController.getUsers(req.filters || {}));
+    } catch (error) {
+      res.status(500).json(error);
+    }
   })
 
   // Create new user
@@ -67,7 +59,6 @@ userRouter.route('/')
   });
 
 userRouter.route('/:id')
-
   // Get user by ID
   .get((req, res) => {
     Users.findById(req.params.id).then((user) => {
@@ -91,18 +82,7 @@ userRouter.route('/:id')
       return res.status(403).json({ message: 'You are not authorized to access this user' });
     }
 
-    let validUpdates = {};
-    if (!req.user.is_admin) {
-      // Only include a key is a user is allowed to modify each requested field
-      Object.keys(req.body).forEach((k) => {
-        if (constants.UNPROTECTED_USER_FIELDS.includes(k)) {
-          validUpdates[k] = req.body[k];
-        }
-      });
-    } else {
-      // Admins can change all fields
-      validUpdates = req.body;
-    }
+    const validUpdates = req.body;
 
     Users.updateOne({ _id: req.params.id }, validUpdates).then(() => {
       // Fetch user object and send

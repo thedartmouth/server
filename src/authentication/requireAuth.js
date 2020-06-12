@@ -1,6 +1,7 @@
 /* eslint-disable func-names */
 import passport from 'passport';
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
+import jwt from 'jwt-simple';
 import dotenv from 'dotenv';
 
 import User from '../models/user-model';
@@ -11,6 +12,11 @@ const jwtOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   secretOrKey: process.env.AUTH_SECRET,
 };
+
+export function tokenForUser(user) {
+  const timestamp = new Date().getTime();
+  return jwt.encode({ sub: user.id, iat: timestamp }, process.env.AUTH_SECRET);
+}
 
 const jwtAuthLogin = new JwtStrategy(jwtOptions, (payload, done) => {
   // See if the token matches any user document in the DB

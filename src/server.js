@@ -5,7 +5,7 @@ import morgan from 'morgan';
 import mongoose from 'mongoose';
 
 import {
-  articleRouter, authRouter, constantsRouter, searchRouter, userRouter,
+  articleRouter, authRouter, constantsRouter, userRouter,
 } from './routers';
 
 import * as constants from './constants';
@@ -26,13 +26,12 @@ app.use(bodyParser.json());
 // declare routers
 app.use('/auth', authRouter);
 app.use('/constants', constantsRouter);
-app.use('/search', searchRouter);
 app.use('/users', userRouter);
 app.use('/articles', articleRouter);
 
 // default index route
 app.get('/', (req, res) => {
-  res.send('Welcome to backend!');
+  res.send('Welcome to hihihih!');
 });
 
 // DB Setup
@@ -48,7 +47,7 @@ mongoose.connect(constants.MONGODB_URI, mongooseOptions).then(() => {
   mongoose.Promise = global.Promise; // configures mongoose to use ES6 Promises
   console.log('Connected to Database');
 }).catch((err) => {
-  console.log('Not Connected to Database ERROR! ', err);
+  console.log('Not Connected to Database ERROR!  ', err);
 });
 
 // Custom 404 middleware

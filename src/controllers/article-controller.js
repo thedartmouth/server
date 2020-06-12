@@ -1,4 +1,4 @@
-import { Articles } from '../models';
+import { Articles, Users } from '../models';
 
 function fetchArticles() {
   Articles.find({}).then((foundResult) => {
@@ -17,6 +17,10 @@ function incrementViewCount(articleID) {
   });
 }
 
-// bookmarkArticle()
+// elorm
+function bookmarkArticle(userID, articleID) {
+  // await Users.find(userid)
+  // user.bookmarkArticle.push(article)
+}
 
-export { fetchArticles, incrementViewCount };
+export default { fetchArticles, incrementViewCount };
