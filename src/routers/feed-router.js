@@ -22,7 +22,7 @@ feedRouter.route('/tags')
     try {
       res.json(await feedController.fetchFollowingFeed(req.user, 'Tags'));
     } catch (error) {
-      res.status(500).send('error fetching author feed');
+      res.status(500).send('error fetching tags feed');
     }
   });
 
