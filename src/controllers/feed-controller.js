@@ -6,6 +6,7 @@ const fetchURL = {
   Tags: 'https://www.thedartmouth.com/search.json?a=1&tg=',
 };
 
+// this is tested
 // uses selection sort to merge an array of arrays together
 // usable for author feed or tag feed merging
 // * ideally should be replaced with a staged heapsort, but it won't affect runtime by more than ~5%
@@ -46,17 +47,15 @@ function selectionMerge(arraysToMerge) {
   return sortedArray;
 }
 
-async function fetchFollowingFeed(user, AuthorsOrTags) {
+// this is tested well
+async function fetchParallel(array, AuthorsOrTags) {
   if (AuthorsOrTags !== 'Authors' && AuthorsOrTags !== 'Tags') {
     throw new Error('second parameter must be "Authors" or "Tags"');
   }
   try {
-    // the next 2 lines are untested, everything else works for sure
-    const populatedUser = await user.populate(`followed${AuthorsOrTags}`, 'name');
-    const following = populatedUser[`followed${AuthorsOrTags}`];
     // send several requests in parallel
     const alldata = await Promise.all(
-      following.map(async ({ name }) => {
+      array.map(async ({ name }) => {
         // encode http spaces
         name.replace(' ', '+');
         const resp = await axios.get(fetchURL[AuthorsOrTags] + name);
@@ -69,6 +68,21 @@ async function fetchFollowingFeed(user, AuthorsOrTags) {
     return selectionMerge(alldata);
   } catch (error) {
     console.log(error);
+    throw error;
+  }
+}
+
+// this has not been tested
+async function fetchFollowingFeed(user, AuthorsOrTags) {
+  if (AuthorsOrTags !== 'Authors' && AuthorsOrTags !== 'Tags') {
+    throw new Error('second parameter must be "Authors" or "Tags"');
+  }
+  try {
+    // the next 2 lines are untested
+    const populatedUser = await user.populate(`followed${AuthorsOrTags}`, 'name');
+    const following = populatedUser[`followed${AuthorsOrTags}`];
+    return await fetchParallel(following, AuthorsOrTags);
+  } catch (error) {
     throw error;
   }
 }
