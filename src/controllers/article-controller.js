@@ -28,4 +28,6 @@ function bookmarkArticle(userID, articleID) {
   // user.bookmarkArticle.push(article)
 }
 
-export default { fetchArticles, createArticle, incrementViewCount };
+export default {
+  fetchArticles, createArticle, incrementViewCount,
+};

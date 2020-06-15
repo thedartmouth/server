@@ -15,6 +15,13 @@ const ArticleSchema = new Schema({
   modifiedAt: { type: Date },
   publishedAt: { type: Date },
   views: { type: Number },
+  // would prefer this to either be indexed or mapped but unsure how to do that
+  viewedUsers: [
+    {
+      user: { type: Schema.Types.ObjectId, ref: 'User' },
+      viewCount: { type: Number },
+    },
+  ],
   authors: [
     { type: Schema.Types.ObjectId, ref: 'Author' },
   ],

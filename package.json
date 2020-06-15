@@ -9,7 +9,8 @@
   "repository": "https://github.com/dali-lab/crud-template-backend",
   "author": "Adam McQuilkin <Adam.J.Mcquilkin.22@Dartmouth.edu>",
   "contributors": [
-    "Alex Lopez <Alejandro.A.Lopez.Cochachi.23@Dartmouth.edu>", "Ziray Hao <Ziray.Hao.22@Dartmouth.edu>"
+    "Alex Lopez <Alejandro.A.Lopez.Cochachi.23@Dartmouth.edu>",
+    "Ziray Hao <Ziray.Hao.22@Dartmouth.edu>"
   ],
   "license": "MIT",
   "scripts": {
@@ -39,6 +40,8 @@
     "path": "^0.12.7"
   },
   "devDependencies": {
+    "@types/passport": "^1.0.3",
+    "@types/passport-local": "^1.0.33",
     "babel-cli": "^6.26.0",
     "babel-eslint": "^10.0.1",
     "babel-preset-env": "^1.7.0",
