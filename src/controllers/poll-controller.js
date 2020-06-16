@@ -29,7 +29,7 @@ function answerPoll(articleID, userID, answerChoice) {
       console.log('Already Voted');
     } else {
       foundPoll.answers.set(answerChoice, answers.get(answerChoice) + 1); // Increments vote by 1
-      foundPoll.usersVoted.add(userID); // Prevents double voting
+      foundPoll.usersVoted.push(userID); // Prevents double voting
       foundPoll.save().then((savedPoll) => {
         return savedPoll;
       });
