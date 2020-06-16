@@ -19,7 +19,7 @@ async function fetchUnansweredPolls(userID) {
   return UnansweredPolls;
 }
 
-function fetchAnsweredPolls(userID) {
+async function fetchAnsweredPolls(userID) {
   AnsweredPolls = []; 
   Polls.find({}).then((foundResult) => {
     // used for each loop to iterate through polls 
@@ -48,7 +48,7 @@ function createPoll(question, answerChoices, articleID) {
 function answerPoll(pollID, userID, answerChoice) {
   Polls.findById(pollID).then((foundPoll) => {
     if (foundPoll.usersVoted.includes(userID)) { // already in users voted list
-      console.log('Already Voted');
+      throw new Error("Already Voted")
     } else {
       foundPoll.answers.set(answerChoice, answers.get(answerChoice) + 1); // Increments vote by 1
       foundPoll.usersVoted.push(userID); // Prevents double voting
