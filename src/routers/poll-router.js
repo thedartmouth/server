@@ -28,6 +28,7 @@ pollRouter.route('/:id')
   })
 
   .put(async (req, res) => {
+    // Controller will send error if user has already voted in poll 
     try {
       await pollController.answerPoll(req.body.pollID, req.body.userID, req.body.answerChoice);
       res.send('success');
