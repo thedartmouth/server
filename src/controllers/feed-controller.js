@@ -2,8 +2,9 @@ import axios from 'axios';
 // import { Users } from '../models';
 
 const fetchURL = {
-  Authors: 'https://www.thedartmouth.com/search.json?a=1&au=',
-  Tags: 'https://www.thedartmouth.com/search.json?a=1&tg=',
+  Authors: 'https://www.thedartmouth.com/search.json?a=1&ty=article&au=',
+  Tags: 'https://www.thedartmouth.com/search.json?a=1&ty=article&tg=',
+  Keywords: 'https://www.thedartmouth.com/search.json?a=1&ty=article&s=',
 };
 
 // this is tested
