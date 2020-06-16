@@ -28,7 +28,7 @@ pollRouter.route('/:id')
   })
 
   .put(async (req, res) => {
-    await pollController.answerPoll(req.body.articleID, req.body.userID, req.body.answerChoice);
+    await pollController.answerPoll(req.body.pollID, req.body.userID, req.body.answerChoice);
     res.send('success');
   })
 
