@@ -8,10 +8,11 @@ const articleRouter = express();
 articleRouter.route('/')
 
   // Get all resources
-  .get((req, res) => {
-    articleController.fetchArticles().then((articles) => {
-      res.send(articles);
-    });
+  .get(async (req, res) => {
+    // articleController.fetchArticles().then((articles) => {
+    //   res.send(articles);
+    // });
+    res.send(await articleController.fetchArticles());
   })
 
   // Create new resource (SECURE)
@@ -39,6 +40,11 @@ articleRouter.route('/:id')
   // Delete resource by id, SECURE
   .delete(requireAuth, (req, res) => {
 
+  });
+
+articleRouter.route('/:userID', '/:articleId')
+  .put(async (req, res) => {
+    res.send(await articleController.bookmarkArticle(req.params.userID, req.params.articleID));
   });
 
 export default articleRouter;

@@ -9,7 +9,8 @@
   "repository": "https://github.com/dali-lab/crud-template-backend",
   "author": "Adam McQuilkin <Adam.J.Mcquilkin.22@Dartmouth.edu>",
   "contributors": [
-    "Alex Lopez <Alejandro.A.Lopez.Cochachi.23@Dartmouth.edu>", "Ziray Hao <Ziray.Hao.22@Dartmouth.edu>"
+    "Alex Lopez <Alejandro.A.Lopez.Cochachi.23@Dartmouth.edu>",
+    "Ziray Hao <Ziray.Hao.22@Dartmouth.edu>"
   ],
   "license": "MIT",
   "scripts": {
@@ -47,6 +48,6 @@
     "eslint-plugin-import": "^2.17.2",
     "eslint-plugin-jsx-a11y": "^6.2.1",
     "eslint-plugin-react": "^7.12.4",
-    "nodemon": "^2.0.3"
+    "nodemon": "^2.0.4"
   }
 }

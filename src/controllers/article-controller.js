@@ -1,9 +1,11 @@
 import { Articles, Users } from '../models';
 
 function fetchArticles() {
-  Articles.find({}).then((foundResult) => {
-    return foundResult;
-  });
+  // Articles.find({}).then((foundResult) => {
+  //   console.log(foundResult);
+  //   return foundResult;
+  // });
+  return Articles.find({});
 }
 
 // createArticle(ceo_article) from the frontend
@@ -19,8 +21,12 @@ function incrementViewCount(articleID) {
 
 // elorm
 function bookmarkArticle(userID, articleID) {
-  // await Users.find(userid)
-  // user.bookmarkArticle.push(article)
+  Users.findById(userID).then((user) => {
+    user.bookmarkArticle.push(articleID);
+    user.save().then((updatedUser) => {
+      return updatedUser;
+    });
+  });
 }
 
-export default { fetchArticles, incrementViewCount };
+export default { fetchArticles, incrementViewCount, bookmarkArticle };
