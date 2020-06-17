@@ -1,20 +1,25 @@
-import { Articles, Users } from '../models';
+import { Articles } from '../models';
 
-function fetchArticles() {
-  Articles.find({}).then((foundResult) => {
-    return foundResult;
-  });
+async function fetchArticles() {
+  return Articles.find({});
 }
 
 // createArticle(ceo_article) from the frontend
-
-function incrementViewCount(articleID) {
-  Articles.findById(articleID).then((foundArticle) => {
-    foundArticle.views += 1.0;
-    foundArticle.save().then((savedArticle) => {
-      return savedArticle;
-    });
+async function createArticle(ceoArticle) {
+  // what's the data type of ceo_article? is it the exact same as our article model?
+  // is it just an article CEOID?
+  const newArticle = new Articles({
+    // populate the document with the appropriate data
+    // probably best to do this after we change the Articles schema
+    views: 0,
   });
+  return newArticle.save();
+}
+
+async function incrementViewCount(articleID) {
+  const foundArticle = await Articles.findById(articleID);
+  foundArticle.views += 1;
+  return foundArticle.save();
 }
 
 // elorm
@@ -23,4 +28,6 @@ function bookmarkArticle(userID, articleID) {
   // user.bookmarkArticle.push(article)
 }
 
-export default { fetchArticles, incrementViewCount };
+export default {
+  fetchArticles, createArticle, incrementViewCount,
+};

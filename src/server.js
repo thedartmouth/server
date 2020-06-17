@@ -5,7 +5,7 @@ import morgan from 'morgan';
 import mongoose from 'mongoose';
 
 import {
-  articleRouter, authRouter, constantsRouter, userRouter,
+  articleRouter, authRouter, userRouter, feedRouter,
 } from './routers';
 
 import * as constants from './constants';
@@ -25,9 +25,9 @@ app.use(bodyParser.json());
 
 // declare routers
 app.use('/auth', authRouter);
-app.use('/constants', constantsRouter);
 app.use('/users', userRouter);
 app.use('/articles', articleRouter);
+app.use('/feed', feedRouter);
 
 // default index route
 app.get('/', (req, res) => {
