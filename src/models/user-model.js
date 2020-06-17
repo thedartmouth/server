@@ -8,7 +8,9 @@ const UserSchema = new Schema({
   name: { type: String, default: '' },
   created_date: { type: Date, default: Date.now() },
   is_admin: { type: Schema.Types.Boolean, default: false },
-  bookmarkedArticles: { type: String, ref: 'Article' },
+  bookmarkedArticles: [
+    { type: String, ref: 'Article' },
+  ],
   followedAuthors: [
     { type: Schema.Types.ObjectId, ref: 'Author' },
   ],
