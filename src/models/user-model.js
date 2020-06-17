@@ -5,10 +5,16 @@ import bcrypt from 'bcryptjs';
 const UserSchema = new Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  name: { type: String, default: '', unique: true },
+  name: { type: String, default: '' },
   created_date: { type: Date, default: Date.now() },
   is_admin: { type: Schema.Types.Boolean, default: false },
-  bookmarkedArticles: { type: Schema.Types.ObjectId, ref: 'Article' },
+  bookmarkedArticles: { type: String, ref: 'Article' },
+  followedAuthors: [
+    { type: Schema.Types.ObjectId, ref: 'Author' },
+  ],
+  followedTags: [
+    { type: Schema.Types.ObjectId, ref: 'Tag' },
+  ],
 }, {
   toObject: {
     virtuals: true,
@@ -59,6 +65,11 @@ UserSchema.virtual('url').get(function () {
     return this.name ? this.name.toLowerCase().split(' ').join('-') : this._id;
   }
 });
+
+// query helper to do case insensitive email lookup
+UserSchema.query.byEmail = function (email) {
+  return this.where({ email: new RegExp(email, 'i') });
+};
 
 const UserModel = mongoose.model('User', UserSchema);
 
