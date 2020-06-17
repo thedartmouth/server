@@ -1,16 +1,17 @@
 {
-  "name": "crud-template-backend",
+  "name": "The Dartmouth Mobile App Backend",
   "version": "1.0.0",
-  "description": "DALI Lab CRUD template",
+  "description": "Node/Express backend for The Dartmouth's upcoming mobile app",
   "productionURL": "https://your-api-url.here",
   "productionClientURL": "https://your-app-url.here",
   "localDatabaseURI": "mongodb://localhost/the-dartmouth",
   "main": "src/server.js",
-  "repository": "https://github.com/dali-lab/crud-template-backend",
-  "author": "Adam McQuilkin <Adam.J.Mcquilkin.22@Dartmouth.edu>",
+  "repository": "https://github.com/thedartmouth/backend",
+  "author": "Ziray Hao <Ziray.Hao.22@Dartmouth.edu>",
   "contributors": [
-    "Alex Lopez <Alejandro.A.Lopez.Cochachi.23@Dartmouth.edu>",
-    "Ziray Hao <Ziray.Hao.22@Dartmouth.edu>"
+      "Jeff Liu <Jeff.Z.Liu.23@dartmouth.edu>", 
+      "Brian Wang <Brian.C.Wang.23@dartmouth.edu>", 
+      "Sylvester Elorm Coch <Sylvester.E.Coch.22@dartmouth.edu>"
   ],
   "license": "MIT",
   "scripts": {
@@ -40,8 +41,6 @@
     "path": "^0.12.7"
   },
   "devDependencies": {
-    "@types/passport": "^1.0.3",
-    "@types/passport-local": "^1.0.33",
     "babel-cli": "^6.26.0",
     "babel-eslint": "^10.0.1",
     "babel-preset-env": "^1.7.0",
