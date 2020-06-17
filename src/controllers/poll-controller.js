@@ -26,7 +26,7 @@ function answerPoll(articleID, userID, answerChoice) {
     if (foundPoll.usersVoted.indexOf(userID) > -1) { // already in users voted list
       console.log('Already Voted');
     } else {
-      foundPoll.answers.set(answerChoice, answers.get(answerChoice) + 1); // Increments vote by 1
+      foundPoll.answers.set(answerChoice, foundPoll.answers.get(answerChoice) + 1); // Increments vote by 1
       foundPoll.usersVoted.add(userID); // Prevents double voting
       foundPoll.save().then((savedPoll) => {
         return savedPoll;
