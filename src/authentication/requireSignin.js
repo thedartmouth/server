@@ -1,7 +1,7 @@
 /* eslint-disable func-names */
 import passport from 'passport';
 import LocalStrategy from 'passport-local';
-import User from '../models/user-model';
+import { Users } from '../models';
 
 // Configure what LocalStrategy will check for as a username
 const localOptions = { usernameField: 'email' };
@@ -13,7 +13,7 @@ const localLogin = new LocalStrategy(localOptions, (email, password, done) => {
     return done(null, false, { message: 'You must provide an email address and password' });
   }
 
-  return User.findOne({ email }, (error, user) => {
+  return Users.findOne().byEmail(email).exec((error, user) => {
     // Was a user with the given email able to be found?
     if (error) return done(error);
     if (!user) return done(null, false, { message: 'Email address not associated with a user' });

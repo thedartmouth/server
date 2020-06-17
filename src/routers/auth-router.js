@@ -10,10 +10,11 @@ const authRouter = express();
 authRouter.route('/signup')
   .post((req, res) => {
     const {
-      email, password, firstName, lastName,
+      // email, password, firstName, lastName,
+      email, password, name,
     } = req.body;
 
-    Users.findOne({ email }).then((user) => {
+    Users.findOne().byEmail(email).then((user) => {
       // Check if a user already has this email address
       if (user) {
         return res.status(409).json({ message: 'Email address already associated to a user' });
@@ -30,8 +31,9 @@ authRouter.route('/signup')
       const newUser = new Users({
         email: email.toLowerCase(),
         password,
-        first_name: firstName,
-        last_name: lastName,
+        // first_name: firstName
+        // last_name: lastName,
+        name,
       });
 
       // Save the user then transmit to frontend
@@ -41,6 +43,7 @@ authRouter.route('/signup')
           json = userController.removePassword(json);
           res.status(201).json({ token: userController.tokenForUser(savedUser), user: json });
         }).catch((error) => {
+          console.log(error);
           return res.status(500).json(error);
         });
     }).catch((error) => {
