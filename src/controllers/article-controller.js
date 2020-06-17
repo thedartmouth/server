@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Articles, Users } from '../models';
 
 async function fetchArticles() {
@@ -26,7 +27,7 @@ async function incrementViewCount(articleID) {
   return foundArticle.save();
 }
 
-// elorm
+
 function bookmarkArticle(userID, articleID) {
   Users.findById(userID).then((user) => {
     user.bookmarkArticle.push(articleID);

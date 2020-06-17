@@ -7,12 +7,12 @@ async function fetchPolls() {
 }
 
 async function fetchUnansweredPolls(userID) {
-  UnansweredPolls = []; 
+  const UnansweredPolls = [];
   Polls.find({}).then((foundResult) => {
-    // used for each loop to iterate through polls 
-    for await(const poll of foundResult) {
-      if (poll.usersVoted.includes(userID) == true){
-        UnansweredPolls.push(poll); 
+    // used for each loop to iterate through polls
+    for (const poll of foundResult) {
+      if (poll.usersVoted.includes(userID) === true) {
+        UnansweredPolls.push(poll);
       }
     }
   });
@@ -20,12 +20,12 @@ async function fetchUnansweredPolls(userID) {
 }
 
 async function fetchAnsweredPolls(userID) {
-  AnsweredPolls = []; 
+  const AnsweredPolls = [];
   Polls.find({}).then((foundResult) => {
-    // used for each loop to iterate through polls 
-    for await(const poll of foundResult) {
-      if (poll.usersVoted.includes(userID) == false){
-        AnsweredPolls.push(poll); 
+    // used for each loop to iterate through polls
+    for (const poll of foundResult) {
+      if (poll.usersVoted.includes(userID) === false) {
+        AnsweredPolls.push(poll);
       }
     }
   });
@@ -48,7 +48,7 @@ function createPoll(question, answerChoices, articleID) {
 function answerPoll(pollID, userID, answerChoice) {
   Polls.findById(pollID).then((foundPoll) => {
     if (foundPoll.usersVoted.includes(userID)) { // already in users voted list
-      throw new Error("Already Voted")
+      throw new Error('Already Voted');
     } else {
       foundPoll.answers.set(answerChoice, answers.get(answerChoice) + 1); // Increments vote by 1
       foundPoll.usersVoted.push(userID); // Prevents double voting
@@ -59,4 +59,6 @@ function answerPoll(pollID, userID, answerChoice) {
   });
 }
 
-export default { fetchPolls, answerPoll, createPoll, fetchUnansweredPolls, fetchAnsweredPolls};
+export default {
+  fetchPolls, answerPoll, createPoll, fetchUnansweredPolls, fetchAnsweredPolls,
+};
