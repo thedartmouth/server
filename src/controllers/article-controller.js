@@ -11,6 +11,7 @@ async function createArticle(ceoArticle) {
   const newArticle = new Articles({
     // populate the document with the appropriate data
     // probably best to do this after we change the Articles schema
+    _id: ceoArticle,
     views: 0,
   });
   return newArticle.save();
