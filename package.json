@@ -1,5 +1,5 @@
 {
-  "name": "The Dartmouth Mobile App Backend",
+  "name": "the-dartmouth-mobile-app-backend",
   "version": "1.0.0",
   "description": "Node/Express backend for The Dartmouth's upcoming mobile app",
   "productionURL": "https://your-api-url.here",
