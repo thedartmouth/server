@@ -10,8 +10,7 @@ const authRouter = express();
 authRouter.route('/signup')
   .post((req, res) => {
     const {
-      // email, password, firstName, lastName,
-      email, password, name,
+      email, password, firstName, lastName,
     } = req.body;
 
     Users.findOne().byEmail(email).then((user) => {
@@ -31,9 +30,7 @@ authRouter.route('/signup')
       const newUser = new Users({
         email: email.toLowerCase(),
         password,
-        // first_name: firstName
-        // last_name: lastName,
-        name,
+        name: `${firstName} ${lastName}`,
       });
 
       // Save the user then transmit to frontend
