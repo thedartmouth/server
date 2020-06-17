@@ -9,16 +9,14 @@ async function fetchPolls() {
 }
 
 // Assumes answers passed in as list
-function createPoll(question, answerChoices, articleID) {
+function createPoll(question, answerChoices, associatedArticle) {
   const voteMap = new Map(answerChoices.map((answer) => { return [answer, 0]; })); // this currently returns an array
   const thisPoll = new Polls();
   thisPoll.answers = voteMap;
   thisPoll.question = question;
-  // thisPoll.Id = articleID;
+  thisPoll.associatedArticle = associatedArticle;
 
-  thisPoll.save().then((savedPoll) => {
-    return savedPoll;
-  });
+  return thisPoll.save();
 }
 
 
