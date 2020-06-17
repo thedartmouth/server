@@ -2,7 +2,7 @@ import express from 'express';
 import validator from 'email-validator';
 
 import { userController } from '../controllers';
-import { requireSignin } from '../authentication';
+import { requireSignin, tokenForUser } from '../authentication';
 import { Users } from '../models';
 
 const authRouter = express();
@@ -39,7 +39,7 @@ authRouter.route('/signup')
         .then((savedUser) => {
           let json = savedUser.toJSON();
           json = userController.removePassword(json);
-          res.status(201).json({ token: userController.tokenForUser(savedUser), user: json });
+          res.status(201).json({ token: tokenForUser(savedUser), user: json });
         }).catch((error) => {
           return res.status(500).json(error);
         });
@@ -54,7 +54,7 @@ authRouter.route('/signin')
     // This information is loaded or rejected by passport
     let json = req.user.toJSON();
     json = userController.removePassword(json);
-    return res.json({ token: userController.tokenForUser(json), user: json });
+    return res.json({ token: tokenForUser(json), user: json });
   });
 
 export default authRouter;
