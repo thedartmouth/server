@@ -1,11 +1,35 @@
 import { Polls } from '../models';
 
 async function fetchPolls() {
-  // const results = await Polls.find({});
-  // await console.log(results);
   Polls.find({}).then((foundResult) => {
     return foundResult;
   });
+}
+
+async function fetchUnansweredPolls(userID) {
+  UnansweredPolls = []; 
+  Polls.find({}).then((foundResult) => {
+    // used for each loop to iterate through polls 
+    for await(const poll of foundResult) {
+      if (poll.usersVoted.includes(userID) == true){
+        UnansweredPolls.push(poll); 
+      }
+    }
+  });
+  return UnansweredPolls;
+}
+
+async function fetchAnsweredPolls(userID) {
+  AnsweredPolls = []; 
+  Polls.find({}).then((foundResult) => {
+    // used for each loop to iterate through polls 
+    for await(const poll of foundResult) {
+      if (poll.usersVoted.includes(userID) == false){
+        AnsweredPolls.push(poll); 
+      }
+    }
+  });
+  return AnsweredPolls;
 }
 
 // Assumes answers passed in as list
@@ -14,8 +38,6 @@ function createPoll(question, answerChoices, articleID) {
   const thisPoll = new Polls();
   thisPoll.answers = voteMap;
   thisPoll.question = question;
-  // thisPoll.Id = articleID;
-
   thisPoll.save().then((savedPoll) => {
     return savedPoll;
   });
@@ -23,13 +45,13 @@ function createPoll(question, answerChoices, articleID) {
 
 
 // lets user answer poll
-function answerPoll(articleID, userID, answerChoice) {
-  Polls.findById(articleID).then((foundPoll) => {
-    if (foundPoll.usersVoted.indexOf(userID) > -1) { // already in users voted list
-      console.log('Already Voted');
+function answerPoll(pollID, userID, answerChoice) {
+  Polls.findById(pollID).then((foundPoll) => {
+    if (foundPoll.usersVoted.includes(userID)) { // already in users voted list
+      throw new Error("Already Voted")
     } else {
       foundPoll.answers.set(answerChoice, answers.get(answerChoice) + 1); // Increments vote by 1
-      foundPoll.usersVoted.add(userID); // Prevents double voting
+      foundPoll.usersVoted.push(userID); // Prevents double voting
       foundPoll.save().then((savedPoll) => {
         return savedPoll;
       });
@@ -37,4 +59,4 @@ function answerPoll(articleID, userID, answerChoice) {
   });
 }
 
-export default { fetchPolls, answerPoll, createPoll };
+export default { fetchPolls, answerPoll, createPoll, fetchUnansweredPolls, fetchAnsweredPolls};

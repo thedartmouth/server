@@ -28,8 +28,13 @@ pollRouter.route('/:id')
   })
 
   .put(async (req, res) => {
-    await pollController.answerPoll(req.body.articleID, req.body.userID, req.body.answerChoice);
-    res.send('success');
+    // Controller will send error if user has already voted in poll 
+    try {
+      await pollController.answerPoll(req.body.pollID, req.body.userID, req.body.answerChoice);
+      res.send('success');
+    } catch (error) {
+      res.send('Already voted');
+    }
   })
 
   .delete(requireAuth, (req, res) => {
