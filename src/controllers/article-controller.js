@@ -50,7 +50,7 @@ async function bookmarkArticle(userID, articleID) {
   } catch (err) {
     return err.value === userID
       ? { message: 'Invalid userID', error: err }
-      : { message: 'Invalid articleID', error: err };
+      : { message: 'Invalid articleID' };
   }
 }
 
