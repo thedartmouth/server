@@ -40,7 +40,7 @@ authRouter.route('/signup')
           json = userController.removePassword(json);
           res.status(201).json({ token: tokenForUser(savedUser), user: json });
         }).catch((error) => {
-          console.log(error);
+          console.log(typeof tokenForUser);
           return res.status(500).json(error);
         });
     }).catch((error) => {
@@ -53,6 +53,7 @@ authRouter.route('/signin')
   .post(requireSignin, (req, res) => {
     // This information is loaded or rejected by passport
     let json = req.user.toJSON();
+    console.log(json);
     json = userController.removePassword(json);
     return res.json({ token: tokenForUser(json), user: json });
   });

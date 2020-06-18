@@ -27,13 +27,33 @@ async function incrementViewCount(articleID) {
 }
 
 
-function bookmarkArticle(userID, articleID) {
-  Users.findById(userID).then((user) => {
-    user.bookmarkArticle.push(articleID);
-    user.save().then((updatedUser) => {
-      return updatedUser;
-    });
-  });
+async function bookmarkArticle(userID, articleID) {
+  try {
+    const user = await Users.findById(userID);
+    const article = await Articles.findById(articleID);
+
+    const articleIndex = user.bookmarkedArticles.indexOf(articleID);
+    const userIndex = article.bookMarkedUsers.indexOf(userID);
+
+    if (articleIndex > -1 || userIndex > -1) {
+      // article is already bookmarked, remove bookmark
+      user.bookmarkedArticles.splice(articleIndex, 1);
+      article.bookMarkedUsers.splice(userIndex, 1);
+    } else {
+      user.bookmarkedArticles.push(articleID);
+      article.bookMarkedUsers.push(userID);
+    }
+    const savedUser = await user.save();
+    const savedArticle = await article.save();
+
+    return { user: savedUser, article: savedArticle };
+  } catch (err) {
+    return err.value === userID
+      ? { message: 'Invalid userID', error: err }
+      : { message: 'Invalid articleID', error: err };
+  }
 }
 
-export default { fetchArticles, incrementViewCount, bookmarkArticle };
+export default {
+  fetchArticles, incrementViewCount, bookmarkArticle, createArticle,
+};
