@@ -2,7 +2,7 @@ import express from 'express';
 import validator from 'email-validator';
 
 import { userController } from '../controllers';
-import { requireSignin } from '../authentication';
+import { requireSignin, tokenForUser } from '../authentication';
 import { Users } from '../models';
 
 const authRouter = express();
@@ -10,8 +10,7 @@ const authRouter = express();
 authRouter.route('/signup')
   .post((req, res) => {
     const {
-      // email, password, firstName, lastName,
-      email, password, name,
+      email, password, firstName, lastName,
     } = req.body;
 
     Users.findOne().byEmail(email).then((user) => {
@@ -31,9 +30,7 @@ authRouter.route('/signup')
       const newUser = new Users({
         email: email.toLowerCase(),
         password,
-        // first_name: firstName
-        // last_name: lastName,
-        name,
+        name: `${firstName} ${lastName}`,
       });
 
       // Save the user then transmit to frontend
@@ -41,7 +38,7 @@ authRouter.route('/signup')
         .then((savedUser) => {
           let json = savedUser.toJSON();
           json = userController.removePassword(json);
-          res.status(201).json({ token: userController.tokenForUser(savedUser), user: json });
+          res.status(201).json({ token: tokenForUser(savedUser), user: json });
         }).catch((error) => {
           console.log(error);
           return res.status(500).json(error);
@@ -57,7 +54,7 @@ authRouter.route('/signin')
     // This information is loaded or rejected by passport
     let json = req.user.toJSON();
     json = userController.removePassword(json);
-    return res.json({ token: userController.tokenForUser(json), user: json });
+    return res.json({ token: tokenForUser(json), user: json });
   });
 
 export default authRouter;

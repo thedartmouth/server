@@ -9,7 +9,6 @@ async function getUsers(filters) {
   return results;
 }
 
-
 function removePassword(user) {
   delete user.password;
   return user;

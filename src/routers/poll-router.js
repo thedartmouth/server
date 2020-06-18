@@ -1,4 +1,5 @@
 import express from 'express';
+import { Polls } from '../models';
 import { articleController, pollController } from '../controllers';
 import { requireAuth } from '../authentication';
 
@@ -12,9 +13,8 @@ pollRouter.route('/')
     });
   })
 
-  .post(async (req, res) => {
-    await pollController.createPoll(req.body.question, req.body.answers, req.body.ArticleId);
-    res.send('success');
+  .post(requireAuth, async (req, res) => {
+    res.send(await pollController.createPoll(req.body.question, req.body.answers, req.body.associatedArticle));
   })
 
   .delete(requireAuth, (req, res) => {
@@ -23,8 +23,8 @@ pollRouter.route('/')
 
 pollRouter.route('/:id')
 
-  .get((req, res) => {
-
+  .get(requireAuth, async (req, res) => {
+    res.send(await Polls.findById(req.params.id).populate('associatedArticle'));
   })
 
   .put(async (req, res) => {

@@ -33,14 +33,14 @@ async function fetchAnsweredPolls(userID) {
 }
 
 // Assumes answers passed in as list
-function createPoll(question, answerChoices, articleID) {
+function createPoll(question, answerChoices, associatedArticle) {
   const voteMap = new Map(answerChoices.map((answer) => { return [answer, 0]; })); // this currently returns an array
   const thisPoll = new Polls();
   thisPoll.answers = voteMap;
   thisPoll.question = question;
-  thisPoll.save().then((savedPoll) => {
-    return savedPoll;
-  });
+  thisPoll.associatedArticle = associatedArticle;
+
+  return thisPoll.save();
 }
 
 
@@ -50,8 +50,8 @@ function answerPoll(pollID, userID, answerChoice) {
     if (foundPoll.usersVoted.includes(userID)) { // already in users voted list
       throw new Error('Already Voted');
     } else {
-      foundPoll.answers.set(answerChoice, answers.get(answerChoice) + 1); // Increments vote by 1
-      foundPoll.usersVoted.push(userID); // Prevents double voting
+      foundPoll.answers.set(answerChoice, foundPoll.answers.get(answerChoice) + 1); // Increments vote by 1
+      foundPoll.usersVoted.add(userID); // Prevents double voting
       foundPoll.save().then((savedPoll) => {
         return savedPoll;
       });
