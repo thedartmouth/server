@@ -42,20 +42,17 @@ function createPoll(question, answerChoices, associatedArticle) {
 
 
 // lets user answer poll
-function answerPoll(pollID, userID, answerChoice) {
+async function answerPoll(pollID, userID, answerChoice) {
   Polls.findById(pollID).then((foundPoll) => {
-    if (foundPoll.usersVoted.some(id => id.equals(userID))) { // already in users voted list
+    if (foundPoll.usersVoted.some(id => id.toString() == userID)) { // already in users voted list
       console.log("already voted");
-      var voteSuccess = new Boolean(false);
-      return voteSuccess;
+      return foundPoll; 
     } 
     else {
       foundPoll.answers.set(answerChoice, foundPoll.answers.get(answerChoice) + 1); // Increments vote by 1
       foundPoll.usersVoted.push(userID); // Prevents double voting
-      foundPoll.save().then((savedPoll => {}));
       console.log("voting");
-      var voteSuccess = new Boolean(true);
-      return voteSuccess;
+      return foundPoll.save();
     }
   });
 }
