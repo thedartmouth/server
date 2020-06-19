@@ -1,14 +1,13 @@
 import { Polls } from '../models';
 
 async function fetchPolls() {
-  Polls.find({}).then((foundResult) => {
-    return foundResult;
-  });
+  return Polls.find({});
 }
 
 async function fetchUnansweredPolls(userID) {
-  UnansweredPolls = []
-  for (let poll of fetchPolls()) {
+  UnansweredPolls = [];
+  allPolls = fetchPolls(); 
+  for (let poll of allPolls) {
       if (poll.usersVoted.includes(userID) == false){
         UnansweredPolls.push(poll); 
       }
@@ -17,10 +16,14 @@ async function fetchUnansweredPolls(userID) {
 }
 
 async function fetchAnsweredPolls(userID) {
-  AnsweredPolls = []
-  for (let poll of fetchPolls()) {
-      if (poll.usersVoted.includes(userID) == true){
-        AnsweredPolls.push(poll); 
+  const AnsweredPolls = new Array(); 
+  let allPolls = new Array(); 
+  allPolls = await Polls.find({});
+  for (var i = 0; i < allPolls.length; i++) {
+      console.log(allPolls[i].usersVoted[1]);
+      console.log(userID);
+      if (allPolls[i].usersVoted.some(id => (id).equals(userID))){
+        AnsweredPolls.push(allPolls[i]); 
       }
   }
   return AnsweredPolls;
@@ -33,7 +36,7 @@ async function fetchAnsweredPolls(userID) {
   //     }
   //   }
   // });
-  return AnsweredPolls;
+  // return AnsweredPolls;
 }
 
 // Assumes answers passed in as list
@@ -43,7 +46,6 @@ function createPoll(question, answerChoices, associatedArticle) {
   thisPoll.answers = voteMap;
   thisPoll.question = question;
   thisPoll.associatedArticle = associatedArticle;
-
   return thisPoll.save();
 }
 
@@ -51,11 +53,12 @@ function createPoll(question, answerChoices, associatedArticle) {
 // lets user answer poll
 function answerPoll(pollID, userID, answerChoice) {
   Polls.findById(pollID).then((foundPoll) => {
-    if (foundPoll.usersVoted.includes(userID)) { // already in users voted list
+    if (foundPoll.usersVoted.some(id => id.equals(userID))) { // already in users voted list
       return; 
     } else {
       foundPoll.answers.set(answerChoice, foundPoll.answers.get(answerChoice) + 1); // Increments vote by 1
-      foundPoll.usersVoted.add(userID); // Prevents double voting
+      foundPoll.usersVoted.push(userID); // Prevents double voting
+      console.log("BADBAD")
       foundPoll.save().then((savedPoll) => {
         return savedPoll;
       });

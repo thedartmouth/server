@@ -8,8 +8,8 @@ const pollRouter = express();
 pollRouter.route('/')
 
   .get((req, res) => {
-    articleController.fetchArticles().then((articles) => {
-      res.send(articles);
+    pollController.fetchPolls().then((polls) => {
+      res.send(polls);
     });
   })
 
@@ -17,17 +17,7 @@ pollRouter.route('/')
     res.send(await pollController.createPoll(req.body.question, req.body.answers, req.body.associatedArticle));
   })
 
-  .delete(requireAuth, (req, res) => {
-
-  });
-
-pollRouter.route('/:id')
-
-  .get(requireAuth, async (req, res) => {
-    res.send(await Polls.findById(req.params.id).populate('associatedArticle'));
-  })
-
-  .put(async (req, res) => {
+  .put(requireAuth, async (req, res) => {
     // Controller will send error if user has already voted in poll 
     try {
       await pollController.answerPoll(req.body.pollID, req.body.userID, req.body.answerChoice);
@@ -35,6 +25,24 @@ pollRouter.route('/:id')
     } catch (error) {
       res.send('Already voted');
     }
+  })
+
+  .delete(requireAuth, (req, res) => {
+
+  });
+
+pollRouter.route('/fetchAnswered')
+
+  .get(requireAuth, (req, res) => {
+    pollController.fetchAnsweredPolls(req.body.userID).then((polls) => {
+      res.send(polls);
+    });
+  });
+
+pollRouter.route('/:id')
+
+  .get(requireAuth, async (req, res) => {
+    res.send(await Polls.findById(req.params.id).populate('associatedArticle'));
   })
 
   .delete(requireAuth, (req, res) => {
