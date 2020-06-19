@@ -1,8 +1,8 @@
 import mongoose, { Schema } from 'mongoose';
 
 const TagSchema = new Schema({
-  name: { type: String },
-  interested_users: [
+  _id: { type: String },
+  followers: [
     { type: Schema.Types.ObjectId, ref: 'User' },
   ],
 });

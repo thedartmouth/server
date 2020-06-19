@@ -12,10 +12,10 @@ const UserSchema = new Schema({
     { type: String, ref: 'Article' },
   ],
   followedAuthors: [
-    { type: Schema.Types.ObjectId, ref: 'Author' },
+    { type: String, ref: 'Author' },
   ],
   followedTags: [
-    { type: Schema.Types.ObjectId, ref: 'Tag' },
+    { type: String, ref: 'Tag' },
   ],
 }, {
   toObject: {
@@ -70,7 +70,7 @@ UserSchema.virtual('url').get(function () {
 
 // query helper to do case insensitive email lookup
 UserSchema.query.byEmail = function (email) {
-  return this.where({ email: new RegExp(email, 'i') });
+  return this.where({ email: new RegExp(`^${email}$`, 'i') });
 };
 
 const UserModel = mongoose.model('User', UserSchema);

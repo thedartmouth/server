@@ -7,16 +7,14 @@ async function fetchArticles() {
 // takes an article object (with format = JSON api's format), saves in db
 async function createArticle(article) {
   const newArticle = new Articles({
-    _id: article.uuid,
-    // populate the document with the appropriate data
-    // probably best to do this after we change the Articles schema
+    _id: article.slug,
     views: 0,
   });
   return newArticle.save();
 }
 
-async function incrementViewCount(articleID) {
-  const foundArticle = await Articles.findById(articleID);
+async function incrementViewCount(articleSlug) {
+  const foundArticle = await Articles.findById(articleSlug);
   foundArticle.views += 1;
   return foundArticle.save();
 }

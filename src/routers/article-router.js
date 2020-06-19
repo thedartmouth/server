@@ -18,7 +18,7 @@ articleRouter.route('/')
     res.send(await articleController.createArticle(req.body.article));
   });
 
-articleRouter.route('/:uuid')
+articleRouter.route('/:slug')
 
   .get((req, res) => {
     // what exactly happens here? the client won't be getting text content from us

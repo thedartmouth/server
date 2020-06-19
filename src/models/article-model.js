@@ -1,8 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
 
 const ArticleSchema = new Schema({
-  _id: { type: String }, // UUID of the article
-  headline: { type: String },
+  _id: { type: String }, // slug of the article
   associatedPolls: [
     { type: Schema.Types.ObjectId, ref: 'Poll' },
   ],
