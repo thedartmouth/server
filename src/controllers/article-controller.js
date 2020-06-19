@@ -15,6 +15,7 @@ async function fetchArticleBySlug(articleSlug) {
 async function createArticle(article) {
   const newArticle = new Articles({
     _id: article.slug,
+    uuid: article.uuid,
     views: 0,
   });
   await newArticle.save();

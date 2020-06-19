@@ -32,7 +32,7 @@ articleRouter.route('/:slug')
     // only context I forsee this being used is updating the view count,
     // let me know if there are more functionalities in PUT later on
     // also unsure of the data format in req.body
-    res.send(await articleController.incrementViewCount(req.params.id));
+    res.send(await articleController.incrementViewCount(req.params.slug));
     // or perhaps bookmarking goes here?
   });
 
