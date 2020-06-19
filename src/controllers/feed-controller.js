@@ -1,11 +1,5 @@
 import axios from 'axios';
-
-const fetchURL = {
-  Authors: 'https://www.thedartmouth.com/search.json?a=1&per_page=100&ty=article&au=',
-  Tags: 'https://www.thedartmouth.com/search.json?a=1&per_page=100&ty=article&tg=',
-  Keywords: 'https://www.thedartmouth.com/search.json?a=1&per_page=100&ty=article&s=',
-};
-
+import fetchURL from './fetchURL';
 
 // this is tested
 // uses selection sort to merge an array of arrays together
