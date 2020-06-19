@@ -7,18 +7,20 @@ const pollRouter = express();
 
 pollRouter.route('/')
 
+  // fetch all polls
   .get((req, res) => {
     pollController.fetchPolls().then((polls) => {
       res.send(polls);
     });
   })
 
+  // create poll 
   .post(requireAuth, async (req, res) => {
     res.send(await pollController.createPoll(req.body.question, req.body.answers, req.body.associatedArticle));
   })
 
+  // vote in poll; will display poll afterwards
   .put(requireAuth, async (req, res) => {
-    // Controller will send error if user has already voted in poll 
     res.send(await pollController.answerPoll(req.body.pollID, req.body.userID, req.body.answerChoice));
   })
 
@@ -28,6 +30,7 @@ pollRouter.route('/')
 
 pollRouter.route('/fetchAnswered')
 
+  // fetch all answered polls for user 
   .get(requireAuth, (req, res) => {
     pollController.fetchAnsweredPolls(req.body.userID).then((polls) => {
       res.send(polls);
@@ -36,6 +39,7 @@ pollRouter.route('/fetchAnswered')
 
   pollRouter.route('/fetchUnanswered')
 
+    // fetch all unanswered polls for user 
   .get(requireAuth, (req, res) => {
     pollController.fetchUnansweredPolls(req.body.userID).then((polls) => {
       res.send(polls);
