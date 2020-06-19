@@ -15,10 +15,10 @@ articleRouter.route('/')
     // what's the context on what this should explicitly return,
     // and what the data type of ceoarticle is? (and if it comes in the body)
     // or should this be in /:id actually?
-    res.send(await articleController.createArticle(req.body.ceo_article));
+    res.send(await articleController.createArticle(req.body.article));
   });
 
-articleRouter.route('/:uuid')
+articleRouter.route('/:slug')
 
   .get((req, res) => {
     // what exactly happens here? the client won't be getting text content from us
