@@ -1,9 +1,11 @@
 import { Polls } from '../models';
 
+// fetch all polls
 async function fetchPolls() {
   return Polls.find({});
 }
 
+// fetch polls that this user has answered
 async function fetchAnsweredPolls(userID) {
   const AnsweredPolls = new Array(); 
   let allPolls = new Array(); 
@@ -16,6 +18,7 @@ async function fetchAnsweredPolls(userID) {
   return AnsweredPolls;
 }
 
+// fetch polls that this user has not answered
 async function fetchUnansweredPolls(userID) {
   const UnansweredPolls = new Array(); 
   let allPolls = new Array(); 
@@ -30,9 +33,9 @@ async function fetchUnansweredPolls(userID) {
   return UnansweredPolls;
 }
 
-// Assumes answers passed in as list
+// create new poll
 function createPoll(question, answerChoices, associatedArticle) {
-  const voteMap = new Map(answerChoices.map((answer) => { return [answer, 0]; })); // this currently returns an array
+  const voteMap = new Map(answerChoices.map((answer) => { return [answer, 0]; })); 
   const thisPoll = new Polls();
   thisPoll.answers = voteMap;
   thisPoll.question = question;
@@ -41,10 +44,10 @@ function createPoll(question, answerChoices, associatedArticle) {
 }
 
 
-// lets user answer poll
+// user answers poll
 async function answerPoll(pollID, userID, answerChoice) {
   return Polls.findById(pollID).then((foundPoll) => {
-    if (foundPoll.usersVoted.some(id => id.toString() == userID)) { // already in users voted list
+    if (foundPoll.usersVoted.some(id => id.toString() == userID)) { // if user has already voted in this poll 
       console.log("already voted");
     } 
     else {
@@ -53,7 +56,6 @@ async function answerPoll(pollID, userID, answerChoice) {
       foundPoll.save(); 
       console.log("voting");
     }
-    console.log(foundPoll);
     return foundPoll; 
   });
 }
