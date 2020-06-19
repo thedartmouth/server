@@ -4,10 +4,14 @@ import { requireAuth } from '../authentication';
 
 const feedRouter = express();
 
+/*
+ * GET /feed/authors
+ * grabs a chronological feed of all articles authored by following authors
+ *
+ * returns an array of JSON API article objects
+ * WIP to be paginated/cached later
+ */
 feedRouter.route('/authors')
-  // I don't yet know how to test this since I don't know how to add a user
-  // for requireAuth
-  // but fetchFollowingFeed is 95% tested, only 2 lines untested
   .get(requireAuth, async (req, res) => {
     try {
       res.json(await feedController.fetchFollowingFeed(req.user, 'Authors'));
@@ -16,8 +20,9 @@ feedRouter.route('/authors')
     }
   });
 
+// currently untested since tag following isn't implemented yet
+// but logic works for authors so should work the same here
 feedRouter.route('/tags')
-  // same comment as above for authorfeed
   .get(requireAuth, async (req, res) => {
     try {
       res.json(await feedController.fetchFollowingFeed(req.user, 'Tags'));

@@ -5,7 +5,7 @@ import morgan from 'morgan';
 import mongoose from 'mongoose';
 
 import {
-  articleRouter, authRouter, userRouter, feedRouter, pollRouter,
+  articleRouter, authRouter, userRouter, feedRouter, pollRouter, authorRouter,
 } from './routers';
 
 import * as constants from './constants';
@@ -29,6 +29,7 @@ app.use('/users', userRouter);
 app.use('/articles', articleRouter);
 app.use('/polls', pollRouter);
 app.use('/feed', feedRouter);
+app.use('/author', authorRouter);
 
 // default index route
 app.get('/', (req, res) => {
