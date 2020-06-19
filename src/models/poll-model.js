@@ -4,7 +4,7 @@ const PollSchema = new Schema({
   question: { type: String },
   answers: { type: Map },
   associatedArticle: { type: String, ref: 'Article' },
-  usersVoted: [{ type: Schema.Types.ObjectId, ref: 'User'}],
+  usersVoted: [{ type: Schema.Types.ObjectId, ref: 'User', unique: true}],
   created_at: { type: Date, default: Date.now() },
 });
 

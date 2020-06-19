@@ -19,13 +19,24 @@ pollRouter.route('/')
 
   .put(requireAuth, async (req, res) => {
     // Controller will send error if user has already voted in poll 
-    try {
-      await pollController.answerPoll(req.body.pollID, req.body.userID, req.body.answerChoice);
-      res.send('success');
-    } catch (error) {
-      res.send('Already voted');
+    var voteSuccess = new Boolean(await pollController.answerPoll(req.body.pollID, req.body.userID, req.body.answerChoice)); 
+    console.log("1st" + voteSuccess);
+    if (voteSuccess == true) {
+        console.log("after");
+        res.send('Successfully Voted');
     }
-  })
+    else {
+        console.log("after2");
+        res.send('Already Voted');
+    }
+    console.log(voteSuccess);
+    })
+    // try {
+    //   await pollController.answerPoll(req.body.pollID, req.body.userID, req.body.answerChoice);
+    //   res.send('success');
+    // } catch (error) {
+    //   res.send('Already voted');
+    // }
 
   .delete(requireAuth, (req, res) => {
 
