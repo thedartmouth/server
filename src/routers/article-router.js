@@ -1,8 +1,33 @@
 import express from 'express';
 import { articleController } from '../controllers';
-import { requireAuth } from '../authentication';
+import { requireAuth, optionalAuth } from '../authentication';
 
 const articleRouter = express();
+
+articleRouter.route('/read')
+  /*
+   * POST /articles/read
+   * all-purpose route for processing a read article by the client
+   *
+   * request: article JSON object with slug and uuid
+   * logic: adds the article to DB if not already there
+   *  increment total view count,
+   *  increment specific user view count (with optional login)
+   *
+   * response: updated article object
+   */
+  .post(optionalAuth, async (req, res) => {
+    if (!req.body || !req.body.article) {
+      res.status(400).send('missing body or article');
+      return;
+    }
+    try {
+      res.json(await articleController.processReadArticle(req.body.article, req.user));
+    } catch (error) {
+      console.log(error);
+      res.status(500).send('error processing read article');
+    }
+  });
 
 // find and return all resources
 articleRouter.route('/')
