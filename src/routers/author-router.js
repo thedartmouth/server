@@ -9,6 +9,8 @@ authorRouter.route('/search')
    * GET /author/search?authorName=...
    * query any author name to get an author document back containing the slug
    * if no author found, 404
+   *
+   * WORKS WITHOUT DB ENTRY (will add to db if not found before)
    */
   .get(async (req, res) => {
     try {
@@ -29,8 +31,12 @@ authorRouter.route('/profile/:slug')
    * GET /authors/profile/:slug
    * grab an author's profile using their slug
    *
-   * returns name, slug, totalArticles, totalViews, followerCount, and
+   * returns author document, totalViews, and
    * articles which is an array of JSON api articles
+   *
+   * follower count is in author.followers.length
+   *
+   * DOES NOT WORK WITHOUT PRIOR DB ENTRY, PLEASE SEARCH FIRST
    */
   .get(async (req, res) => {
     try {
@@ -51,7 +57,9 @@ authorRouter.route('/profile/:slug')
    * follows or unfollows an author by slug
    * needs a req body containing "follow": boolean
    *
-   * returns a message containing slug and isFollowing
+   * returns json containing the updated user, author, and isFollowing boolean
+   *
+   * DOES NOT WORK WITHOUT PRIOR DB ENTRY, PLEASE SEARCH FIRST
    */
   .put(requireAuth, async (req, res) => {
     try {

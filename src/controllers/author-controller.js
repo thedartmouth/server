@@ -35,9 +35,7 @@ async function getProfileBySlug(slug) {
   if (data.data.items[0].authors[0].slug !== slug) return null;
   // return summary data and articles; currently uses strange 'hits' parameter in API
   return {
-    name: author.name,
-    slug,
-    numFollowers: author.followers.length,
+    author,
     totalArticles: data.data.total,
     totalViews: data.data.items.reduce((total, article) => {
       return (total + parseInt(article.hits, 10));
@@ -55,7 +53,8 @@ async function toggleFollowingBySlug(slug, user, isFollowing) {
   if (user.followedAuthors.includes(author._id) === isFollowing
     && author.followers.includes(user._id) === isFollowing) {
     return {
-      slug,
+      user,
+      author,
       isFollowing,
     };
   }
@@ -78,63 +77,10 @@ async function toggleFollowingBySlug(slug, user, isFollowing) {
     await author.save(),
   ]);
   return {
-    slug,
+    user,
+    author,
     isFollowing,
   };
 }
 
 export default { searchByName, getProfileBySlug, toggleFollowingBySlug };
-
-// below contains some deprecated code that we don't need but I'm going to put in history
-// for this commit!
-
-// function checkAuthorConsistent(articles) {
-//   // console.log(articles[0])
-//   return articles[0].authors.reduce((isConsistent, candidateAuthor) => {
-//     // console.log(candidateAuthor.slug);
-//     return isConsistent || articles.reduce((isAlwaysPresent, article) => {
-//       return isAlwaysPresent && article.authors.reduce((hasAuthor, author) => {
-//         // console.log(author.slug);
-//         return hasAuthor || author.slug === candidateAuthor.slug;
-//       }, false);
-//     }, true);
-//   }, false);
-// }
-
-
-// async function searchByName(authorName) {
-//   let [author, data] = await Promise.all([
-//     await Authors.findOne().byName(authorName),
-//     await axios.get(fetchURL.Authors + authorName),
-//   ]);
-//   if (!data || !data.data || !data.data.total) {
-//     return null;
-//   }
-//   // check if there's a consistent singular author
-//   if (!checkAuthorConsistent(data.data.items)) {
-//     // re-search by the first author's name
-//     authorName = data.data.items[0].authors[0].name;
-//     console.log(authorName);
-//     [author, data] = await Promise.all([
-//       await Authors.findOne().byName(authorName),
-//       await axios.get(fetchURL.Authors + authorName),
-//     ]);
-//   }
-//   if (!author) {
-//     author = new Authors({
-//       _id: data.data.items[0].authors[0].slug,
-//       name: authorName
-//     });
-//     await author.save();
-//   }
-//   console.log(author);
-//   return {
-//     name: data.data.items[0].authors[0].name,
-//     slug: data.data.items[0].authors[0].slug,
-//     totalArticles: data.data.total,
-//     totalViews: data.data.items.reduce((total, article) => {
-//       return (total + parseInt(article.hits, 10));
-//     }, 0),
-//     articles: data.data.items,
-//   };
-// }
