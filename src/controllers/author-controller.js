@@ -54,7 +54,7 @@ async function toggleFollowingBySlug(slug, user, isFollowing) {
   if (user.followedAuthors.includes(author._id) === isFollowing
     && author.followers.includes(user._id) === isFollowing) {
     return {
-      user: userController.removePassword(user),
+      user: userController.removeDocPassword(user),
       author,
       isFollowing,
     };
@@ -78,7 +78,7 @@ async function toggleFollowingBySlug(slug, user, isFollowing) {
     await author.save(),
   ]);
   return {
-    user: userController.removePassword(user),
+    user: userController.removeDocPassword(user),
     author,
     isFollowing,
   };
