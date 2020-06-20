@@ -10,13 +10,13 @@ async function getUsers(filters) {
 }
 
 function removePassword(user) {
-  delete user.password;
+  delete user._doc.password;
   return user;
 }
 
 function redactUser(user) {
-  delete user.created_date;
-  delete user.password;
+  delete user._doc.created_date;
+  delete user._doc.password;
   return user;
 }
 

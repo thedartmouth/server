@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { Authors } from '../models';
 import fetchURL from './fetchURL';
+import userController from './user-controller';
 
 // takes a potential name and returns the author document it corresponds to
 async function searchByName(authorName) {
@@ -53,7 +54,7 @@ async function toggleFollowingBySlug(slug, user, isFollowing) {
   if (user.followedAuthors.includes(author._id) === isFollowing
     && author.followers.includes(user._id) === isFollowing) {
     return {
-      user,
+      user: userController.removePassword(user),
       author,
       isFollowing,
     };
@@ -68,7 +69,7 @@ async function toggleFollowingBySlug(slug, user, isFollowing) {
       return id !== author._id;
     });
     author.followers = author.followers.filter((id) => {
-      return id !== user._id;
+      return !user._id.equals(id);
     });
   }
   // wooo parallel saving
@@ -77,7 +78,7 @@ async function toggleFollowingBySlug(slug, user, isFollowing) {
     await author.save(),
   ]);
   return {
-    user,
+    user: userController.removePassword(user),
     author,
     isFollowing,
   };
