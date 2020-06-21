@@ -1,12 +1,5 @@
 import axios from 'axios';
-// import { Users } from '../models';
-
-const fetchURL = {
-  Authors: 'https://www.thedartmouth.com/search.json?a=1&per_page=100&ty=article&au=',
-  Tags: 'https://www.thedartmouth.com/search.json?a=1&per_page=100&ty=article&tg=',
-  Keywords: 'https://www.thedartmouth.com/search.json?a=1&per_page=100&ty=article&s=',
-};
-
+import fetchURL from './fetchURL';
 
 // this is tested
 // uses selection sort to merge an array of arrays together
@@ -74,15 +67,16 @@ async function fetchParallel(array, AuthorsOrTags) {
   }
 }
 
-// this has not been tested
+// this is tested for authors, tags await testing but should work too
 async function fetchFollowingFeed(user, AuthorsOrTags) {
   if (AuthorsOrTags !== 'Authors' && AuthorsOrTags !== 'Tags') {
     throw new Error('second parameter must be "Authors" or "Tags"');
   }
   try {
-    // the next 2 lines are untested
-    const populatedUser = await user.populate(`followed${AuthorsOrTags}`, 'name');
+    const populatedUser = await user.populate(`followed${AuthorsOrTags}`, 'name').execPopulate();
+    // console.log(populatedUser);
     const following = populatedUser[`followed${AuthorsOrTags}`];
+    // console.log(following);
     return await fetchParallel(following, AuthorsOrTags);
   } catch (error) {
     throw error;

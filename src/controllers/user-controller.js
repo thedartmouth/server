@@ -9,6 +9,17 @@ async function getUsers(filters) {
   return results;
 }
 
+function removeDocPassword(user) {
+  delete user._doc.password;
+  return user;
+}
+
+function redactDocUser(user) {
+  delete user._doc.created_date;
+  delete user._doc.password;
+  return user;
+}
+
 function removePassword(user) {
   delete user.password;
   return user;
@@ -20,6 +31,7 @@ function redactUser(user) {
   return user;
 }
 
+
 export default {
-  getUsers, removePassword, redactUser,
+  getUsers, removePassword, redactUser, removeDocPassword, redactDocUser,
 };
