@@ -2,6 +2,7 @@ import axios from 'axios';
 import { Authors } from '../models';
 import fetchURL from './fetchURL';
 import userController from './user-controller';
+import cleanArticles from './cleanArticles';
 
 // takes a potential name and returns the author document it corresponds to
 async function searchByName(authorName) {
@@ -41,7 +42,7 @@ async function getProfileBySlug(slug) {
     totalViews: data.data.items.reduce((total, article) => {
       return (total + parseInt(article.hits, 10));
     }, 0),
-    articles: data.data.items,
+    articles: cleanArticles(data.data.items),
   };
 }
 

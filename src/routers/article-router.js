@@ -29,6 +29,10 @@ articleRouter.route('/read')
     }
   });
 
+/*
+ * BELOW ROUTES ARE DEPRECATED AND MAY BE REMOVED EVENTUALLY
+ * could be useful for testing tho!
+ */
 // find and return all resources
 articleRouter.route('/')
 
