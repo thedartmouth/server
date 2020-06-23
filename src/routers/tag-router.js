@@ -6,14 +6,12 @@ const tagRouter = express();
 
 /*
  * PUT /tags/:userID/:tagID"
- * Allows  the user to follow or unfollow an article tag
- * returns an array of JSON API updated
+ * Allows user to follow or unfollow an article tag
+ * returns updated user and tag
  */
-tagRouter.route(requireAuth, '/:userID/:tagID')
-  .put(async (req, res) => {
-    res.send(
-      await tagController.tagArticle(req.params.userID, req.params.tagID),
-    );
+tagRouter.route('/:userID/:tagID')
+  .put(requireAuth, async (req, res) => {
+    res.send(await tagController.tagArticle(req.params.userID, req.params.tagID));
   });
 
 

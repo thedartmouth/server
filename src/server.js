@@ -30,7 +30,7 @@ app.use('/articles', articleRouter);
 app.use('/polls', pollRouter);
 app.use('/feed', feedRouter);
 app.use('/author', authorRouter);
-app.user('/tags', tagRouter);
+app.use('/tags', tagRouter);
 
 // default index route
 app.get('/', (req, res) => {

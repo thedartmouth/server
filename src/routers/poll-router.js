@@ -37,9 +37,9 @@ pollRouter.route('/fetchAnswered')
     });
   });
 
-  pollRouter.route('/fetchUnanswered')
+pollRouter.route('/fetchUnanswered')
 
-    // fetch all unanswered polls for user
+// fetch all unanswered polls for user
   .get(requireAuth, (req, res) => {
     pollController.fetchUnansweredPolls(req.body.userID).then((polls) => {
       res.send(polls);
