@@ -7,9 +7,6 @@ const articleRouter = express();
 // find and return all resources
 articleRouter.route('/')
   .get(async (req, res) => {
-    // articleController.fetchArticles().then((articles) => {
-    //   res.send(articles);
-    // });
     res.send(await articleController.fetchArticles());
   })
 
@@ -20,7 +17,7 @@ articleRouter.route('/')
     res.send(await articleController.createArticle(req.body));
   });
 
-articleRouter.route('/:uuid')
+articleRouter.route('/:slug')
 
   .get((req, res) => {
     // what exactly happens here? the client won't be getting text content from us
@@ -34,13 +31,18 @@ articleRouter.route('/:uuid')
     // only context I forsee this being used is updating the view count,
     // let me know if there are more functionalities in PUT later on
     // also unsure of the data format in req.body
-    res.send(await articleController.incrementViewCount(req.params.id));
+    res.send(await articleController.incrementViewCount(req.params.slug));
     // or perhaps bookmarking goes here?
   });
 
 articleRouter.route('/:userID/:articleID')
   .put(async (req, res) => {
     res.send(await articleController.bookmarkArticle(req.params.userID, req.params.articleID));
+  });
+
+articleRouter.route('/:userID/:tagID')
+  .put(async (req, res) => {
+    res.send(await articleController.tagArticle(req.params.userID, req.params.tagID));
   });
 
 export default articleRouter;
