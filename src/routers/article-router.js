@@ -40,9 +40,4 @@ articleRouter.route('/:userID/:articleID')
     res.send(await articleController.bookmarkArticle(req.params.userID, req.params.articleID));
   });
 
-articleRouter.route('/:userID/:tagID')
-  .put(async (req, res) => {
-    res.send(await articleController.tagArticle(req.params.userID, req.params.tagID));
-  });
-
 export default articleRouter;
