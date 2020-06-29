@@ -14,7 +14,7 @@ export default function cleanArticles(articles) {
       hits: article.hits,
       tags: article.tags,
       authors: article.authors,
-      dominantmedia: article.dominantmedia,
+      dominantMedia: article.dominantMedia,
     };
   });
 }
