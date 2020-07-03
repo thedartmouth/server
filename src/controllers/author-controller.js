@@ -12,9 +12,20 @@ async function searchByName(authorName) {
   // then look for it in JSON API, if not found return error
   const data = await axios.get(fetchURL.AuthorsLite + authorName);
   if (!data || !data.data || !data.data.total) return null;
-  // check to see if the returned value was actually in db now that it's a legit slug
-  const foundSlug = data.data.items[0].authors[0].slug;
-  const foundName = data.data.items[0].authors[0].name;
+  // try to look for exact match if possible in items[0]
+  const exactMatch = data.data.items[0].authors.find((potentialAuthor) => {
+    return potentialAuthor.name === authorName;
+  });
+  let foundSlug;
+  let foundName;
+  if (exactMatch) {
+    foundSlug = exactMatch.slug;
+    foundName = exactMatch.name;
+  } else {
+    // check to see if the returned value was actually in db now that it's a legit slug
+    foundSlug = data.data.items[0].authors[0].slug;
+    foundName = data.data.items[0].authors[0].name;
+  }
   const fixedAuthor = await Authors.findById(foundSlug);
   if (fixedAuthor) return fixedAuthor;
   // now we're sure the author is entirely new; add to db
