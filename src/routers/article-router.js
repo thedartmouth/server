@@ -11,8 +11,7 @@ articleRouter.route('/read')
    *
    * request: article JSON object with slug and uuid
    * logic: adds the article to DB if not already there
-   *  increment total view count,
-   *  increment specific user view count (with optional login)
+   *  adds the user id to the viewedUsers array if not already there
    *
    * response: updated article object
    */
@@ -29,6 +28,28 @@ articleRouter.route('/read')
     }
   });
 
+articleRouter.route('/share')
+  /*
+   * POST /articles/share
+   * adds to the share counter of an article, assumes it's already read
+   *
+   * request: article JSON object with slug and uuid
+   *  adds the user id to the sharedUsers array if not already there
+   *
+   * response: updated article object
+   */
+  .post(optionalAuth, async (req, res) => {
+    if (!req.body || !req.body.article) {
+      res.status(400).send('missing body or article');
+      return;
+    }
+    try {
+      res.json(await articleController.shareArticle(req.body.article, req.user));
+    } catch (error) {
+      console.log(error);
+      res.status(500).send('error processing shared article');
+    }
+  });
 /*
  * BELOW ROUTES ARE DEPRECATED AND MAY BE REMOVED EVENTUALLY
  * could be useful for testing tho!
