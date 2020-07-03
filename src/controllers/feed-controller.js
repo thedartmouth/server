@@ -9,6 +9,7 @@ import cleanArticles from './cleanArticles';
 // * since our bottleneck is the API requests anyway, and our "n" value is bounded:
 // * (runtime m log n, where m is number of articles and n is number of authors, n won't be large so n ~ logn)
 function selectionMerge(arraysToMerge) {
+  console.time('selectionMerge');
   // array tracks the actual items
   const sortedArray = [];
   // use a set to make sure that articles are unique
@@ -40,11 +41,13 @@ function selectionMerge(arraysToMerge) {
       sortedArray.push(lowestItem);
     }
   }
+  console.timeEnd('selectionMerge');
   return sortedArray;
 }
 
 // this is tested well
 async function fetchParallel(array, AuthorsOrTags) {
+  console.time('fetchParallel');
   if (AuthorsOrTags !== 'Authors' && AuthorsOrTags !== 'Tags') {
     throw new Error('second parameter must be "Authors" or "Tags"');
   }
@@ -61,6 +64,7 @@ async function fetchParallel(array, AuthorsOrTags) {
     // merge and return the data
     // ! depending on what the frontend needs, this data can be
     // ! further pruned later
+    console.timeEnd('fetchParallel');
     return selectionMerge(alldata);
   } catch (error) {
     console.log(error);
@@ -74,11 +78,14 @@ async function fetchFollowingFeed(user, AuthorsOrTags) {
     throw new Error('second parameter must be "Authors" or "Tags"');
   }
   try {
+    console.time('populateUser');
     const populatedUser = await user.populate(`followed${AuthorsOrTags}`, 'name').execPopulate();
     // console.log(populatedUser);
     const following = populatedUser[`followed${AuthorsOrTags}`];
     // console.log(following);
+    console.timeEnd('populateUser');
     const output = await fetchParallel(following, AuthorsOrTags);
+    console.time('cleanArticles');
     return cleanArticles(output);
   } catch (error) {
     throw error;
