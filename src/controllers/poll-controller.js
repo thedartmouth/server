@@ -24,8 +24,6 @@ async function fetchUnansweredPolls(userID) {
   let allPolls = new Array();
   allPolls = await Polls.find({});
   for (let i = 0; i < allPolls.length; i++) {
-    console.log(allPolls[i].usersVoted[1]);
-    console.log(userID);
     if (!allPolls[i].usersVoted.some((id) => { return (id).equals(userID); })) {
       UnansweredPolls.push(allPolls[i]);
     }

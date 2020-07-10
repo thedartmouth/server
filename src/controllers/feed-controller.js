@@ -1,5 +1,6 @@
 import axios from 'axios';
 import fetchURL from './fetchURL';
+import cleanArticles from './cleanArticles';
 
 // this is tested
 // uses selection sort to merge an array of arrays together
@@ -77,7 +78,8 @@ async function fetchFollowingFeed(user, AuthorsOrTags) {
     // console.log(populatedUser);
     const following = populatedUser[`followed${AuthorsOrTags}`];
     // console.log(following);
-    return await fetchParallel(following, AuthorsOrTags);
+    const output = await fetchParallel(following, AuthorsOrTags);
+    return cleanArticles(output);
   } catch (error) {
     throw error;
   }

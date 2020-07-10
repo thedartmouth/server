@@ -3,7 +3,7 @@ import mongoose, { Schema } from 'mongoose';
 const PollSchema = new Schema({
   question: { type: String },
   answers: { type: Map },
-  associatedArticle: { type: String, ref: 'Article' },
+  associatedArticle: { type: String, ref: 'Article'}, // default: "" in case there is no associated article 
   usersVoted: [{ type: Schema.Types.ObjectId, ref: 'User'}],
   created_at: { type: Date, default: Date.now() },
 });
