@@ -1,4 +1,3 @@
-
 import { Users } from '../models';
 
 async function getUsers(filters) {
