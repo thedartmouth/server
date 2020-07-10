@@ -63,6 +63,7 @@ async function bookmarkArticle(userID, articleID) {
       ? { message: 'Invalid userID', error: err }
       : { message: 'Invalid articleID' };
   }
+}
 // when client reads an article, they send the api a call
 // including the article, so we can catalog its existence for
 // view count/bookmarking/sharing purposes
