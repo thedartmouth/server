@@ -35,7 +35,6 @@ articleRouter.route('/read')
  */
 // find and return all resources
 articleRouter.route('/')
-
   .get(async (req, res) => {
     res.send(await articleController.fetchArticles());
   })
@@ -44,7 +43,7 @@ articleRouter.route('/')
     // what's the context on what this should explicitly return,
     // and what the data type of ceoarticle is? (and if it comes in the body)
     // or should this be in /:id actually?
-    res.send(await articleController.createArticle(req.body.article));
+    res.send(await articleController.createArticle(req.body));
   });
 
 articleRouter.route('/:slug')
@@ -63,6 +62,11 @@ articleRouter.route('/:slug')
     // also unsure of the data format in req.body
     res.send(await articleController.incrementViewCount(req.params.slug));
     // or perhaps bookmarking goes here?
+  });
+
+articleRouter.route('/:userID/:articleID')
+  .put(async (req, res) => {
+    res.send(await articleController.bookmarkArticle(req.params.userID, req.params.articleID));
   });
 
 export default articleRouter;

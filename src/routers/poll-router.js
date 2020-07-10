@@ -14,12 +14,12 @@ pollRouter.route('/')
     });
   })
 
-  // create poll 
+  // create poll
   .post(requireAuth, async (req, res) => {
     res.send(await pollController.createPoll(req.body.question, req.body.answers, req.body.associatedArticle));
   })
 
-  // vote in poll; will display poll afterwards; removed requireAuth for now 
+  // vote in poll; will display poll afterwards; removed requireAuth for now
   .put(async (req, res) => {
     res.send(await pollController.answerPoll(req.body.pollID, req.body.userID, req.body.answerChoice));
   })
@@ -37,9 +37,9 @@ pollRouter.route('/fetchAnswered/:userID')
     });
   });
 
-  pollRouter.route('/fetchUnanswered/:userID')
+pollRouter.route('/fetchUnanswered/:userID')
 
-    // fetch all unanswered polls for user; removed requireAuth for now 
+// fetch all unanswered polls for user; removed requireAuth for now
   .get((req, res) => {
     pollController.fetchUnansweredPolls(req.params.userID).then((polls) => {
       res.send(polls);

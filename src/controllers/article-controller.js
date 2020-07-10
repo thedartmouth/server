@@ -1,4 +1,5 @@
-import { Articles } from '../models';
+/* eslint-disable no-unused-vars */
+import { Articles, Users } from '../models';
 
 // grabs all articles
 async function fetchArticles() {
@@ -36,6 +37,33 @@ async function incrementViewCount(articleSlug) {
   return foundArticle;
 }
 
+// bookmarks an article if it's not been bookmarked, else unbookmarks it
+async function bookmarkArticle(userID, articleID) {
+  try {
+    const user = await Users.findById(userID);
+    const article = await Articles.findById(articleID);
+
+    const articleIndex = user.bookmarkedArticles.indexOf(articleID);
+    const userIndex = article.bookMarkedUsers.indexOf(userID);
+
+    if (articleIndex > -1 || userIndex > -1) {
+      // article is already bookmarked, remove bookmark
+      user.bookmarkedArticles.splice(articleIndex, 1);
+      article.bookMarkedUsers.splice(userIndex, 1);
+    } else {
+      user.bookmarkedArticles.push(articleID);
+      article.bookMarkedUsers.push(userID);
+    }
+    const savedUser = await user.save();
+    const savedArticle = await article.save();
+
+    return { user: savedUser, article: savedArticle };
+  } catch (err) {
+    return err.value === userID
+      ? { message: 'Invalid userID', error: err }
+      : { message: 'Invalid articleID' };
+  }
+}
 // when client reads an article, they send the api a call
 // including the article, so we can catalog its existence for
 // view count/bookmarking/sharing purposes
@@ -63,12 +91,6 @@ async function processReadArticle(article, user) {
   // here is where we can implement user stuff
   await dbArticle.save();
   return dbArticle;
-}
-
-// elorm
-function bookmarkArticle(userID, articleID) {
-  // await Users.find(userid)
-  // user.bookmarkArticle.push(article)
 }
 
 export default {
