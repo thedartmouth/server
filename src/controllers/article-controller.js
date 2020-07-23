@@ -17,7 +17,6 @@ function createArticle(article) {
   const newArticle = new Articles({
     _id: article.slug,
     uuid: article.uuid,
-    views: 0,
   });
   return newArticle;
 }
@@ -27,14 +26,6 @@ async function createAndSaveArticle(article) {
   const newArticle = createArticle(article);
   await newArticle.save();
   return newArticle;
-}
-
-// gets an article, increments its view count, and returns updated article
-async function incrementViewCount(articleSlug) {
-  const foundArticle = await Articles.findById(articleSlug);
-  foundArticle.views += 1;
-  await foundArticle.save();
-  return foundArticle;
 }
 
 // bookmarks an article if it's not been bookmarked, else unbookmarks it
@@ -71,28 +62,35 @@ async function processReadArticle(article, user) {
   // looks for article; if not found, make it
   let dbArticle = await Articles.findById(article.slug);
   if (!dbArticle) dbArticle = createArticle(article);
-  // view count goes up
-  dbArticle.views += 1;
   if (user) {
-    let viewedUser = dbArticle.viewedUsers.find((item) => {
-      return user._id.equals(item.user);
+    const viewedUser = dbArticle.viewedUsers.find((item) => {
+      return user._id.equals(item);
     });
     if (!viewedUser) {
-      viewedUser = {
-        user: user._id,
-        viewCount: 1,
-      };
-      dbArticle.viewedUsers.push(viewedUser);
+      dbArticle.viewedUsers.push(user._id);
     }
-    viewedUser.viewCount += 1;
-    console.log(viewedUser);
-    dbArticle.markModified('viewedUsers');
   }
   // here is where we can implement user stuff
   await dbArticle.save();
   return dbArticle;
 }
 
+// works the same way as processReadArticle
+// finds an article and adds the user to the shared list
+async function shareArticle(article, user) {
+  const dbArticle = await Articles.findById(article.slug);
+  if (user) {
+    const sharedUser = dbArticle.sharedUsers.find((item) => {
+      return user._id.equals(item);
+    });
+    if (!sharedUser) {
+      dbArticle.sharedUsers.push(user._id);
+    }
+  }
+  await dbArticle.save();
+  return dbArticle;
+}
+
 export default {
-  fetchArticles, fetchArticleBySlug, createAndSaveArticle, incrementViewCount, bookmarkArticle, processReadArticle,
+  fetchArticles, fetchArticleBySlug, createAndSaveArticle, bookmarkArticle, processReadArticle, shareArticle,
 };

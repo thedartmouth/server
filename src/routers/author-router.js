@@ -35,8 +35,6 @@ authorRouter.route('/profile/:slug')
    * articles which is an array of JSON api articles
    *
    * follower count is in author.followers.length
-   *
-   * DOES NOT WORK WITHOUT PRIOR DB ENTRY, PLEASE SEARCH FIRST
    */
   .get(async (req, res) => {
     try {
@@ -58,8 +56,6 @@ authorRouter.route('/profile/:slug')
    * needs a req body containing "follow": boolean
    *
    * returns json containing the updated user, author, and isFollowing boolean
-   *
-   * DOES NOT WORK WITHOUT PRIOR DB ENTRY, PLEASE SEARCH FIRST
    */
   .put(requireAuth, async (req, res) => {
     try {

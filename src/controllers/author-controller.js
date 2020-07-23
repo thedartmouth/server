@@ -12,9 +12,20 @@ async function searchByName(authorName) {
   // then look for it in JSON API, if not found return error
   const data = await axios.get(fetchURL.AuthorsLite + authorName);
   if (!data || !data.data || !data.data.total) return null;
-  // check to see if the returned value was actually in db now that it's a legit slug
-  const foundSlug = data.data.items[0].authors[0].slug;
-  const foundName = data.data.items[0].authors[0].name;
+  // try to look for exact match if possible in items[0]
+  const exactMatch = data.data.items[0].authors.find((potentialAuthor) => {
+    return potentialAuthor.name === authorName;
+  });
+  let foundSlug;
+  let foundName;
+  if (exactMatch) {
+    foundSlug = exactMatch.slug;
+    foundName = exactMatch.name;
+  } else {
+    // check to see if the returned value was actually in db now that it's a legit slug
+    foundSlug = data.data.items[0].authors[0].slug;
+    foundName = data.data.items[0].authors[0].name;
+  }
   const fixedAuthor = await Authors.findById(foundSlug);
   if (fixedAuthor) return fixedAuthor;
   // now we're sure the author is entirely new; add to db
@@ -26,30 +37,44 @@ async function searchByName(authorName) {
   return newAuthor;
 }
 
+async function getAuthorDocBySlug(slug) {
+  // search the db, if not found, look up the slug
+  let author = await Authors.findById(slug);
+  if (!author) {
+    const authorfetch = await axios.get(`${fetchURL.AuthorSlug + slug}.json`);
+    if (!authorfetch || !authorfetch.data) return null;
+    author = new Authors({
+      _id: slug,
+      name: authorfetch.data.author.name,
+    });
+    await author.save();
+  }
+  return author;
+}
+
 // gets an author's "profile" given their slug
 async function getProfileBySlug(slug) {
-  // search the db, if not found, we don't look for them at all
-  const author = await Authors.findById(slug);
+  const author = await getAuthorDocBySlug(slug);
   if (!author) return null;
-  // ping JSON API for their data
+  // ping advanced search for their articles (slug.json only gives 10 results)
   const data = await axios.get(fetchURL.Authors + author.name);
   if (!data || !data.data || !data.data.total) return null;
-  if (data.data.items[0].authors[0].slug !== slug) return null;
-  // return summary data and articles; currently uses strange 'hits' parameter in API
+  // return summary data and articles
   return {
     author,
     totalArticles: data.data.total,
-    totalViews: data.data.items.reduce((total, article) => {
+    totalHits: data.data.items.reduce((total, article) => {
       return (total + parseInt(article.hits, 10));
     }, 0),
     articles: cleanArticles(data.data.items),
+    // below idea would require a bit of author model redesign
+    // totalViews: author.totalViews,
   };
 }
 
 // toggles whether or not we're following an author
 async function toggleFollowingBySlug(slug, user, isFollowing) {
-  // lookup the author doc; if none found error
-  const author = await Authors.findById(slug);
+  const author = await getAuthorDocBySlug(slug);
   if (!author) return null;
   // if things are consistent, return
   if (user.followedAuthors.includes(author._id) === isFollowing
