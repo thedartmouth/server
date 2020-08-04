@@ -9,9 +9,9 @@
   "repository": "https://github.com/thedartmouth/backend",
   "author": "Ziray Hao <Ziray.Hao.22@Dartmouth.edu>",
   "contributors": [
-      "Jeff Liu <Jeff.Z.Liu.23@dartmouth.edu>", 
-      "Brian Wang <Brian.C.Wang.23@dartmouth.edu>", 
-      "Sylvester Elorm Coch <Sylvester.E.Coch.22@dartmouth.edu>"
+    "Jeff Liu <Jeff.Z.Liu.23@dartmouth.edu>",
+    "Brian Wang <Brian.C.Wang.23@dartmouth.edu>",
+    "Sylvester Elorm Coch <Sylvester.E.Coch.22@dartmouth.edu>"
   ],
   "license": "MIT",
   "scripts": {
