@@ -67,7 +67,7 @@ authorRouter.route('/profile/:slug')
       }
     } catch (error) {
       console.log(error);
-      res.status(500).send('error following/defollowing author');
+      res.status(500).send('error following / defollowing author');
     }
   });
 
