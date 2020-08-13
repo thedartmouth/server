@@ -58,20 +58,21 @@ userRouter.route('/')
     });
   });
 
-userRouter.route('/:id')
+userRouter.route('/me')
   // Get user by ID
-  .get((req, res) => {
-    Users.findById(req.params.id).then((user) => {
-      user = user.toObject();
-      user = userController.redactUser(user);
-      return res.json(user);
-    }).catch((error) => {
-      if (error.message && error.message.startsWith('User with id:')) {
-        return res.status(404).json(error.message);
-      } else {
-        return res.status(500).json(error.message);
-      }
-    });
+  .get(requireAuth, (req, res) => {
+    return res.json(req.user);
+    // Users.findById(req.params.id).then((user) => {
+    //   user = user.toObject();
+    //   user = userController.redactUser(user);
+    //   return res.json(user);
+    // }).catch((error) => {
+    //   if (error.message && error.message.startsWith('User with id:')) {
+    //     return res.status(404).json(error.message);
+    //   } else {
+    //     return res.status(500).json(error.message);
+    //   }
+    // });
   })
 
   // Update user by ID
