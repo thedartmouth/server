@@ -2,26 +2,27 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import morgan from 'morgan';
-import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import { Client as PostgreSQLClient } from 'pg';
 
-import {
-  articleRouter, authRouter, userRouter, feedRouter, pollRouter, authorRouter, tagRouter,
-} from './routers';
-
-import * as constants from './constants';
+dotenv.config();
 
 // initialize
 const app = express();
 
-// enable/disable cross origin listing sharing if necessary
+// enable CORS
 app.use(cors());
 
-// enable/disable http request logging
+// configure logging
 app.use(morgan('dev'));
 
-// enable json message body for posting data to API
+// configure data type
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+import {
+  articleRouter, authRouter, userRouter, feedRouter, pollRouter, authorRouter, tagRouter,
+} from './routers';
 
 // declare routers
 app.use('/auth', authRouter);
@@ -37,29 +38,21 @@ app.get('/', (req, res) => {
   res.send('Welcome to hihihih!');
 });
 
-// DB Setup
-const mongooseOptions = {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useCreateIndex: true,
-  loggerLevel: 'error',
-};
-
-// Connect the database
-mongoose.connect(constants.MONGODB_URI, mongooseOptions).then(() => {
-  mongoose.Promise = global.Promise; // configures mongoose to use ES6 Promises
-  console.log('Connected to Database');
-}).catch((err) => {
-  console.log('Not Connected to Database ERROR!  ', err);
-});
-
-// Custom 404 middleware
+// custom 404 middleware
 app.use((req, res) => {
   res.status(404).json({ message: 'The route you\'ve requested doesn\'t exist' });
 });
 
-// START THE SERVER
-// =============================================================================
-app.listen(constants.PORT);
+const pgClient = new PostgreSQLClient({
+  user: process.env.PGUSER,
+  password: process.env.PGPASSWORD,
+  host: process.env.PGHOST,
+  database: process.env.PGDATABASE,
+  port: process.env.PGPORT
+});
+pgClient.connect();
 
-console.log(`listening on: ${constants.PORT}`);
+// start the server
+app.listen(process.env.PORT);
+
+console.log(`listening on: ${process.env.PORT}`);
