@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { Articles, Users } from '../models'
 import { query, getClient } from '../db'
 
@@ -15,13 +14,6 @@ async function fetchMetaArticle(slug) {
  */
 function createMetaArticle(slug) {
     return query('INSERT INTO metaArticles (slug) VALUES ($1)', [slug])
-}
-
-// wrapper around createArticle that also saves it in db
-async function createAndSaveArticle(article) {
-    const newArticle = createArticle(article)
-    await newArticle.save()
-    return newArticle
 }
 
 // bookmarks an article if it's not been bookmarked, else unbookmarks it
