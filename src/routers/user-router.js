@@ -1,121 +1,166 @@
 /* eslint-disable consistent-return */
-import express from 'express';
+import express from 'express'
 
-import { Users } from '../models';
-import { requireAuth, requireAdmin } from '../authentication';
-import { userController } from '../controllers';
+import { Users } from '../models'
+import { requireAuth, requireAdmin } from '../authentication'
+import { userController } from '../controllers'
 
-import * as constants from '../constants';
+import * as constants from '../constants'
 
-const userRouter = express();
+const userRouter = express()
 
 // find and return all users
-userRouter.route('/')
+userRouter
+    .route('/')
 
-  // Get all users
-  .get(requireAdmin, async (req, res) => {
-    try {
-      res.json(userController.getUsers(req.filters || {}));
-    } catch (error) {
-      res.status(500).json(error);
-    }
-  })
+    // Get all users
+    .get(requireAdmin, async (req, res) => {
+        try {
+            res.json(userController.getUsers(req.filters || {}))
+        } catch (error) {
+            res.status(500).json(error)
+        }
+    })
 
-  // Create new user
-  .post(requireAdmin, (req, res) => {
-    if (!req.body.email || !req.body.name) {
-      return res.status(400).json({ message: 'Bad request: include \'email\' and \'name \' fields' });
-    }
-
-    Users.findOne({ email: req.body.email }).then((ue) => {
-      if (ue) { // Check for unique email
-        return res.status(409).json({ message: 'Email address already associated to a user' });
-      }
-
-      Users.findOne({ name: req.body.name }).then((ua) => {
-        if (ua) { // Check for unique account name
-          return res.status(409).json({ message: 'Account name already associated to a user' });
+    // Create new user
+    .post(requireAdmin, (req, res) => {
+        if (!req.body.email || !req.body.name) {
+            return res
+                .status(400)
+                .json({
+                    message: "Bad request: include 'email' and 'name ' fields",
+                })
         }
 
-        const user = new Users();
+        Users.findOne({ email: req.body.email })
+            .then((ue) => {
+                if (ue) {
+                    // Check for unique email
+                    return res
+                        .status(409)
+                        .json({
+                            message:
+                                'Email address already associated to a user',
+                        })
+                }
 
-        Object.keys(req.body).forEach((key) => {
-          user[key] = req.body[key];
-        });
+                Users.findOne({ name: req.body.name })
+                    .then((ua) => {
+                        if (ua) {
+                            // Check for unique account name
+                            return res
+                                .status(409)
+                                .json({
+                                    message:
+                                        'Account name already associated to a user',
+                                })
+                        }
 
-        user.save().then((savedUser) => {
-          savedUser = savedUser.toObject();
-          savedUser = userController.redactUser(savedUser);
-          return res.json(savedUser);
-        }).catch((error) => {
-          return res.status(500).json(error);
-        });
-      }).catch((error) => {
-        return res.status(500).json(error);
-      });
-    }).catch((error) => {
-      return res.status(500).json(error);
-    });
-  });
+                        const user = new Users()
 
-userRouter.route('/me')
-  // Get user by ID
-  .get(requireAuth, (req, res) => {
-    return res.json(req.user);
-    // Users.findById(req.params.id).then((user) => {
-    //   user = user.toObject();
-    //   user = userController.redactUser(user);
-    //   return res.json(user);
-    // }).catch((error) => {
-    //   if (error.message && error.message.startsWith('User with id:')) {
-    //     return res.status(404).json(error.message);
-    //   } else {
-    //     return res.status(500).json(error.message);
-    //   }
-    // });
-  })
+                        Object.keys(req.body).forEach((key) => {
+                            user[key] = req.body[key]
+                        })
 
-  // Update user by ID
-  .put(requireAuth, (req, res) => {
-    // Only admins and same organization account can update organization pages
-    // eslint-disable-next-line eqeqeq
-    if (!req.user.is_admin && req.user._id != req.params.id) {
-      return res.status(403).json({ message: 'You are not authorized to access this user' });
-    }
+                        user.save()
+                            .then((savedUser) => {
+                                savedUser = savedUser.toObject()
+                                savedUser = userController.redactUser(savedUser)
+                                return res.json(savedUser)
+                            })
+                            .catch((error) => {
+                                return res.status(500).json(error)
+                            })
+                    })
+                    .catch((error) => {
+                        return res.status(500).json(error)
+                    })
+            })
+            .catch((error) => {
+                return res.status(500).json(error)
+            })
+    })
 
-    const validUpdates = req.body;
+userRouter
+    .route('/me')
+    // Get user by ID
+    .get(requireAuth, (req, res) => {
+        return res.json(req.user)
+        // Users.findById(req.params.id).then((user) => {
+        //   user = user.toObject();
+        //   user = userController.redactUser(user);
+        //   return res.json(user);
+        // }).catch((error) => {
+        //   if (error.message && error.message.startsWith('User with id:')) {
+        //     return res.status(404).json(error.message);
+        //   } else {
+        //     return res.status(500).json(error.message);
+        //   }
+        // });
+    })
 
-    Users.updateOne({ _id: req.params.id }, validUpdates).then(() => {
-      // Fetch user object and send
-      Users.findById(req.params.id).then((updatedUser) => {
-        updatedUser = updatedUser.toObject();
-        updatedUser = userController.redactUser(updatedUser);
-        return res.json(updatedUser);
-      }).catch((error) => {
-        return res.status(500).json(error);
-      });
-    }).catch((error) => {
-      if (error.name === 'CastError' && error.path === '_id') {
-        return res.status(404).json(error.message);
-      } else {
-        return res.status(500).json(error);
-      }
-    });
-  })
-
-  // Delete user by ID
-  .delete(requireAdmin, (req, res) => {
-    Users.deleteOne({ _id: req.params.id })
-      .then((result) => {
-        if (result.deletedCount === 1) { // Successful deletion
-          return res.json(Object.assign({ message: `User with id: ${req.params.id} was successfully deleted` }, result));
-        } else {
-          return res.status(500).json(Object.assign({ message: 'Listing not able to be deleted' }, result));
+    // Update user by ID
+    .put(requireAuth, (req, res) => {
+        // Only admins and same organization account can update organization pages
+        // eslint-disable-next-line eqeqeq
+        if (!req.user.is_admin && req.user._id != req.params.id) {
+            return res
+                .status(403)
+                .json({ message: 'You are not authorized to access this user' })
         }
-      })
-      .catch((error) => {
-        return res.status(500).json(error);
-      });
-  });
 
-export default userRouter;
+        const validUpdates = req.body
+
+        Users.updateOne({ _id: req.params.id }, validUpdates)
+            .then(() => {
+                // Fetch user object and send
+                Users.findById(req.params.id)
+                    .then((updatedUser) => {
+                        updatedUser = updatedUser.toObject()
+                        updatedUser = userController.redactUser(updatedUser)
+                        return res.json(updatedUser)
+                    })
+                    .catch((error) => {
+                        return res.status(500).json(error)
+                    })
+            })
+            .catch((error) => {
+                if (error.name === 'CastError' && error.path === '_id') {
+                    return res.status(404).json(error.message)
+                } else {
+                    return res.status(500).json(error)
+                }
+            })
+    })
+
+    // Delete user by ID
+    .delete(requireAdmin, (req, res) => {
+        Users.deleteOne({ _id: req.params.id })
+            .then((result) => {
+                if (result.deletedCount === 1) {
+                    // Successful deletion
+                    return res.json(
+                        Object.assign(
+                            {
+                                message: `User with id: ${req.params.id} was successfully deleted`,
+                            },
+                            result
+                        )
+                    )
+                } else {
+                    return res
+                        .status(500)
+                        .json(
+                            Object.assign(
+                                { message: 'Listing not able to be deleted' },
+                                result
+                            )
+                        )
+                }
+            })
+            .catch((error) => {
+                return res.status(500).json(error)
+            })
+    })
+
+export default userRouter

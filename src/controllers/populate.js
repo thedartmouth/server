@@ -1,57 +1,73 @@
-import mongoose from 'mongoose';
-import { Articles } from '../models';
-import * as constants from '../constants';
+import mongoose from 'mongoose'
+import { Articles } from '../models'
+import * as constants from '../constants'
 
 /**
  * Populates all possible first-layer fields of a Mongo Document.
  * @param {Document} document
  */
 const populateAll = (document) => {
-  return new Promise((resolve) => {
-    Promise.all(
-      Object.values(document.schema.paths).map((path) => {
-        return new Promise((resolve) => {
-          if (path.instance === 'ObjectID' && path.path !== '_id') {
-            resolve(path.path);
-          } else if (path.instance === 'Array' && path.caster.instance === 'ObjectID') {
-            resolve(path.caster.path);
-          } else resolve('');
-        });
-      }),
-    ).then((paths) => {
-      paths = paths.filter((path) => { return path !== ''; });
-      document.populate(paths).execPopulate().then((populatedDocument) => {
-        resolve(populatedDocument);
-      });
-    });
-  });
-};
+    return new Promise((resolve) => {
+        Promise.all(
+            Object.values(document.schema.paths).map((path) => {
+                return new Promise((resolve) => {
+                    if (path.instance === 'ObjectID' && path.path !== '_id') {
+                        resolve(path.path)
+                    } else if (
+                        path.instance === 'Array' &&
+                        path.caster.instance === 'ObjectID'
+                    ) {
+                        resolve(path.caster.path)
+                    } else resolve('')
+                })
+            })
+        ).then((paths) => {
+            paths = paths.filter((path) => {
+                return path !== ''
+            })
+            document
+                .populate(paths)
+                .execPopulate()
+                .then((populatedDocument) => {
+                    resolve(populatedDocument)
+                })
+        })
+    })
+}
 
 const testPopulateAll = () => {
-  const mongooseOptions = {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useCreateIndex: true,
-    loggerLevel: 'error',
-  };
-  mongoose.connect(constants.MONGODB_URI, mongooseOptions).then(() => {
-    mongoose.Promise = global.Promise; // configures mongoose to use ES6 Promises
-    console.log('Connected to Database');
+    const mongooseOptions = {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        useCreateIndex: true,
+        loggerLevel: 'error',
+    }
+    mongoose
+        .connect(constants.MONGODB_URI, mongooseOptions)
+        .then(() => {
+            mongoose.Promise = global.Promise // configures mongoose to use ES6 Promises
+            console.log('Connected to Database')
 
-    Articles.findById('5eaf8d1c7e000cec1c6598e1').then((foundArticle) => {
-      populateAll(foundArticle).then((populatedArticle) => {
-      }).catch((error) => { return console.log(error); });
-    });
-  }).catch((err) => {
-    console.log('Not Connected to Database ERROR! ', err);
-  });
-};
+            Articles.findById('5eaf8d1c7e000cec1c6598e1').then(
+                (foundArticle) => {
+                    populateAll(foundArticle)
+                        .then((populatedArticle) => {})
+                        .catch((error) => {
+                            return console.log(error)
+                        })
+                }
+            )
+        })
+        .catch((err) => {
+            console.log('Not Connected to Database ERROR! ', err)
+        })
+}
 
 /**
  * Only executes the testing of populateAll if this module was run independently.
  */
 if (typeof require !== 'undefined' && require.main === module) {
-  testPopulateAll();
+    testPopulateAll()
 }
 
-export default populateAll;
+export default populateAll
