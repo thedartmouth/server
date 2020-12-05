@@ -10,9 +10,7 @@ const tagRouter = express()
  * returns updated user and tag
  */
 tagRouter.route('/:userID/:tagID').put(requireAuth, async (req, res) => {
-    res.send(
-        await tagController.tagArticle(req.params.userID, req.params.tagID)
-    )
+	res.send(await tagController.tagArticle(req.params.userID, req.params.tagID))
 })
 
 export default tagRouter

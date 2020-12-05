@@ -7,11 +7,11 @@ import authorController from './author-controller'
 import tagController from './tag-controller'
 
 export {
-    userController,
-    articleController,
-    populateAll,
-    pollController,
-    feedController,
-    authorController,
-    tagController,
+	userController,
+	articleController,
+	populateAll,
+	pollController,
+	feedController,
+	authorController,
+	tagController,
 }

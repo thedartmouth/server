@@ -5,13 +5,13 @@ import express from 'express'
 import morgan from 'morgan'
 
 import {
-    articleRouter,
-    authRouter,
-    userRouter,
-    feedRouter,
-    pollRouter,
-    authorRouter,
-    tagRouter,
+	articleRouter,
+	authRouter,
+	userRouter,
+	feedRouter,
+	pollRouter,
+	authorRouter,
+	tagRouter,
 } from './routers'
 
 dotenv.config()
@@ -40,14 +40,14 @@ app.use('/tags', tagRouter)
 
 // default index route
 app.get('/', (req, res) => {
-    res.send('Welcome to hihihih!')
+	res.send('Welcome to hihihih!')
 })
 
 // custom 404 middleware
 app.use((req, res) => {
-    res.status(404).json({
-        message: "The route you've requested doesn't exist",
-    })
+	res.status(404).json({
+		message: "The route you've requested doesn't exist",
+	})
 })
 
 // start the server

@@ -12,23 +12,23 @@ const feedRouter = express()
  * WIP to be paginated/cached later
  */
 feedRouter.route('/authors').get(requireAuth, async (req, res) => {
-    try {
-        res.json(await feedController.fetchFollowingFeed(req.user, 'Authors'))
-    } catch (error) {
-        console.log(error)
-        res.status(500).send('error fetching author feed')
-    }
+	try {
+		res.json(await feedController.fetchFollowingFeed(req.user, 'Authors'))
+	} catch (error) {
+		console.log(error)
+		res.status(500).send('error fetching author feed')
+	}
 })
 
 // currently untested since tag following isn't implemented yet
 // but logic works for authors so should work the same here
 feedRouter.route('/tags').get(requireAuth, async (req, res) => {
-    try {
-        res.json(await feedController.fetchFollowingFeed(req.user, 'Tags'))
-    } catch (error) {
-        console.log(error)
-        res.status(500).send('error fetching tags feed')
-    }
+	try {
+		res.json(await feedController.fetchFollowingFeed(req.user, 'Tags'))
+	} catch (error) {
+		console.log(error)
+		res.status(500).send('error fetching tags feed')
+	}
 })
 
 export default feedRouter

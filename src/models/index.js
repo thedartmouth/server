@@ -5,9 +5,9 @@ import PollModel from './poll-model'
 import TagModel from './tag-model'
 
 export {
-    UserModel as Users,
-    ArticleModel as Articles,
-    AuthorModel as Authors,
-    PollModel as Polls,
-    TagModel as Tags,
+	UserModel as Users,
+	ArticleModel as Articles,
+	AuthorModel as Authors,
+	PollModel as Polls,
+	TagModel as Tags,
 }

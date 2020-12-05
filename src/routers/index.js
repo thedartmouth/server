@@ -7,11 +7,11 @@ import authorRouter from './author-router'
 import tagRouter from './tag-router'
 
 export {
-    articleRouter,
-    pollRouter,
-    authRouter,
-    userRouter,
-    feedRouter,
-    authorRouter,
-    tagRouter,
+	articleRouter,
+	pollRouter,
+	authRouter,
+	userRouter,
+	feedRouter,
+	authorRouter,
+	tagRouter,
 }

@@ -4,9 +4,9 @@ One to two sentence description. Add current and expected behavior if the issue 
 
 ## Type of Issue
 
--   [ ] New feature
--   [ ] Bug fix
--   [ ] Documentation update
--   [ ] User research/testing
--   [ ] Wireframe/mockup
--   [ ] Other
+-  [ ] New feature
+-  [ ] Bug fix
+-  [ ] Documentation update
+-  [ ] User research/testing
+-  [ ] Wireframe/mockup
+-  [ ] Other
