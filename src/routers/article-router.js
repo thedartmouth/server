@@ -15,16 +15,15 @@ articleRouter.route('/read')
    *
    * response: updated article object
    */
-  .post(optionalAuth, async (req, res) => {
-    if (!req.body || !req.body.article) {
-      res.status(400).send('missing body or article');
-      return;
-    }
-    try {
-      res.json(await articleController.processReadArticle(req.body.article, req.user));
-    } catch (error) {
-      console.log(error);
-      res.status(500).send('error processing read article');
+  .post(async (req, res) => {
+    if (!req.body.slug || !req.body.userId) {
+      res.status(400).send('missing article slug or userId');
+    } else {
+      try {
+        res.json(await articleController.readArticle(req.body.slug, req.body.userId));
+      } catch (err) {
+        res.status(500).send(err.message);
+      }
     }
   });
 
@@ -50,31 +49,29 @@ articleRouter.route('/share')
       res.status(500).send('error processing shared article');
     }
   });
-/*
- * BELOW ROUTES ARE DEPRECATED AND MAY BE REMOVED EVENTUALLY
- * could be useful for testing tho!
- */
-// find and return all resources
-articleRouter.route('/')
-  .get(async (req, res) => {
-    res.send(await articleController.fetchArticles());
-  })
 
-  .post(requireAuth, async (req, res) => {
-    // what's the context on what this should explicitly return,
-    // and what the data type of ceoarticle is? (and if it comes in the body)
-    // or should this be in /:id actually?
-    res.send(await articleController.createArticle(req.body));
+
+articleRouter.route('/')
+  .post(async (req, res) => {
+    if (!req.body.slug || typeof req.body.slug != 'string') {
+      res.status(400).send('missing or bad slug');
+    } else {
+      try {
+        res.send(await articleController.createMetaArticle(req.body.slug));
+      } catch (err) {
+        res.status(500).send(err.message);
+      }
+    }
   });
 
 articleRouter.route('/:slug')
-
-  .get((req, res) => {
-    // what exactly happens here? the client won't be getting text content from us
-    // guessing we're throwing a GET at the json API and checking the CEOID against our index
-    // of CEOIDs in article-model and creating a new document if needed,
-    // and then just forwarding the response to the client
-    // also see @PUT below: does the view count get updated here or there?
+  .get(async (req, res) => {
+    try {
+      res.send(await articleController.fetchMetaArticle(req.params.slug));
+    } catch (err) {
+      console.log(err);
+      res.status(500).send(err.message);
+    }
   })
 
   .put(requireAuth, async (req, res) => {
