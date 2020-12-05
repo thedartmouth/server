@@ -1,24 +1,20 @@
 /* eslint-disable no-unused-vars */
 import { Articles, Users } from '../models';
+import {query, getClient} from '../db';
 
-// grabs all articles
-async function fetchArticles() {
-  return Articles.find({});
+/**
+ * Fetches a meta article by slug.
+ * @param {*} slug 
+ */
+async function fetchMetaArticle(slug) {
+  return query('SELECT * FROM metaArticles WHERE slug=$1', [slug]);
 }
 
-// grabs an article by its slug
-async function fetchArticleBySlug(articleSlug) {
-  return Articles.findbyId(articleSlug);
-}
-
-// takes an article object (with format = JSON api's format)
-// creates and returns a new document of it
-function createArticle(article) {
-  const newArticle = new Articles({
-    _id: article.slug,
-    uuid: article.uuid,
-  });
-  return newArticle;
+/**
+ * Creates a meta article references by slug.
+ */
+function createMetaArticle(slug) {
+  return query('INSERT INTO metaArticles (slug) VALUES ($1)', [slug]);
 }
 
 // wrapper around createArticle that also saves it in db
@@ -55,24 +51,19 @@ async function bookmarkArticle(userID, articleID) {
       : { message: 'Invalid articleID' };
   }
 }
-// when client reads an article, they send the api a call
-// including the article, so we can catalog its existence for
-// view count/bookmarking/sharing purposes
-async function processReadArticle(article, user) {
-  // looks for article; if not found, make it
-  let dbArticle = await Articles.findById(article.slug);
-  if (!dbArticle) dbArticle = createArticle(article);
-  if (user) {
-    const viewedUser = dbArticle.viewedUsers.find((item) => {
-      return user._id.equals(item);
-    });
-    if (!viewedUser) {
-      dbArticle.viewedUsers.push(user._id);
-    }
+
+async function readArticle(slug, userId) {
+  const dbClient = await getClient();
+
+  let metaArticle = (await dbClient.query('SELECT * FROM metaArticles WHERE slug = $1', [slug])).rows[0] || null;
+  console.table(metaArticle);
+  if (!metaArticle) {
+    metaArticle = dbClient.query('INSERT INTO metaArticles (slug) VALUES ($1)', [slug]);
   }
-  // here is where we can implement user stuff
-  await dbArticle.save();
-  return dbArticle;
+
+  await dbClient.query('INSERT INTO reads (articleSlug, userId, timestamp) VALUES ($1, $2, $3)', [slug, userId, (new Date()).toUTCString()]);
+  await dbClient.query('UPDATE metaArticles SET reads = reads + 1 WHERE slug = $1', [slug]);
+  dbClient.release();
 }
 
 // works the same way as processReadArticle
@@ -92,5 +83,5 @@ async function shareArticle(article, user) {
 }
 
 export default {
-  fetchArticles, fetchArticleBySlug, createAndSaveArticle, bookmarkArticle, processReadArticle, shareArticle,
+  createMetaArticle, fetchMetaArticle, createAndSaveArticle, bookmarkArticle, readArticle, shareArticle,
 };
