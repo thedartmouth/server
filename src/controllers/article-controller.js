@@ -19,8 +19,8 @@ async function createMetaArticle(slug) {
 
 /**
  * Toggles article bookmark for a user.
- * @param {String} slug 
- * @param {String} userId 
+ * @param {String} slug
+ * @param {String} userId
  */
 async function bookmarkArticle(slug, userId) {
 	const dbClient = await getClient()
@@ -47,8 +47,8 @@ async function bookmarkArticle(slug, userId) {
 
 /**
  * Logs an artilce read for a user.
- * @param {String} slug 
- * @param {String} userId 
+ * @param {String} slug
+ * @param {String} userId
  */
 async function readArticle(slug, userId) {
 	const dbClient = await getClient()
