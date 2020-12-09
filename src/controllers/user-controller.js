@@ -68,6 +68,7 @@ const getBookmarkedArticles = async (userId) => {
 }
 
 export default {
+	createUser,
 	validateUserExistence,
 	getBasicUserData,
 	updateBasicUserData,
