@@ -8,7 +8,7 @@ const userRouter = express()
 
 userRouter
 	.route('/')
-	.post((req, res) => {
+	.post(async (req, res) => {
 		try {
 			res.json(await userController.createUser(req.body))
 		} catch (err) {
@@ -17,7 +17,7 @@ userRouter
 	})
 
 userRouter
-	.route('/me/:userId')
+	.route('/:userId')
 	.get(
 		(req, res, next) => userController.validateUserExistence(req, res, next, req.params.userId),
 		async (req, res) => {
@@ -28,22 +28,31 @@ userRouter
 			}
 		}
 	)
-	.put(requireAuth({}), (req, res) => {
+	.put(requireAuth({}), async (req, res) => {
 		if (!req.admin && req.user.id !== req.params.userId) {
 			res.setStatus(401)
 		} else {
 			try {
-				res.json(await userController.updateBasicUserData(req.params.userId, req.body.updates))
+				res.json(await userController.updateBasicUserData(req.params.userId, req.body))
 			} catch (err) {
 				res.status(500).send(err.message)
 			}
 		}
 	})
-	.delete(requireAdmin, (req, res) => {
+	.delete(requireAuth({}), async (req, res) => {
+		if (!req.admin && req.user.id !== req.params.userId) {
+			res.setStatus(401)
+		} else {
+			try {
+				res.json(await userController.deleteUser(req.params.userId))
+			} catch (err) {
+				res.status(500).send(err.message)
+			}
+		}
 	})
 
 userRouter
-	.route('/me/bookmarks/:userId')
+	.route('/bookmarks/:userId')
 	.get(
 		(req, res, next) => userController.validateUserExistence(req, res, next, req.params.userId),
 		async (req, res) => {

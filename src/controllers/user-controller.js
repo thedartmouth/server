@@ -1,6 +1,15 @@
 import { query, getClient } from '../db'
 import format from 'pg-format'
 
+class UserSchema {
+	id
+	firstName
+	lastName
+	email
+	password
+	reads
+}
+
 /**
  * Middleware to validate a user exists for routes that require querying on a specific user.
  * @param {*} req 
@@ -17,10 +26,21 @@ const validateUserExistence = async (req, res, next, userId) => {
 	next()
 }
 
+/**
+ * Creates a new user.
+ * @param {UserSchema} user 
+ */
 const createUser = async (user) => {
-	const user = Object.entries(user).map(entry => {
-		return `${format.ident(entry[0])} = ${format.literal(entry[1])}`
+	const values = Object.keys(new UserSchema()).map(key => {
+		const value = key in user ? format.literal(user[key]) : 'DEFAULT'
+		if (format.ident(key.toLowerCase()) === 'password') {
+			return `crypt(${value}, gen_salt('bf', 8))`
+		}
+		return value
+			
 	}).join(',')
+	console.log(values)
+	await query(`INSERT INTO users (id, firstName, lastName, email, passhash, reads) VALUES (${values})`)
 }
 
 /**
@@ -46,11 +66,33 @@ const getBasicUserData = async (userId) => {
 	return res
 }
 
+/**
+ * Updates fields for basic user data.
+ * @param {String} userId 
+ * @param {UserSchema} updates 
+ */
 const updateBasicUserData = async (userId, updates) => {
-	const updates = Object.entries(updates).map(entry => {
-		return `${format.ident(entry[0])} = ${format.literal(entry[1])}`
+	const values = Object.keys(new UserSchema()).map(key => {
+		const value = key in updates ? format.literal(updates[key]) : 'DEFAULT'
+		if (format.ident(key.toLowerCase()) === 'password') {
+			return `passhash = crypt(${value}, gen_salt('bf', 8))`
+		}
+		return `${format.ident(key.toLowerCase())} = ${value}`
+			
 	}).join(',')
-	await query(`UPDATE users SET ${updates} WHERE id = $1`, [userId])
+	console.log(values)
+	await query(`UPDATE users SET ${values} WHERE id = $1`, [userId])
+}
+
+/**
+ * Deletes a user and associated reads and bookmarks from tables.
+ * @param {String} userId 
+ */
+const deleteUser = async (userId) => {
+	const dbClient = await getClient()
+	await dbClient.query('DELETE FROM users WHERE id = $1', [userId])
+	await dbClient.query('DELETE FROM bookmarks WHERE userId = $1', [userId])
+	await dbClient.query('DELETE FROM reads WHERE userId = $1', [userId])
 }
 
 /**
@@ -69,8 +111,9 @@ const getBookmarkedArticles = async (userId) => {
 
 export default {
 	createUser,
-	validateUserExistence,
+	deleteUser,
 	getBasicUserData,
-	updateBasicUserData,
 	getBookmarkedArticles,
+	updateBasicUserData,
+	validateUserExistence
 }
