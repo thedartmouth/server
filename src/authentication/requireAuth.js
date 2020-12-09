@@ -37,7 +37,7 @@ passport.use('jwt-auth', jwtAuthLogin)
 
 // Create function to transmit result of authenticate() call to user or next middleware
 const requireAuth = (options) => function (req, res, next) {
-	if (req.headers.API_KEY === process.env.API_KEY) {
+	if (req.headers['api_key'] === process.env.API_KEY) {
 		req.admin = true
 		next()
 	}
