@@ -36,32 +36,36 @@ const jwtAuthLogin = new JwtStrategy(jwtOptions, (payload, done) => {
 passport.use('jwt-auth', jwtAuthLogin)
 
 // Create function to transmit result of authenticate() call to user or next middleware
-const requireAuth = function (req, res, next) {
-	// eslint-disable-next-line prefer-arrow-callback
-	passport.authenticate(
-		'jwt-auth',
-		{ session: false },
-		function (err, user, info) {
-			// Needs to be a function
-			// Return any existing errors
-			if (err) {
-				return next(err)
+const requireAuth = (options) => function (req, res, next) {
+	if (req.headers.API_KEY === process.env.API_KEY) {
+		req.admin = true
+		next()
+	}
+	else if (!options.admin) {
+		passport.authenticate(
+			'jwt-auth',
+			{ session: false },
+			function (err, user, info) {
+				if (err) {
+					return next(err)
+				}
+	
+				if (!user) {
+					return res.status(401).json({
+						message: info
+							? info.message
+							: 'Authentication Error: Not authorized to perform this request',
+					})
+				}
+	
+				req.user = user
+	
+				return next()
 			}
-
-			// If no user found, return appropriate error message
-			if (!user) {
-				return res.status(401).json({
-					message: info
-						? info.message
-						: 'Authentication Error: Not authorized to perform this request',
-				})
-			}
-
-			req.user = user
-
-			return next()
-		}
-	)(req, res, next)
+		)(req, res, next)
+	} else {
+		return res.setStatus(401)
+	}
 }
 
 export default requireAuth
