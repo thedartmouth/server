@@ -34,8 +34,6 @@ CREATE TABLE reads (
 )
 ```
 
-
-
 ## Extensions
 
 ### `pgcrypto`
