@@ -18,34 +18,6 @@ async function createMetaArticle(slug) {
 }
 
 /**
- * Toggles article bookmark for a user.
- * @param {String} slug
- * @param {String} userId
- */
-async function bookmarkArticle(slug, userId) {
-	const dbClient = await getClient()
-	const bookmarkExists = (
-		await dbClient.query(
-			'SELECT EXISTS(SELECT 1 FROM bookmarks WHERE articleSlug = $1 AND userId = $2)',
-			[slug, userId]
-		)
-	).rows[0].exists
-	if (bookmarkExists) {
-		await dbClient.query(
-			'DELETE FROM bookmarks WHERE articleSlug = $1 AND userId = $2',
-			[slug, userId]
-		)
-	} else {
-		await dbClient.query(
-			'INSERT INTO bookmarks (articleSlug, userId, timestamp) VALUES ($1, $2, $3)',
-			[slug, userId, new Date().toUTCString()]
-		)
-	}
-	dbClient.release()
-	return bookmarkExists ? 'bookmark deleted' : 'bookmark added'
-}
-
-/**
  * Logs an artilce read for a user.
  * @param {String} slug
  * @param {String} userId
@@ -78,6 +50,48 @@ async function readArticle(slug, userId) {
 	return 'article read'
 }
 
+/**
+ * Toggles article bookmark for a user.
+ * @param {String} slug
+ * @param {String} userId
+ */
+async function bookmarkArticle(slug, userId) {
+	const dbClient = await getClient()
+	const bookmarkExists = (
+		await dbClient.query(
+			'SELECT EXISTS(SELECT 1 FROM bookmarks WHERE articleSlug = $1 AND userId = $2)',
+			[slug, userId]
+		)
+	).rows[0].exists
+	if (bookmarkExists) {
+		await dbClient.query(
+			'DELETE FROM bookmarks WHERE articleSlug = $1 AND userId = $2',
+			[slug, userId]
+		)
+	} else {
+		await dbClient.query(
+			'INSERT INTO bookmarks (articleSlug, userId, timestamp) VALUES ($1, $2, $3)',
+			[slug, userId, new Date().toUTCString()]
+		)
+	}
+	dbClient.release()
+	return bookmarkExists ? 'bookmark deleted' : 'bookmark added'
+}
+
+/**
+ * Queries a user's bookmarked articles, sorted by most recent timestamp.
+ * @param {String} userId
+ */
+const getBookmarkedArticles = async (userId) => {
+	const articles = (
+		await query(
+			'SELECT slug, timestamp FROM (SELECT articleSlug, timestamp FROM bookmarks WHERE userId = $1) AS userBookmarks LEFT JOIN (SELECT slug FROM metaArticles) AS matchingMetaArticles ON userBookmarks.articleSlug = matchingMetaArticles.slug ORDER BY timestamp DESC',
+			[userId]
+		)
+	).rows
+	return articles
+}
+
 // async function shareArticle(article, user) {
 // 	const dbArticle = await Articles.findById(article.slug)
 // 	if (user) {
@@ -93,9 +107,10 @@ async function readArticle(slug, userId) {
 // }
 
 export default {
-	createMetaArticle,
 	fetchMetaArticle,
+	createMetaArticle,
 	readArticle,
 	bookmarkArticle,
+	getBookmarkedArticles,
 	// shareArticle,
 }
