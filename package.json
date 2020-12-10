@@ -53,6 +53,7 @@
 		"@babel/preset-env": "^7.12.10",
 		"@types/jest": "^26.0.18",
 		"@types/supertest": "^2.0.10",
+		"babel-eslint": "^10.1.0",
 		"eslint": "^7.15.0",
 		"eslint-config-airbnb": "^17.1.0",
 		"eslint-config-prettier": "^6.15.0",
