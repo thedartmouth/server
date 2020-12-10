@@ -14,11 +14,16 @@ const jwtOptions = {
 
 export function tokenForUser(user) {
 	const timestamp = new Date().getTime()
-	return jwt.encode({ userId: user.id, timestamp: timestamp }, process.env.AUTH_SECRET)
+	return jwt.encode(
+		{ userId: user.id, timestamp: timestamp },
+		process.env.AUTH_SECRET
+	)
 }
 
 const jwtAuthLogin = new JwtStrategy(jwtOptions, async (payload, done) => {
-	const user = (await query('SELECT id FROM users WHERE id = $1', [payload.userId])) || null
+	const user =
+		(await query('SELECT id FROM users WHERE id = $1', [payload.userId])) ||
+		null
 	if (user) {
 		return done(null, user)
 	} else {

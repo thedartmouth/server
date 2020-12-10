@@ -75,7 +75,7 @@ export default () =>
 
 			test('prohibits access for invalid email but valid password', async () => {
 				expect.assertions(2)
-				
+
 				const getRes = await request(app)
 					.post(`${path}/auth`)
 					.send({
