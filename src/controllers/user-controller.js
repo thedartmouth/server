@@ -105,11 +105,11 @@ const updateBasicUserData = async (userId, updates) => {
 			const value = key in updates ? format.literal(updates[key]) : 'DEFAULT'
 			if (format.ident(key.toLowerCase()) === 'password') {
 				return `passhash = crypt(${value}, gen_salt('bf', 8))`
-			}
-			return `${format.ident(key.toLowerCase())} = ${value}`
+			} else if (format.ident(key.toLowerCase()) === 'id') {
+				return null
+			} else return `${format.ident(key.toLowerCase())} = ${value}`
 		})
 		.join(',')
-	console.log(values)
 	await query(`UPDATE users SET ${values} WHERE id = $1`, [userId])
 }
 
