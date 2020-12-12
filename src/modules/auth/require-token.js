@@ -1,8 +1,7 @@
 /* eslint-disable func-names */
 import passport from 'passport'
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt'
-import jwt from 'jwt-simple'
-import { query } from '../db'
+import { query } from '../../db'
 import dotenv from 'dotenv'
 
 dotenv.config({ silent: true })
@@ -12,18 +11,10 @@ const jwtOptions = {
 	secretOrKey: process.env.AUTH_SECRET,
 }
 
-export function tokenForUser(user) {
-	const timestamp = new Date().getTime()
-	return jwt.encode(
-		{ userId: user.id, timestamp: timestamp },
-		process.env.AUTH_SECRET
-	)
-}
-
 const jwtAuthLogin = new JwtStrategy(jwtOptions, async (payload, done) => {
 	const user =
-		(await query('SELECT id FROM users WHERE id = $1', [payload.userId])) ||
-		null
+		(await query('SELECT id FROM users WHERE id = $1', [payload.userId]))
+			.rows[0] || null
 	if (user) {
 		return done(null, user)
 	} else {
@@ -34,7 +25,7 @@ const jwtAuthLogin = new JwtStrategy(jwtOptions, async (payload, done) => {
 passport.use('jwt-auth', jwtAuthLogin)
 
 // Create function to transmit result of authenticate() call to user or next middleware
-const requireAuth = (options) =>
+const requireToken = (options) =>
 	function (req, res, next) {
 		if (req.headers['api_key'] === process.env.API_KEY) {
 			req.admin = true
@@ -66,4 +57,4 @@ const requireAuth = (options) =>
 		}
 	}
 
-export default requireAuth
+export default requireToken
