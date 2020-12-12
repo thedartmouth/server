@@ -1,7 +1,7 @@
 import { query, getClient } from '../db'
+import { generateToken } from '../modules/auth'
 import { UserValidationError } from '../modules/error'
 import format from 'pg-format'
-import jwt from 'jwt-simple'
 
 class UserSchema {
 	id
@@ -52,7 +52,7 @@ const createUser = async (user) => {
 	).rows[0]?.id
 }
 
-const generateToken = async (email, password) => {
+const generateTokenForUser = async (email, password) => {
 	let token = ''
 	const userId =
 		(
@@ -62,13 +62,10 @@ const generateToken = async (email, password) => {
 			)
 		).rows[0]?.id || null
 	if (userId) {
-		token = jwt.encode(
-			{ userId, timestamp: new Date().getTime() },
-			process.env.AUTH_SECRET
-		)
+		token = generateToken(userId)
 		return { token, userId }
 	}
-	throw new Error('invalid credentials')
+	throw new UserValidationError('invalid credentials')
 }
 
 /**
@@ -101,12 +98,11 @@ const getBasicUserData = async (userId) => {
  */
 const updateBasicUserData = async (userId, updates) => {
 	const values = Object.keys(new UserSchema())
+		.filter((key) => key !== 'id')
 		.map((key) => {
 			const value = key in updates ? format.literal(updates[key]) : 'DEFAULT'
 			if (format.ident(key.toLowerCase()) === 'password') {
 				return `passhash = crypt(${value}, gen_salt('bf', 8))`
-			} else if (format.ident(key.toLowerCase()) === 'id') {
-				return null
 			} else return `${format.ident(key.toLowerCase())} = ${value}`
 		})
 		.join(',')
@@ -128,7 +124,7 @@ const deleteUser = async (userId) => {
 export default {
 	validateUserExistence,
 	createUser,
-	generateToken,
+	generateTokenForUser,
 	getBasicUserData,
 	updateBasicUserData,
 	deleteUser,
