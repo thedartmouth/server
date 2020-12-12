@@ -1,6 +1,6 @@
 import express from 'express'
 import { tagController } from '../controllers'
-import { requireAuth } from '../authentication'
+import { requireToken } from '../modules/auth'
 
 const tagRouter = express()
 
@@ -9,7 +9,7 @@ const tagRouter = express()
  * Allows user to follow or unfollow an article tag
  * returns updated user and tag
  */
-tagRouter.route('/:userID/:tagID').put(requireAuth, async (req, res) => {
+tagRouter.route('/:userID/:tagID').put(requireToken, async (req, res) => {
 	res.send(await tagController.tagArticle(req.params.userID, req.params.tagID))
 })
 

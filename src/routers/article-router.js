@@ -1,23 +1,21 @@
 import express from 'express'
-import { requireAuth, requireSelf } from '../authentication'
+import asyncHandler from 'express-async-handler'
+import { requireToken, requireSelf } from '../modules/auth'
 import { articleController, userController } from '../controllers'
 
 const articleRouter = express()
 
-articleRouter.route('/:slug').get(async (req, res) => {
-	try {
+articleRouter.route('/:slug').get(
+	asyncHandler(async (req, res) => {
 		res.json(await articleController.fetchMetaArticle(req.params.slug))
-	} catch (err) {
-		console.log(err)
-		res.status(500).send(err.message)
-	}
-})
+	})
+)
 
-articleRouter.route('/read/:articleSlug').post(async (req, res) => {
-	if (!req.params.articleSlug) {
-		res.status(400).send('missing {articleSlug}')
-	} else {
-		try {
+articleRouter.route('/read/:articleSlug').post(
+	asyncHandler(async (req, res) => {
+		if (!req.params.articleSlug) {
+			res.status(400).send('missing {articleSlug}')
+		} else {
 			await userController.validateUserExistence(req.params.userId)(
 				req.body.userId
 			)(res)
@@ -28,56 +26,48 @@ articleRouter.route('/read/:articleSlug').post(async (req, res) => {
 					req.body.userId
 				)
 			)
-		} catch (err) {
-			res.status(500).send(err.message)
 		}
-	}
-})
+	})
+)
 
-articleRouter.route('/share').post(async (req, res) => {
-	if (!req.body?.article) {
-		res.status(400).send('missing article data')
-		return
-	}
-	try {
+articleRouter.route('/share').post(
+	asyncHandler(async (req, res) => {
+		if (!req.body?.article) {
+			res.status(400).send('missing article data')
+			return
+		}
 		res.json(await articleController.shareArticle(req.body.article, req.user))
-	} catch (error) {
-		console.log(error)
-		res.status(500).send('error processing shared article')
-	}
-})
+	})
+)
 
-articleRouter.route('/').post(async (req, res) => {
-	if (!req.body?.slug) {
-		res.status(400).send('missing or bad slug')
-	} else {
-		try {
+articleRouter.route('/').post(
+	asyncHandler(async (req, res) => {
+		if (!req.body?.slug) {
+			res.status(400).send('missing or bad slug')
+		} else {
 			res.json(await articleController.createMetaArticle(req.body.slug))
-		} catch (err) {
-			res.status(500).send(err.message)
 		}
-	}
-})
+	})
+)
 
 articleRouter
 	.route('/bookmarks')
-	.get(requireAuth(), async (req, res) => {
-		try {
+	.get(
+		requireToken(),
+		asyncHandler(async (req, res) => {
 			await userController.validateUserExistence(req.params.userId)(
 				req.body.userId
 			)(res)
 			requireSelf(req.body.userId, req)(res)
 			res.json(await userController.getBookmarkedArticles(req.body.userId))
-		} catch (err) {
-			res.status(500).send(err.message)
-		}
-	})
-	.post(async (req, res) => {
-		if (!req.body?.articleSlug) {
-			res.status(400).send('missing {articleSlug}')
-			return
-		}
-		try {
+		})
+	)
+	.post(
+		asyncHandler(async (req, res) => {
+			if (!req.body?.articleSlug) {
+				res.status(400).send('missing {articleSlug}')
+				return
+			}
 			await userController.validateUserExistence(req.params.userId)(
 				req.body.userId
 			)(res)
@@ -88,9 +78,7 @@ articleRouter
 					req.body.userId
 				)
 			)
-		} catch (err) {
-			res.status(500).send(err.message)
-		}
-	})
+		})
+	)
 
 export default articleRouter

@@ -1,6 +1,6 @@
 import express from 'express'
 import { authorController } from '../controllers'
-import { requireAuth } from '../authentication'
+import { requireToken } from '../modules/auth'
 
 const authorRouter = express()
 
@@ -61,7 +61,7 @@ authorRouter
 	 *
 	 * returns json containing the updated user, author, and isFollowing boolean
 	 */
-	.put(requireAuth, async (req, res) => {
+	.put(requireToken, async (req, res) => {
 		try {
 			const result = await authorController.toggleFollowingBySlug(
 				req.params.slug,

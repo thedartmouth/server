@@ -4,9 +4,10 @@ import dotenv from 'dotenv'
 import express from 'express'
 import morgan from 'morgan'
 
+import { errorHandlerMiddleware } from './modules/error'
+import { requireToken, requireSelf } from './modules/auth'
 import {
 	articleRouter,
-	authRouter,
 	userRouter,
 	feedRouter,
 	pollRouter,
@@ -30,7 +31,6 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
 // declare routers
-app.use('/auth', authRouter)
 app.use('/users', userRouter)
 app.use('/articles', articleRouter)
 app.use('/polls', pollRouter)
@@ -43,11 +43,24 @@ app.get('/', (req, res) => {
 	res.send('Welcome!')
 })
 
+app.get('/require-auth', requireToken({}), (req, res) => {
+	res.sendStatus(200)
+})
+app.get('/require-auth-self/:userId', requireToken({}), (req, res) => {
+	requireSelf(req.params.userId, req)(res)
+	res.sendStatus(200)
+})
+app.get('/require-auth-admin', requireToken({ admin: true }), (req, res) => {
+	res.sendStatus(200)
+})
+
 // custom 404 middleware
 app.use((req, res) => {
 	res.status(404).json({
 		message: "The route you've requested doesn't exist",
 	})
 })
+
+app.use(errorHandlerMiddleware)
 
 export default app

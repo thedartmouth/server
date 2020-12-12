@@ -1,6 +1,6 @@
 import express from 'express'
 import { feedController } from '../controllers'
-import { requireAuth } from '../authentication'
+import { requireToken } from '../modules/auth'
 
 const feedRouter = express()
 
@@ -11,7 +11,7 @@ const feedRouter = express()
  * returns an array of JSON API article objects
  * WIP to be paginated/cached later
  */
-feedRouter.route('/authors').get(requireAuth, async (req, res) => {
+feedRouter.route('/authors').get(requireToken, async (req, res) => {
 	try {
 		res.json(await feedController.fetchFollowingFeed(req.user, 'Authors'))
 	} catch (error) {
@@ -22,7 +22,7 @@ feedRouter.route('/authors').get(requireAuth, async (req, res) => {
 
 // currently untested since tag following isn't implemented yet
 // but logic works for authors so should work the same here
-feedRouter.route('/tags').get(requireAuth, async (req, res) => {
+feedRouter.route('/tags').get(requireToken, async (req, res) => {
 	try {
 		res.json(await feedController.fetchFollowingFeed(req.user, 'Tags'))
 	} catch (error) {

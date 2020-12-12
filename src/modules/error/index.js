@@ -11,3 +11,16 @@ export class UserValidationError extends Error {
 		this.name = 'UserValidationError'
 	}
 }
+
+export const errorHandlerMiddleware = (err, req, res, next) => {
+	if (res.headersSent) {
+		return next(err)
+	}
+	if (!(err instanceof UserValidationError)) {
+		res.status(500).send(err.message)
+		next()
+	} else if (err.message === 'invalid credentials') {
+		res.status(401).send(err.message)
+		next()
+	} else next()
+}
