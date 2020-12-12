@@ -13,8 +13,8 @@ export default () =>
 			password: 'good_password',
 		}
 
-		describe('successfully', () => {
-			test('creates a new user', async () => {
+		describe('creates a new user', () => {
+			test('successfully', async () => {
 				expect.assertions(4)
 
 				const createRes = await request(app)
@@ -40,8 +40,20 @@ export default () =>
 			})
 		})
 
-		describe('successfully', () => {
-			test('authenticates with email and password', async () => {
+		describe('prohibits duplicate emails', () => {
+			test('successfully', async () => {
+				expect.assertions(1)
+
+				const createRes = await request(app)
+					.post(path)
+					.send(user)
+					.set('Accept', 'application/json')
+				expect(createRes.statusCode).toBe(500)
+			})
+		})
+
+		describe('authenticates with email and password', () => {
+			test('successfully', async () => {
 				expect.assertions(3)
 
 				const getRes = await request(app)
@@ -86,9 +98,9 @@ export default () =>
 			})
 		})
 
-		describe('successfully', () => {
-			test('updates a user', async () => {
-				expect.assertions(7)
+		describe('updates a user', () => {
+			test('successfully', async () => {
+				expect.assertions(5)
 
 				const updatedUser = {
 					id: 'cannot_set',
@@ -99,13 +111,12 @@ export default () =>
 				}
 
 				const updateRes = await request(app)
-					.put(path)
+					.put(`${path}/${user.id}`)
 					.send(updatedUser)
 					.set('Accept', 'application/json')
+					.set('API_KEY', process.env.API_KEY)
 				expect(updateRes.statusCode).toBe(200)
-				expect(uuid.validate(updateRes.body.userId)).toBe(true)
-				expect(updateRes.body.userId === user.id).toBe(true)
-				
+
 				const authRes = await request(app)
 					.post(`${path}/auth`)
 					.send({
@@ -117,7 +128,7 @@ export default () =>
 				expect(authRes.body?.userId).toBe(user.id)
 
 				const getRes = await request(app)
-					.get(`${path}/${updateRes.body.userId}`)
+					.get(`${path}/${user.id}`)
 					.set('API_KEY', process.env.API_KEY)
 				expect(getRes.statusCode).toBe(200)
 				expect(getRes.body).toEqual({
@@ -131,24 +142,13 @@ export default () =>
 			})
 		})
 
-		describe('successfully', () => {
-			test('prohibits user deletion without authentication by user', async () => {
+		describe('deletes a user', () => {
+			test('successfully', async () => {
 				expect.assertions(1)
 
 				const getRes = await request(app)
 					.delete(`${path}/${user.id}`)
-					.auth(uuid.v4(), { type: 'bearer' })
-				expect(getRes.statusCode).toBe(401)
-			})
-		})
-
-		describe('successfully', () => {
-			test('deletes a user', async () => {
-				expect.assertions(1)
-
-				const getRes = await request(app)
-					.delete(`${path}/${user.id}`)
-					.auth(user.token, { type: 'bearer' })
+					.set('API_KEY', process.env.API_KEY)
 				expect(getRes.statusCode).toBe(200)
 			})
 		})
