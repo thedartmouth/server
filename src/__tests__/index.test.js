@@ -3,6 +3,7 @@ import app from '../app'
 import request from 'supertest'
 import authTest from './auth.test'
 import userTest from './user.test'
+import articleTest from './article.test'
 
 dotenv.config()
 
@@ -17,3 +18,4 @@ describe('The Express app', () => {
 
 authTest()
 userTest()
+articleTest()
