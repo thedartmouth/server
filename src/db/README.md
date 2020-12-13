@@ -8,7 +8,7 @@
 CREATE TABLE metaArticles (
 	slug text PRIMARY KEY,
 	reads integer DEFAULT 0
-)
+);
 ```
 
 ### `users`
@@ -21,7 +21,7 @@ CREATE TABLE users (
 	email text NOT NULL UNIQUE,
 	passhash text,
 	reads integer DEFAULT 0
-)
+);
 ```
 
 ### `reads`
@@ -31,7 +31,17 @@ CREATE TABLE reads (
 	articleSlug text REFERENCES metaArticles ON DELETE CASCADE,
 	userId uuid REFERENCES users ON DELETE CASCADE,
 	timestamp timestamp NOT NULL
-)
+);
+```
+
+### `bookmarks`
+
+```SQL
+CREATE TABLE bookmarks (
+	articleSlug text REFERENCES metaArticles ON DELETE CASCADE,
+	userId uuid REFERENCES users ON DELETE CASCADE,
+	timestamp timestamp NOT NULL
+);
 ```
 
 ## Extensions
