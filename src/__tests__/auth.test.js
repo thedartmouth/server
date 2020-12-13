@@ -89,4 +89,9 @@ export default () =>
 				expect(res.statusCode).toBe(200)
 			})
 		})
+
+		afterAll(async (done) => {
+			await userController.deleteUser(user.id)
+			done()
+		})
 	})
