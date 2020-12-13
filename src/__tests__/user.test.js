@@ -7,7 +7,7 @@ const path = '/users'
 export default () =>
 	describe('The user endpoint', () => {
 		const user = {
-			firstName: `Test`,
+			firstName: 'Test',
 			lastName: 'User',
 			email: `${uuid.v4()}@email.com`,
 			password: 'good_password',
