@@ -12,7 +12,7 @@ export default () =>
 		let user
 		const article = {
 			slug: uuid.v4(),
-			reads: 0
+			reads: 0,
 		}
 
 		beforeAll(async (done) => {
@@ -78,11 +78,15 @@ export default () =>
 				expect(getReadsRes.body.map((article) => article.slug)).toContain(
 					article.slug
 				)
-				expect(getReadsRes.body.map(article => new Date(article.timestamp)).every((date, idx, timestamps) => {
-					if (idx < timestamps.length - 1) {
-						return date <= new Date(timestamps[idx + 1])
-					} else return true
-				})).toBe(true)
+				expect(
+					getReadsRes.body
+						.map((article) => new Date(article.timestamp))
+						.every((date, idx, timestamps) => {
+							if (idx < timestamps.length - 1) {
+								return date <= new Date(timestamps[idx + 1])
+							} else return true
+						})
+				).toBe(true)
 			})
 		})
 
@@ -99,21 +103,25 @@ export default () =>
 					.get(`${path}/bookmarks/${user.id}`)
 					.set('API_KEY', process.env.API_KEY)
 				expect(getBookmarksRes.statusCode).toBe(200)
-				expect(getBookmarksRes.body.map((article) => article.slug)).toContain(
-					article.slug
-				)
-				expect(getBookmarksRes.body.map(article => new Date(article.timestamp)).every((date, idx, timestamps) => {
-					if (idx < timestamps.length - 1) {
-						return date <= new Date(timestamps[idx + 1])
-					} else return true
-				})).toBe(true)
+				expect(
+					getBookmarksRes.body.map((article) => article.slug)
+				).toContain(article.slug)
+				expect(
+					getBookmarksRes.body
+						.map((article) => new Date(article.timestamp))
+						.every((date, idx, timestamps) => {
+							if (idx < timestamps.length - 1) {
+								return date <= new Date(timestamps[idx + 1])
+							} else return true
+						})
+				).toBe(true)
 			})
 		})
 
 		describe('deletes reads on article deletion', () => {
 			test('successfully', async () => {
 				expect.assertions(6)
-				
+
 				await articleController.deleteMetaArticle(article.slug)
 
 				const getUserRes = await request(app)
@@ -126,13 +134,17 @@ export default () =>
 					.get(`${path}/reads/${user.id}`)
 					.set('API_KEY', process.env.API_KEY)
 				expect(getReadsRes.statusCode).toBe(200)
-				expect(getReadsRes.body.map((article) => article.slug)).toHaveLength(0)
-				
+				expect(
+					getReadsRes.body.map((article) => article.slug)
+				).toHaveLength(0)
+
 				const getBookmarksRes = await request(app)
 					.get(`${path}/bookmarks/${user.id}`)
 					.set('API_KEY', process.env.API_KEY)
 				expect(getBookmarksRes.statusCode).toBe(200)
-				expect(getBookmarksRes.body.map((article) => article.slug)).toHaveLength(0)
+				expect(
+					getBookmarksRes.body.map((article) => article.slug)
+				).toHaveLength(0)
 			})
 		})
 
