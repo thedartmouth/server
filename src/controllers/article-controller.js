@@ -5,16 +5,14 @@ import { query, getClient } from '../db'
  * @param {String} slug
  */
 async function fetchMetaArticle(slug) {
-	return await query('SELECT * FROM metaArticles WHERE slug=$1', [slug])
+	return (
+		(await query('SELECT * FROM metaArticles WHERE slug = $1', [slug]))
+			.rows[0] || null
+	)
 }
 
-/**
- * Creates a meta article references by slug.
- * @param {String} slug
- */
-async function createMetaArticle(slug) {
-	await query('INSERT INTO metaArticles (slug) VALUES ($1)', [slug])
-	return 'meta article created'
+async function deleteMetaArticle(slug) {
+	await query('DELETE FROM metaArticles WHERE slug = $1', [slug])
 }
 
 /**
@@ -46,8 +44,21 @@ async function readArticle(slug, userId) {
 		'UPDATE metaArticles SET reads = reads + 1 WHERE slug = $1',
 		[slug]
 	)
+	await dbClient.query('UPDATE users SET reads = reads + 1 WHERE id = $1', [
+		userId,
+	])
 	dbClient.release()
 	return 'article read'
+}
+
+async function getReadArticles(userId) {
+	const articles = (
+		await query(
+			'SELECT slug, timestamp FROM (SELECT articleSlug, timestamp FROM reads WHERE userId = $1) AS userReads LEFT JOIN (SELECT slug from metaArticles) AS matchingMetaArticles ON userReads.articleSlug = matchingMetaArticles.slug ORDER BY timestamp DESC',
+			[userId]
+		)
+	).rows
+	return articles
 }
 
 /**
@@ -108,8 +119,9 @@ const getBookmarkedArticles = async (userId) => {
 
 export default {
 	fetchMetaArticle,
-	createMetaArticle,
+	deleteMetaArticle,
 	readArticle,
+	getReadArticles,
 	bookmarkArticle,
 	getBookmarkedArticles,
 	// shareArticle,
