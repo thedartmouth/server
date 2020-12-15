@@ -74,8 +74,13 @@ articleRouter.route('/share').post(
 )
 
 articleRouter.route('/:slug').get(
+	requireToken({}),
 	asyncHandler(async (req, res) => {
-		res.json(await articleController.fetchMetaArticle(req.params.slug))
+		if (req.query.for) {
+			await userController.validateUserExistence(req.query.for)(res)
+			requireSelf(req.query.for, req)(res)
+		}
+		res.json(await articleController.fetchMetaArticle(req.params.slug, req.query.for))
 	})
 )
 

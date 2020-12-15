@@ -36,13 +36,16 @@ export default () =>
 					.send({ articleSlug: article.slug })
 					.set('API_KEY', process.env.API_KEY)
 				expect(readRes.statusCode).toBe(200)
+				article.reads += 1
 
 				const getRes = await request(app).get(`${path}/${article.slug}`)
-				article.reads += 1
+				.set('API_KEY', process.env.API_KEY)
 				expect(getRes.statusCode).toBe(200)
 				expect(getRes.body).toEqual({
 					slug: article.slug,
 					reads: article.reads,
+					bookmarked: null,
+					read: null
 				})
 			})
 		})
@@ -53,6 +56,7 @@ export default () =>
 					.post(`${path}/reads/${user.id}`)
 					.send({ articleSlug: article.slug })
 					.set('API_KEY', process.env.API_KEY)
+				article.reads += 1
 				done()
 			})
 			test('successfully', async () => {
@@ -61,7 +65,7 @@ export default () =>
 				const getArticleRes = await request(app).get(
 					`${path}/${article.slug}`
 				)
-				article.reads += 1
+				.set('API_KEY', process.env.API_KEY)
 				expect(getArticleRes.statusCode).toBe(200)
 				expect(getArticleRes.body.reads).toBe(article.reads)
 
@@ -115,6 +119,20 @@ export default () =>
 							} else return true
 						})
 				).toBe(true)
+			})
+		})
+
+		describe('returns reading and bookmarked data', () => {
+			test('successfully', async () => {
+				expect.assertions(3)
+
+				const getArticleRes = await request(app).get(
+					`${path}/${article.slug}?for=${user.id}`
+				)
+				.set('API_KEY', process.env.API_KEY)
+				expect(getArticleRes.statusCode).toBe(200)
+				expect(getArticleRes.body.read).toBe(true)
+				expect(getArticleRes.body.bookmarked).toBe(true)
 			})
 		})
 

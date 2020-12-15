@@ -4,11 +4,18 @@ import { query, getClient } from '../db'
  * Fetches a meta article by slug.
  * @param {String} slug
  */
-async function fetchMetaArticle(slug) {
-	return (
-		(await query('SELECT * FROM metaArticles WHERE slug = $1', [slug]))
-			.rows[0] || null
-	)
+async function fetchMetaArticle(slug, userId = null) {
+	const dbClient = await getClient()
+	const bookmarked = userId ? (await query('SELECT EXISTS(SELECT 1 FROM bookmarks WHERE articleSlug = $1 AND userId = $2)', [slug, userId])).rows[0].exists : null
+	const read = userId ? (await query('SELECT EXISTS(SELECT 1 FROM reads WHERE articleSlug = $1 AND userId = $2)', [slug, userId])).rows[0].exists : null
+	const article = {
+		...(await query('SELECT * FROM metaArticles WHERE slug = $1', [slug]))
+			.rows[0] || null,
+		bookmarked,
+		read
+	}
+	dbClient.release()
+	return article
 }
 
 async function deleteMetaArticle(slug) {
