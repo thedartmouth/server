@@ -109,7 +109,7 @@ export default () =>
 					.post(`${path}/bookmarks/${user.id}`)
 					.send({ articleSlug: article.slug })
 					.set('API_KEY', process.env.API_KEY)
-				expect(bookmarkArticleRes.statusCode).toBe(200)
+				expect(bookmarkArticleRes.statusCode).toBe(201)
 
 				const getBookmarksRes = await request(app)
 					.get(`${path}/bookmarks/${user.id}`)
@@ -154,7 +154,7 @@ export default () =>
 				.send({ articleSlug: otherArticle.slug })
 				.set('API_KEY', process.env.API_KEY)
 
-				expect(unbookmarkArticleRes.statusCode).toBe(410)
+				expect(unbookmarkArticleRes.statusCode).toBe(200)
 			})
 
 			afterAll(async (done) => {

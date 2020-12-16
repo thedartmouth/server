@@ -47,7 +47,7 @@ articleRouter.route('/bookmarks/:userId').get((0, _auth.requireToken)({}), (0, _
   await _controllers.userController.validateUserExistence(req.params.userId)(res);
   (0, _auth.requireSelf)(req.params.userId, req)(res);
   const outcome = await _controllers.articleController.bookmarkArticle(req.body.articleSlug, req.params.userId);
-  res.sendStatus(outcome === 'deleted' ? 410 : 200);
+  res.sendStatus(outcome === 'deleted' ? 200 : 200);
 }));
 articleRouter.route('/share').post((0, _expressAsyncHandler.default)(async (req, res) => {
   if (!req.body?.article) {

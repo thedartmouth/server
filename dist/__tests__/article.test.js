@@ -124,7 +124,7 @@ var _default = () => describe('The article endpoint', () => {
       const unbookmarkArticleRes = await (0, _supertest.default)(_app.default).post(`${path}/bookmarks/${user.id}`).send({
         articleSlug: otherArticle.slug
       }).set('API_KEY', process.env.API_KEY);
-      expect(unbookmarkArticleRes.statusCode).toBe(410);
+      expect(unbookmarkArticleRes.statusCode).toBe(200);
     });
     afterAll(async done => {
       await _controllers.articleController.deleteMetaArticle(otherArticle.slug);
