@@ -1,12 +1,12 @@
 import { Pool } from 'pg'
 
-const pool = new Pool({
+const pool = new Pool(process.env.DEPLOY_TAG === 'dev' ? {
 	user: process.env.PGUSER,
 	password: process.env.PGPASSWORD,
 	host: process.env.PGHOST,
 	database: process.env.PGDATABASE,
 	port: process.env.PGPORT,
-})
+} : { connectionString: process.env.DATABASE_URL})
 
 const query = async (text, params) => {
 	// const start = Date.now()
