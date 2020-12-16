@@ -39,7 +39,7 @@ const requireToken = (options) =>
 						return next(err)
 					}
 
-					if (!user) {
+					if (!user && !options.optional) {
 						return res.status(401).json({
 							message: info
 								? info.message

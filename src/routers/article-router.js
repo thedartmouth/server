@@ -6,27 +6,29 @@ import { articleController, userController } from '../controllers'
 const articleRouter = express()
 
 articleRouter
-	.route('/reads/:userId')
+	.route('/reads')
 	.get(
 		requireToken({}),
 		asyncHandler(async (req, res) => {
-			await userController.validateUserExistence(req.params.userId)(res)
-			requireSelf(req.params.userId, req)(res)
-			res.json(await articleController.getReadArticles(req.params.userId))
+			await userController.validateUserExistence(req.body.userId)(res)
+			requireSelf(req.body.userId, req)(res)
+			res.json(await articleController.getReadArticles(req.body.userId))
 		})
 	)
 	.post(
-		requireToken({}),
+		requireToken({ optional: true }),
 		asyncHandler(async (req, res) => {
-			if (!req.body?.articleSlug) {
+			if (!req.body.articleSlug) {
 				res.status(400).send('missing {articleSlug}')
 			} else {
-				await userController.validateUserExistence(req.params.userId)(res)
-				requireSelf(req.params.userId, req)(res)
+				if (req.body.userId) {
+					await userController.validateUserExistence(req.body.userId)(res)
+					requireSelf(req.body.userId, req)(res)
+				}
 				res.json(
 					await articleController.readArticle(
 						req.body.articleSlug,
-						req.params.userId
+						req.body.userId
 					)
 				)
 			}
@@ -54,12 +56,11 @@ articleRouter
 			}
 			await userController.validateUserExistence(req.params.userId)(res)
 			requireSelf(req.params.userId, req)(res)
-			res.json(
-				await articleController.bookmarkArticle(
-					req.body.articleSlug,
-					req.params.userId
-				)
+			const outcome = await articleController.bookmarkArticle(
+				req.body.articleSlug,
+				req.params.userId
 			)
+			res.sendStatus(outcome === 'deleted' ? 410 : 200)
 		})
 	)
 
@@ -74,7 +75,7 @@ articleRouter.route('/share').post(
 )
 
 articleRouter.route('/:slug').get(
-	requireToken({}),
+	requireToken({ optional: true }),
 	asyncHandler(async (req, res) => {
 		if (req.query.for) {
 			await userController.validateUserExistence(req.query.for)(res)

@@ -25,7 +25,7 @@ async function deleteMetaArticle(slug) {
 /**
  * Logs an artilce read for a user.
  * @param {String} slug
- * @param {String} userId
+ * @param {String | undefined} userId
  */
 async function readArticle(slug, userId) {
 	const dbClient = await getClient()
@@ -43,17 +43,24 @@ async function readArticle(slug, userId) {
 		)
 	}
 
-	await dbClient.query(
-		'INSERT INTO reads (articleSlug, userId, timestamp) VALUES ($1, $2, $3)',
-		[slug, userId, new Date().toUTCString()]
-	)
+	if (userId) {
+		await dbClient.query(
+			'INSERT INTO reads (articleSlug, userId, timestamp) VALUES ($1, $2, $3)',
+			[slug, userId, new Date().toUTCString()]
+		)
+		await dbClient.query('UPDATE users SET reads = reads + 1 WHERE id = $1', [
+			userId,
+		])
+	} else {
+		await dbClient.query(
+			'INSERT INTO reads (articleSlug, timestamp) VALUES ($1, $2)',
+			[slug, new Date().toUTCString()]
+		)
+	}
 	await dbClient.query(
 		'UPDATE metaArticles SET reads = reads + 1 WHERE slug = $1',
 		[slug]
 	)
-	await dbClient.query('UPDATE users SET reads = reads + 1 WHERE id = $1', [
-		userId,
-	])
 	dbClient.release()
 	return 'article read'
 }
@@ -93,7 +100,7 @@ async function bookmarkArticle(slug, userId) {
 		)
 	}
 	dbClient.release()
-	return bookmarkExists ? 'bookmark deleted' : 'bookmark added'
+	return bookmarkExists ? 'deleted' : 'added'
 }
 
 /**

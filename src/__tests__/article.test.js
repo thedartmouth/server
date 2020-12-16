@@ -32,8 +32,8 @@ export default () =>
 				expect.assertions(3)
 
 				const readRes = await request(app)
-					.post(`${path}/reads/${user.id}`)
-					.send({ articleSlug: article.slug })
+					.post(`${path}/reads`)
+					.send({ articleSlug: article.slug, userId: user.id })
 					.set('API_KEY', process.env.API_KEY)
 				expect(readRes.statusCode).toBe(200)
 				article.reads += 1
@@ -53,7 +53,13 @@ export default () =>
 		describe('increments read count', () => {
 			beforeAll(async (done) => {
 				await request(app)
-					.post(`${path}/reads/${user.id}`)
+					.post(`${path}/reads`)
+					.send({ articleSlug: article.slug, userId: user.id })
+					.set('API_KEY', process.env.API_KEY)
+				article.reads += 1
+
+				await request(app)
+					.post(`${path}/reads`)
 					.send({ articleSlug: article.slug })
 					.set('API_KEY', process.env.API_KEY)
 				article.reads += 1
@@ -73,10 +79,11 @@ export default () =>
 					.get(`/users/${user.id}`)
 					.set('API_KEY', process.env.API_KEY)
 				expect(getUserRes.statusCode).toBe(200)
-				expect(getUserRes.body.reads).toBe(article.reads)
+				expect(getUserRes.body.reads).toBe(article.reads - 1)
 
 				const getReadsRes = await request(app)
-					.get(`${path}/reads/${user.id}`)
+					.get(`${path}/reads`)
+					.send({ userId: user.id })
 					.set('API_KEY', process.env.API_KEY)
 				expect(getReadsRes.statusCode).toBe(200)
 				expect(getReadsRes.body.map((article) => article.slug)).toContain(
@@ -96,12 +103,13 @@ export default () =>
 
 		describe('bookmarks an article', () => {
 			test('successfully', async () => {
-				expect.assertions(3)
+				expect.assertions(4)
 
-				await request(app)
+				const bookmarkArticleRes = await request(app)
 					.post(`${path}/bookmarks/${user.id}`)
 					.send({ articleSlug: article.slug })
 					.set('API_KEY', process.env.API_KEY)
+				expect(bookmarkArticleRes.statusCode).toBe(200)
 
 				const getBookmarksRes = await request(app)
 					.get(`${path}/bookmarks/${user.id}`)
@@ -119,6 +127,39 @@ export default () =>
 							} else return true
 						})
 				).toBe(true)
+			})
+		})
+
+		describe('unbookmarks an article', () => {
+			let otherArticle = {
+				slug: uuid.v4(),
+				reads: 0,
+			}
+			beforeAll(async (done) => {
+				await articleController.readArticle(otherArticle.slug)
+
+				await request(app)
+				.post(`${path}/bookmarks/${user.id}`)
+				.send({ articleSlug: otherArticle.slug })
+				.set('API_KEY', process.env.API_KEY)
+
+				done()
+			})
+
+			test('successfully', async () => {
+				expect.assertions(1)
+
+				const unbookmarkArticleRes = await request(app)
+				.post(`${path}/bookmarks/${user.id}`)
+				.send({ articleSlug: otherArticle.slug })
+				.set('API_KEY', process.env.API_KEY)
+
+				expect(unbookmarkArticleRes.statusCode).toBe(410)
+			})
+
+			afterAll(async (done) => {
+				await articleController.deleteMetaArticle(otherArticle.slug)
+				done()
 			})
 		})
 
@@ -146,10 +187,11 @@ export default () =>
 					.get(`/users/${user.id}`)
 					.set('API_KEY', process.env.API_KEY)
 				expect(getUserRes.statusCode).toBe(200)
-				expect(getUserRes.body.reads).toBe(article.reads)
+				expect(getUserRes.body.reads).toBe(article.reads - 1)
 
 				const getReadsRes = await request(app)
-					.get(`${path}/reads/${user.id}`)
+					.get(`${path}/reads`)
+					.send({ userId: user.id })
 					.set('API_KEY', process.env.API_KEY)
 				expect(getReadsRes.statusCode).toBe(200)
 				expect(

@@ -7,8 +7,10 @@ const path = '/users'
 export default () =>
 	describe('The user endpoint', () => {
 		const user = {
-			firstName: 'Test',
-			lastName: 'User',
+			name: {
+				first: 'Test',
+				last: 'User'
+			},
 			email: `${uuid.v4()}@email.com`,
 			password: 'good_password',
 		}
@@ -30,10 +32,7 @@ export default () =>
 					.set('API_KEY', process.env.API_KEY)
 				expect(getRes.statusCode).toBe(200)
 				expect(getRes.body).toEqual({
-					name: {
-						first: user.firstName,
-						last: user.lastName,
-					},
+					name: user.name,
 					email: user.email,
 					reads: 0,
 				})
@@ -104,15 +103,17 @@ export default () =>
 
 				const updatedUser = {
 					id: 'cannot_set',
-					firstName: 'Test_updated',
-					lastName: 'User_updated',
+					name: {
+						first: 'Test_updated',
+						last: 'User_updated'
+					},
 					email: `${uuid.v4()}@email.com`,
 					password: 'good_password_updated',
 				}
 
 				const updateRes = await request(app)
 					.put(`${path}/${user.id}`)
-					.send(updatedUser)
+					.send({id: updatedUser.id, firstName: updatedUser.name.first, lastName: updatedUser.name.last, email: updatedUser.email, password: updatedUser.password})
 					.set('Accept', 'application/json')
 					.set('API_KEY', process.env.API_KEY)
 				expect(updateRes.statusCode).toBe(200)
@@ -132,10 +133,7 @@ export default () =>
 					.set('API_KEY', process.env.API_KEY)
 				expect(getRes.statusCode).toBe(200)
 				expect(getRes.body).toEqual({
-					name: {
-						first: updatedUser.firstName,
-						last: updatedUser.lastName,
-					},
+					name: updatedUser.name,
 					email: updatedUser.email,
 					reads: 0,
 				})

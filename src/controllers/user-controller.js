@@ -3,7 +3,7 @@ import { generateToken } from '../modules/auth'
 import { UserValidationError } from '../modules/error'
 import format from 'pg-format'
 
-class UserSchema {
+export class UserSchema {
 	id
 	firstName
 	lastName
@@ -36,20 +36,30 @@ const validateUserExistence = (userId) => async (res) => {
  * @param {UserSchema} user
  */
 const createUser = async (user) => {
+	const formattedUser = {
+		firstName: user.name?.first,
+		lastName: user.name?.last,
+		email: user.email,
+		password: user.password
+	}
 	const values = Object.keys(new UserSchema())
 		.map((key) => {
-			const value = key in user ? format.literal(user[key]) : 'DEFAULT'
+			const value = key in formattedUser ? format.literal(formattedUser[key]) : 'DEFAULT'
 			if (format.ident(key.toLowerCase()) === 'password') {
 				return `crypt(${value}, gen_salt('bf', 8))`
 			}
 			return value
 		})
 		.join(',')
-	return (
+	const userId = (
 		await query(
 			`INSERT INTO users (id, firstName, lastName, email, passhash, reads) VALUES (${values}) RETURNING id`
 		)
 	).rows[0]?.id
+	return {
+		userId,
+		token: generateToken(userId)
+	}
 }
 
 const generateTokenForUser = async (email, password) => {
@@ -88,6 +98,7 @@ const getBasicUserData = async (userId) => {
 		email: user.email,
 		reads: parseInt(user.reads),
 	}
+	dbClient.release()
 	return res
 }
 
