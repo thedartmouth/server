@@ -60,7 +60,7 @@ articleRouter
 				req.body.articleSlug,
 				req.params.userId
 			)
-			res.sendStatus(outcome === 'deleted' ? 200 : 200)
+			res.sendStatus(outcome === 'deleted' ? 200 : 201)
 		})
 	)
 
