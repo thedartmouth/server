@@ -16,6 +16,6 @@ describe('The Express app', () => {
 	})
 })
 
-authTest()
-userTest()
+// authTest()
+// userTest()
 articleTest()

@@ -21,8 +21,9 @@ export default () =>
 				password: 'good_password',
 			}
 
-			user.id = await userController.createUser(user)
-			user.token = generateToken(user.id)
+			const res = await userController.createUser(user)
+			user.id = res.userId
+			user.token = res.token
 
 			done()
 		})
