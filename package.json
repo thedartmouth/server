@@ -18,13 +18,10 @@
 		"format": "prettier --write .",
 		"lint": "eslint src/**.js",
 		"test": "jest index.test.js",
-		"dev": "ENV=DEVELOPMENT; nodemon src/server.js --exec babel-node",
+		"dev": "nodemon src/server.js --exec babel-node",
 		"start": "node dist/server.js",
 		"build": "babel src -d dist",
-		"prod": "yarn build; node dist/server.js",
-		"seedDB": "babel-node src/db-services/seed-db.js",
-		"migrateDB": "babel-node src/db-services/migrate-db.js",
-		"testPopulate": "babel-node src/controllers/populate.js"
+		"prod": "yarn build; node dist/server.js"
 	},
 	"dependencies": {
 		"axios": "^0.19.2",
