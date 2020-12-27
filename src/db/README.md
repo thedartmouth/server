@@ -48,4 +48,12 @@ CREATE TABLE bookmarks (
 
 ### `pgcrypto`
 
-### `uuid-oosp`
+```SQL
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+```
+
+### `uuid-ossp`
+
+```SQL
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+```
