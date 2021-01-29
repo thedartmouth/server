@@ -39,7 +39,7 @@ const createUser = async (user) => {
 	const formattedUser = {
 		firstName: user.name?.first,
 		lastName: user.name?.last,
-		email: user.email,
+		email: user.email.toLowerCase(),
 		password: user.password
 	}
 	const values = Object.keys(new UserSchema())
@@ -68,7 +68,7 @@ const generateTokenForUser = async (email, password) => {
 		(
 			await query(
 				'SELECT id FROM users WHERE email = $1 AND passhash = crypt($2, passhash)',
-				[email, password]
+				[email.toLowerCase(), password]
 			)
 		).rows[0]?.id || null
 	if (userId) {
