@@ -18,7 +18,8 @@
 		"format": "prettier --write .",
 		"lint": "eslint src/**.js",
 		"test": "jest index.test.js",
-		"dev": "nodemon src/server.js --exec babel-node",
+		"dev": "export DEPLOY_TAG=development; nodemon src/server.js --exec babel-node",
+		"staging": "export DEPLOY_TAG=staging; nodemon src/server.js --exec babel-node",
 		"start": "node dist/server.js",
 		"build": "babel src -d dist",
 		"prod": "yarn build; node dist/server.js"

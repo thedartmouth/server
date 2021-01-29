@@ -1,4 +1,8 @@
 import packageInfo from '../package.json'
+import path from 'path'
+import dotenv from 'dotenv'
+
+export const dotenvConfig = dotenv.config({ path: path.resolve(process.cwd(), `${process.env.DEPLOY_TAG === 'production' ? 'prod' : process.env.DEPLOY_TAG === 'staging' ? 'staging' : 'dev'}.env`) });
 
 export const MONGODB_URI =
 	process.env.MONGODB_URI || packageInfo.localDatabaseURI
