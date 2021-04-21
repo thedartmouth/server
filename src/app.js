@@ -10,9 +10,6 @@ import {
 	articleRouter,
 	userRouter,
 	feedRouter,
-	pollRouter,
-	authorRouter,
-	tagRouter,
 } from './routers'
 
 dotenv.config()
@@ -33,10 +30,7 @@ app.use(bodyParser.json())
 // declare routers
 app.use('/users', userRouter)
 app.use('/articles', articleRouter)
-app.use('/polls', pollRouter)
 app.use('/feed', feedRouter)
-app.use('/author', authorRouter)
-app.use('/tags', tagRouter)
 
 // default index route
 app.get('/', (req, res) => {
