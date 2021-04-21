@@ -10,6 +10,7 @@ const pool = new Pool(process.env.DEPLOY_TAG === 'dev' ? {
 	host: process.env.PGHOST,
 	database: process.env.PGDATABASE,
 	port: process.env.PGPORT,
+	ssl: true
 } : { connectionString: process.env.DATABASE_URL})
 
 const query = async (text, params) => {
