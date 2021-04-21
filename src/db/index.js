@@ -2,16 +2,31 @@ import { Pool } from 'pg'
 import path from 'path'
 import dotenv from 'dotenv'
 
-export const dotenvConfig = dotenv.config({ path: path.resolve(process.cwd(), `${process.env.DEPLOY_TAG === 'production' ? 'prod' : process.env.DEPLOY_TAG === 'staging' ? 'staging' : 'dev'}.env`) });
+export const dotenvConfig = dotenv.config({
+	path: path.resolve(
+		process.cwd(),
+		`${
+			process.env.DEPLOY_TAG === 'production'
+				? 'prod'
+				: process.env.DEPLOY_TAG === 'staging'
+				? 'staging'
+				: 'dev'
+		}.env`
+	),
+})
 
-const pool = new Pool(process.env.DEPLOY_TAG === 'dev' ? {
-	user: process.env.PGUSER,
-	password: process.env.PGPASSWORD,
-	host: process.env.PGHOST,
-	database: process.env.PGDATABASE,
-	port: process.env.PGPORT,
-	ssl: true
-} : { connectionString: process.env.DATABASE_URL})
+const pool = new Pool(
+	process.env.DEPLOY_TAG === 'dev'
+		? {
+				user: process.env.PGUSER,
+				password: process.env.PGPASSWORD,
+				host: process.env.PGHOST,
+				database: process.env.PGDATABASE,
+				port: process.env.PGPORT,
+				ssl: true,
+		  }
+		: { connectionString: process.env.DATABASE_URL }
+)
 
 const query = async (text, params) => {
 	// const start = Date.now()

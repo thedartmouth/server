@@ -6,11 +6,7 @@ import morgan from 'morgan'
 
 import { errorHandlerMiddleware } from './modules/error'
 import { requireToken, requireSelf } from './modules/auth'
-import {
-	articleRouter,
-	userRouter,
-	feedRouter,
-} from './routers'
+import { articleRouter, userRouter, feedRouter } from './routers'
 
 dotenv.config()
 

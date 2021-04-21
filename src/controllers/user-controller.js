@@ -40,11 +40,14 @@ const createUser = async (user) => {
 		firstName: user.name?.first,
 		lastName: user.name?.last,
 		email: user.email.toLowerCase(),
-		password: user.password
+		password: user.password,
 	}
 	const values = Object.keys(new UserSchema())
 		.map((key) => {
-			const value = key in formattedUser ? format.literal(formattedUser[key]) : 'DEFAULT'
+			const value =
+				key in formattedUser
+					? format.literal(formattedUser[key])
+					: 'DEFAULT'
 			if (format.ident(key.toLowerCase()) === 'password') {
 				return `crypt(${value}, gen_salt('bf', 8))`
 			}
@@ -58,7 +61,7 @@ const createUser = async (user) => {
 	).rows[0]?.id
 	return {
 		userId,
-		token: generateToken(userId)
+		token: generateToken(userId),
 	}
 }
 

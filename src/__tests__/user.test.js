@@ -9,7 +9,7 @@ export default () =>
 		const user = {
 			name: {
 				first: 'Test',
-				last: 'User'
+				last: 'User',
 			},
 			email: `${uuid.v4()}@email.com`,
 			password: 'good_password',
@@ -105,7 +105,7 @@ export default () =>
 					id: 'cannot_set',
 					name: {
 						first: 'Test_updated',
-						last: 'User_updated'
+						last: 'User_updated',
 					},
 					email: `${uuid.v4()}@email.com`,
 					password: 'good_password_updated',
@@ -113,7 +113,13 @@ export default () =>
 
 				const updateRes = await request(app)
 					.put(`${path}/${user.id}`)
-					.send({id: updatedUser.id, firstName: updatedUser.name.first, lastName: updatedUser.name.last, email: updatedUser.email, password: updatedUser.password})
+					.send({
+						id: updatedUser.id,
+						firstName: updatedUser.name.first,
+						lastName: updatedUser.name.last,
+						email: updatedUser.email,
+						password: updatedUser.password,
+					})
 					.set('Accept', 'application/json')
 					.set('API_KEY', process.env.API_KEY)
 				expect(updateRes.statusCode).toBe(200)

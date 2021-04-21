@@ -81,7 +81,12 @@ articleRouter.route('/:slug').get(
 			await userController.validateUserExistence(req.query.for)(res)
 			requireSelf(req.query.for, req)(res)
 		}
-		res.json(await articleController.fetchMetaArticle(req.params.slug, req.query.for))
+		res.json(
+			await articleController.fetchMetaArticle(
+				req.params.slug,
+				req.query.for
+			)
+		)
 	})
 )
 
