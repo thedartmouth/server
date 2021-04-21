@@ -1,6 +1,6 @@
 import axios from 'axios'
-import fetchURL from './fetchURL'
-import cleanArticles from './cleanArticles'
+import fetchURL from '../modules/fetch'
+import cleanArticles from '../modules/clean-articles'
 
 // this is tested
 // uses selection sort to merge an array of arrays together
