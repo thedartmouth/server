@@ -6,7 +6,7 @@ export const dotenvConfig = dotenv.config({
 	path: path.resolve(
 		process.cwd(),
 		`${
-			process.env.DEPLOY_TAG === 'production'
+			process.env.DEPLOY_TAG === 'prod'
 				? 'prod'
 				: process.env.DEPLOY_TAG === 'staging'
 				? 'staging'
@@ -16,7 +16,7 @@ export const dotenvConfig = dotenv.config({
 })
 
 const pool = new Pool({
-	...(process.env.DEPLOY_TAG === 'dev'
+	...(process.env.DEPLOY_TAG !== 'prod'
 		? {
 				user: process.env.PGUSER,
 				password: process.env.PGPASSWORD,
