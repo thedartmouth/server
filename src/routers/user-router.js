@@ -8,12 +8,11 @@ const userRouter = express()
 userRouter.route('/').post(
 	asyncHandler(async (req, res) => {
 		if (
-			(req.body.name?.hasOwnProperty('first') && req.body.name?.hasOwnProperty('last'))
-			&&
-			req.body.hasOwnProperty('email')
-			&&
+			req.body.name?.hasOwnProperty('first') &&
+			req.body.name?.hasOwnProperty('last') &&
+			req.body.hasOwnProperty('email') &&
 			req.body.hasOwnProperty('password')
-			) {
+		) {
 			res.json(await userController.createUser(req.body))
 		} else {
 			res.status(400).send('missing user data')

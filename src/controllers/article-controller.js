@@ -6,13 +6,27 @@ import { query, getClient } from '../db'
  */
 async function fetchMetaArticle(slug, userId = null) {
 	const dbClient = await getClient()
-	const bookmarked = userId ? (await query('SELECT EXISTS(SELECT 1 FROM bookmarks WHERE articleSlug = $1 AND userId = $2)', [slug, userId])).rows[0].exists : null
-	const read = userId ? (await query('SELECT EXISTS(SELECT 1 FROM reads WHERE articleSlug = $1 AND userId = $2)', [slug, userId])).rows[0].exists : null
+	const bookmarked = userId
+		? (
+				await query(
+					'SELECT EXISTS(SELECT 1 FROM bookmarks WHERE articleSlug = $1 AND userId = $2)',
+					[slug, userId]
+				)
+		  ).rows[0].exists
+		: null
+	const read = userId
+		? (
+				await query(
+					'SELECT EXISTS(SELECT 1 FROM reads WHERE articleSlug = $1 AND userId = $2)',
+					[slug, userId]
+				)
+		  ).rows[0].exists
+		: null
 	const article = {
-		...(await query('SELECT * FROM metaArticles WHERE slug = $1', [slug]))
-			.rows[0] || null,
+		...((await query('SELECT * FROM metaArticles WHERE slug = $1', [slug]))
+			.rows[0] || null),
 		bookmarked,
-		read
+		read,
 	}
 	dbClient.release()
 	return article
