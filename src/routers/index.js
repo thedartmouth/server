@@ -3,9 +3,4 @@ import userRouter from './user-router'
 import feedRouter from './feed-router'
 import articleRouter from './article-router'
 
-export {
-	articleRouter,
-	notificationRouter,
-	userRouter,
-	feedRouter
-}
+export { articleRouter, userRouter, feedRouter, notificationRouter }

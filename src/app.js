@@ -6,7 +6,12 @@ import morgan from 'morgan'
 
 import { errorHandlerMiddleware } from './modules/error'
 import { requireToken, requireSelf } from './modules/auth'
-import { articleRouter, userRouter, feedRouter } from './routers'
+import {
+	articleRouter,
+	userRouter,
+	feedRouter,
+	notificationRouter,
+} from './routers'
 
 dotenv.config()
 
@@ -27,6 +32,7 @@ app.use(bodyParser.json())
 app.use('/users', userRouter)
 app.use('/articles', articleRouter)
 app.use('/feed', feedRouter)
+app.use('/notifications', notificationRouter)
 
 // default index route
 app.get('/', (req, res) => {
