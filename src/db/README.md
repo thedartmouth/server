@@ -24,6 +24,62 @@ CREATE TABLE users (
 );
 ```
 
+### `notificationTokens`
+
+```SQL
+CREATE TABLE notificationTokens (
+	token text PRIMARY KEY,
+	userId uuid REFERENCES users ON DELETE CASCADE
+);
+```
+
+### `notifications`
+
+```SQL
+CREATE TABLE notifications (
+	id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
+	type text NOT NULL,
+	title text,
+	body text,
+	targetTime timestamp,
+	createdTime timestamp NOT NULL,
+	triggered boolean DEFAULT 'false' NOT NULL,
+	tagSlug text NOT NULL REFERENCES tags ON DELETE CASCADE,
+	articleSlug text
+);
+```
+
+### `notificationFires`
+
+```SQL
+CREATE TABLE notificationFires (
+	notificationId uuid REFERENCES notifications ON DELETE CASCADE,
+	notificationToken text NOT NULL REFERENCES notificationTokens ON DELETE CASCADE,
+	success boolean NOT NULL
+);
+```
+
+### `notificationSettings`
+
+```SQL
+CREATE TABLE notificationSettings (
+	notificationToken text NOT NULL REFERENCES notificationTokens ON DELETE CASCADE,
+	tagSlug text NOT NULL REFERENCES tags ON DELETE CASCADE,
+	active boolean DEFAULT 'true' NOT NULL
+);
+```
+
+### `tags`
+
+```SQL
+CREATE TABLE tags (
+	slug text PRIMARY KEY,
+	type text NOT NULL DEFAULT 'UNKNOWN',
+	name text,
+	reads integer DEFAULT 0
+);
+```
+
 ### `reads`
 
 ```SQL

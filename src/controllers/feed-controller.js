@@ -1,5 +1,5 @@
 import axios from 'axios'
-import fetchURL from '../modules/fetch'
+import { CEO_URLS } from '../modules/ceo'
 import cleanArticles from '../modules/clean-articles'
 
 // this is tested
@@ -60,7 +60,7 @@ async function fetchParallel(array, AuthorsOrTags) {
 			array.map(async ({ name }) => {
 				// encode http spaces
 				name.replace(' ', '+')
-				const resp = await axios.get(fetchURL[AuthorsOrTags] + name)
+				const resp = {} // await axios.get(fetchURL[AuthorsOrTags] + name)
 				return resp.data
 			})
 		)

@@ -16,7 +16,7 @@ export const dotenvConfig = dotenv.config({
 })
 
 const pool = new Pool({
-	...(process.env.DEPLOY_TAG !== 'prod'
+	...(process.env.DEPLOY_TAG === 'development'
 		? {
 				user: process.env.PGUSER,
 				password: process.env.PGPASSWORD,
@@ -25,9 +25,12 @@ const pool = new Pool({
 				port: process.env.PGPORT,
 		  }
 		: { connectionString: process.env.DATABASE_URL }),
-	ssl: {
-		rejectUnauthorized: false,
-	},
+	ssl:
+		process.env.DEPLOY_TAG === 'development'
+			? false
+			: {
+					rejectUnauthorized: false,
+			  },
 })
 
 const query = async (text, params) => {
