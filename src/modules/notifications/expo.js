@@ -7,11 +7,11 @@ let expo = new Expo({ accessToken: process.env.EXPO_ACCESS_TOKEN })
 
 /**
  *
- * @param {Notification} notification Requested notification to fire.
- * @return {'SUCCESS' | string} Return 'SUCCESS' or the reason for failure.
+ * @param {string} notificationId Requested notification ID to fire.
  */
-export async function fire(notification) {
+export async function fire(notificationId) {
 	const dbClient = await getClient()
+	let notification = await Notification.fetchById(notificationId)
 	let audience
 	let messages
 	switch (notification.type) {
@@ -64,7 +64,10 @@ export async function fire(notification) {
 				const badToken = ticket.message.split('"')[1]
 				if (badToken) {
 					console.log(`Bad token: ${badToken}`)
-					// notificationController.deleteToken(badToken)
+					dbClient.query(
+						'INSERT INTO notificationFires (notificationId, notificationToken, success) VALUES ($1, $2, $3)',
+						[notificationId, badToken, false]
+					)
 				}
 		}
 	}
@@ -97,6 +100,10 @@ export async function fire(notification) {
 			})
 		})
 	)
-	// dbClient.query('INSERT INTO notificationFires (notificationId, notificationToken, success) VALUES ($1, $2, $3)', [notification.id, TODO])
+
+	dbClient.query('UPDATE notifications SET triggered = $1 WHERE id = $2', [
+		true,
+		notificationId,
+	])
 	dbClient.release()
 }
