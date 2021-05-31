@@ -21,4 +21,24 @@ async function getName(slug) {
 	}
 }
 
-export default { getTag, getName }
+async function rankTags(tagSlugs) {
+	if (!tagSlugs) return []
+
+	const dbClient = await getClient()
+
+	const tags = await Promise.all(
+		tagSlugs.map(async (slug) => {
+			return (
+				await dbClient.query(
+					'SELECT (slug, rank) FROM tags WHERE slug = $1 AND rank > -1 LIMIT 1',
+					[slug]
+				)
+			).rows[0]
+		})
+	)
+	tags.sort((a, b) => a.rank - b.rank)
+
+	return tags
+}
+
+export default { getTag, getName, rankTags }
