@@ -22,9 +22,11 @@ const validateUserExistence = (userId) => async (res) => {
 		res.status(400).send('missing userId')
 		throw new UserValidationError()
 	}
-	const user =
-		(await query('SELECT 1 FROM users WHERE id = $1', [userId])).rows[0] ||
-		null
+	const user = (
+		await query('SELECT EXISTS(SELECT FROM users WHERE id = $1 LIMIT 1)', [
+			userId,
+		])
+	).rows[0].exists
 	if (!user) {
 		res.status(404).send(`specified userId ${userId} does not exist`)
 		throw new UserValidationError()
