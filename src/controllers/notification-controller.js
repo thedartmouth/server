@@ -162,7 +162,7 @@ async function postArticleNotification(articleSlug) {
 
 	await Promise.all(
 		notifications
-			.slice(0, 3)
+			// .slice(0, 3)
 			.map((notification) => fireNotification(notification.notificationId))
 	)
 

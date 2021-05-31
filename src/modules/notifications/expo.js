@@ -52,7 +52,10 @@ export async function fire(notificationId) {
 				}))
 			break
 	}
-	if (!messages?.length) return
+	if (!messages?.length) {
+		dbClient.release()
+		return
+	}
 
 	/**
 	 * @see https://docs.expo.io/push-notifications/sending-notifications/#individual-errors
