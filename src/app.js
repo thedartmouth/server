@@ -11,6 +11,7 @@ import {
 	userRouter,
 	feedRouter,
 	notificationRouter,
+	ceoRouter,
 } from './routers'
 
 dotenv.config()
@@ -33,6 +34,7 @@ app.use('/users', userRouter)
 app.use('/articles', articleRouter)
 app.use('/feed', feedRouter)
 app.use('/notifications', notificationRouter)
+app.use('/ceo', ceoRouter)
 
 // default index route
 app.get('/', (req, res) => {
