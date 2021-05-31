@@ -88,9 +88,8 @@ const generateTokenForUser = async (email, password) => {
  * @param {String} userId
  */
 const getBasicUserData = async (userId) => {
-	const dbClient = await getClient()
 	const user = (
-		await dbClient.query(
+		await query(
 			'SELECT firstName, lastName, email, reads FROM users WHERE id = $1',
 			[userId]
 		)
@@ -103,7 +102,6 @@ const getBasicUserData = async (userId) => {
 		email: user.email,
 		reads: parseInt(user.reads),
 	}
-	dbClient.release()
 	return res
 }
 
