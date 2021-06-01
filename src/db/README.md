@@ -21,7 +21,8 @@ CREATE TABLE users (
 	lastname text,
 	email text NOT NULL UNIQUE,
 	passhash text,
-	reads integer DEFAULT 0
+	reads integer DEFAULT 0,
+	requested
 );
 ```
 
