@@ -6,18 +6,6 @@ import { Notification } from '../modules/notifications'
 
 const notificationRouter = express()
 
-notificationRouter.route('/:notificationId').get(
-	asyncHandler(async (req, res) => {
-		try {
-			res.status(200).json(
-				await Notification.fetchById(req.params.notificationId)
-			)
-		} catch (e) {
-			res.status(500).send(e.message)
-		}
-	})
-)
-
 notificationRouter.route('/tokens').post(
 	asyncHandler(async (req, res) => {
 		const status = await notificationController.checkToken(
@@ -66,6 +54,18 @@ notificationRouter.route('/article').post(
 				req.body.articleSlug
 			)
 			res.status(201).json(result)
+		} catch (e) {
+			res.status(500).send(e.message)
+		}
+	})
+)
+
+notificationRouter.route('/:notificationId').get(
+	asyncHandler(async (req, res) => {
+		try {
+			res.status(200).json(
+				await Notification.fetchById(req.params.notificationId)
+			)
 		} catch (e) {
 			res.status(500).send(e.message)
 		}
