@@ -87,6 +87,7 @@ async function updateSettings(token, settings) {
 				return tagSlug
 			})
 		)
+		dbClient.release()
 		return {
 			success: res.filter((r) => r.status === 'fulfilled'),
 			failed: res.filter((r) => r.status === 'rejected'),
