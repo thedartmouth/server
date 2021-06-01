@@ -24,6 +24,13 @@ async function checkToken(token, userId) {
 				[token]
 			)
 		}
+	} else {
+		if (userId) {
+			await dbClient.query(
+				'UPDATE notificationTokens SET userId = $1 WHERE token = $2',
+				[userId, token]
+			)
+		}
 	}
 	dbClient.release()
 	return existingToken ? 200 : 201
