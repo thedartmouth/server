@@ -123,7 +123,6 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 ```SQL
 INSERT INTO tags (slug, type, name, rank) VALUES ('top-story', 'ARTICLE', 'Top Story', 0);
-INSERT INTO tags (slug, type, name, rank) VALUES ('top-section', 'ARTICLE', 'Top Section', 0);
 INSERT INTO tags (slug, type, name, rank) VALUES ('top-picture', 'ARTICLE', 'Top Picture', 0);
 INSERT INTO tags (slug, type, name, rank) VALUES ('cartoon-of-the-day', 'ARTICLE', 'Cartoon of the Day', 0);
 

@@ -3,6 +3,22 @@ import tagController from './tag-controller'
 import { Notification, fireNotification } from '../modules/notifications'
 import { fetchArticle } from '../modules/ceo'
 
+const DEFAULT_NOTIFICATION_TAGS = new Set([
+	'top-story',
+	'top-picture',
+	'cartoon-of-the-day',
+	'featured',
+	'student-spotlights',
+	'verbum-ultimum',
+	'news',
+	'covid-19',
+	'opinion',
+	'sports',
+	'arts',
+	'mirror',
+	'cartoon',
+])
+
 async function checkToken(token, userId) {
 	if (!token) throw new Error('Missing token.')
 	const dbClient = await getClient()
@@ -24,6 +40,9 @@ async function checkToken(token, userId) {
 				[token]
 			)
 		}
+		Array.from(DEFAULT_NOTIFICATION_TAGS).forEach(slug => {
+			query('INSERT INTO notificationSettings (notificationToken, active, tagSlug) VALUES ($1, $2, $3)', [token, false, slug])
+		})
 	} else {
 		if (userId) {
 			await dbClient.query(
