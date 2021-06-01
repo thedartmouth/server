@@ -3,8 +3,8 @@ import { fire as fireFirebaseNotification } from './firebase'
 import { fire as fireExpoNotification } from './expo'
 export * from './notification'
 
-export async function fireNotification(notification) {
-	return fireExpoNotification(notification)
+export async function fireNotification(notificationId) {
+	return fireExpoNotification(notificationId)
 	// return {
 	// 	// apple: await fireAppleNotification(notification),
 	// 	// firebase: await fireFirebaseNotification(notification),

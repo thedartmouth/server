@@ -22,9 +22,11 @@ const validateUserExistence = (userId) => async (res) => {
 		res.status(400).send('missing userId')
 		throw new UserValidationError()
 	}
-	const user =
-		(await query('SELECT 1 FROM users WHERE id = $1', [userId])).rows[0] ||
-		null
+	const user = (
+		await query('SELECT EXISTS(SELECT FROM users WHERE id = $1 LIMIT 1)', [
+			userId,
+		])
+	).rows[0].exists
 	if (!user) {
 		res.status(404).send(`specified userId ${userId} does not exist`)
 		throw new UserValidationError()
@@ -86,9 +88,8 @@ const generateTokenForUser = async (email, password) => {
  * @param {String} userId
  */
 const getBasicUserData = async (userId) => {
-	const dbClient = await getClient()
 	const user = (
-		await dbClient.query(
+		await query(
 			'SELECT firstName, lastName, email, reads FROM users WHERE id = $1',
 			[userId]
 		)
@@ -101,7 +102,6 @@ const getBasicUserData = async (userId) => {
 		email: user.email,
 		reads: parseInt(user.reads),
 	}
-	dbClient.release()
 	return res
 }
 

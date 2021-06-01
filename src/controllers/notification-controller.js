@@ -3,6 +3,22 @@ import tagController from './tag-controller'
 import { Notification, fireNotification } from '../modules/notifications'
 import { fetchArticle } from '../modules/ceo'
 
+const DEFAULT_NOTIFICATION_TAGS = new Set([
+	'top-story',
+	'top-picture',
+	'cartoon-of-the-day',
+	'featured',
+	'student-spotlights',
+	'verbum-ultimum',
+	'news',
+	'covid-19',
+	'opinion',
+	'sports',
+	'arts',
+	'mirror',
+	'cartoon',
+])
+
 async function checkToken(token, userId) {
 	if (!token) throw new Error('Missing token.')
 	const dbClient = await getClient()
@@ -22,6 +38,19 @@ async function checkToken(token, userId) {
 			await dbClient.query(
 				'INSERT INTO notificationTokens (token) VALUES ($1)',
 				[token]
+			)
+		}
+		Array.from(DEFAULT_NOTIFICATION_TAGS).forEach((slug) => {
+			query(
+				'INSERT INTO notificationSettings (notificationToken, active, tagSlug) VALUES ($1, $2, $3)',
+				[token, false, slug]
+			)
+		})
+	} else {
+		if (userId) {
+			await dbClient.query(
+				'UPDATE notificationTokens SET userId = $1 WHERE token = $2',
+				[userId, token]
 			)
 		}
 	}
@@ -54,14 +83,15 @@ async function updateSettings(token, settings) {
 				if (typeof active !== 'boolean')
 					throw new Error('Active label on tag must be a boolean.')
 				const tag = (
-					await dbClient.query('SELECT 1 FROM tags WHERE slug = $1', [
-						tagSlug,
-					])
-				).rows
-				if (!tag.length) throw new Error(`Invalid tag slug ${tagSlug}.`)
+					await dbClient.query(
+						'SELECT EXISTS(SELECT FROM tags WHERE slug = $1 LIMIT 1)',
+						[tagSlug]
+					)
+				).rows[0].exists
+				if (!tag) throw new Error(`Invalid tag slug ${tagSlug}.`)
 				const existingSetting = (
 					await dbClient.query(
-						'SELECT 1 FROM notificationSettings WHERE notificationToken = $1 AND tagSlug = $2',
+						'SELECT FROM notificationSettings WHERE notificationToken = $1 AND tagSlug = $2',
 						[token, tagSlug]
 					)
 				).rows
@@ -79,6 +109,7 @@ async function updateSettings(token, settings) {
 				return tagSlug
 			})
 		)
+		dbClient.release()
 		return {
 			success: res.filter((r) => r.status === 'fulfilled'),
 			failed: res.filter((r) => r.status === 'rejected'),
@@ -87,82 +118,85 @@ async function updateSettings(token, settings) {
 	dbClient.release()
 }
 
-async function postDirect(notification) {
-	const dbClient = await getClient()
+async function postGeneralNotification(title, body) {
+	if (!title || !body)
+		throw new Error('Missing title and body for notitification.')
 
-	if (!notification.type) throw new Error('missing {type}')
+	const createdNotification = new Notification(null, 'GENERAL', {
+		title,
+		body,
+	})
 
-	let { title, body } = notification
+	const notificationId = await createdNotification.save()
 
-	switch (notification.type) {
-		case 'ARTICLE':
-			let { tagSlug, articleSlug } = notification
-			if (!articleSlug) throw new Error('Missing articleSlug.')
-			const tag = await tagController.getTag(tagSlug)
-			if (!tag) throw new Error(`Cannot find tag with slug ${tagSlug}.`)
-			fetchArticle(articleSlug)
-				.then(async (article) => {
-					if (!body) {
-						body = article.headline
+	await fireNotification(notificationId)
+}
+
+async function postArticleNotification(articleSlug) {
+	let notifications
+	let failedTags
+
+	if (!articleSlug) throw new Error('Missing articleSlug.')
+
+	const article = await fetchArticle(articleSlug)
+	try {
+		const res = await Promise.allSettled(
+			article.tags?.map(async ({ slug: tagSlug }) => {
+				const tag = await tagController.getTag(tagSlug)
+				if (tag) {
+					let title
+					switch (tag.type) {
+						case 'AUTHOR':
+							title = 'Author you follow'
+							break
+						case 'ARTICLE':
+							title = tag.name ?? tag.slug.toUpperCase()
+							break
 					}
-					if (!title) {
-						switch (tag.type) {
-							case 'AUTHOR':
-								title = 'Author you follow'
-								break
-							case 'ARTICLE':
-								title = tag.name ?? tag.slug.toUpperCase()
-								break
-						}
-					}
-					const id = (
-						await dbClient.query(
-							'INSERT INTO notifications (type, title, body, createdTime, tagSlug, articleSlug) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id',
-							[
-								notification.type,
-								title,
-								body,
-								new Date().toUTCString(),
-								tagSlug,
-								articleSlug,
-							]
+					const createdNotification = new Notification(null, 'ARTICLE', {
+						title,
+						body: article.headline,
+						tagSlug,
+						articleSlug,
+					})
+					const notificationId = await createdNotification.save()
+					if (tag.rank > -1) {
+						return { notificationId, tag }
+					} else {
+						throw new Error(
+							`Notification for tag ${tagSlug} has unset rank.`
 						)
-					).rows[0]?.id
-					await fireNotification(
-						new Notification(id, notification.type, {
-							tagSlug,
-							articleSlug,
-							title,
-							body,
-						})
-					)
-				})
-				.catch((e) => {
+					}
+				} else {
 					throw new Error(
-						`Failed due to exception in fetching article with slug ${articleSlug}, ${e}.`
+						`Notification for tag with slug ${tagSlug} not found.`
 					)
-				})
-			break
-		case 'GENERAL':
-			if (!title || !body)
-				throw new Error('Missing title and body for notitification.')
-			const id = (
-				await dbClient.query(
-					'INSERT INTO notifications (type, title, body, createdTime) VALUES ($1, $2, $3, $4) RETURNING id',
-					[notification.type, title, body, new Date().toUTCString()]
-				)
-			).rows[0]?.id
-			await fireNotification(
-				new Notification(id, notification.type, {
-					title,
-					body,
-				})
-			)
-			break
-		default:
-			throw new Error('invalid {type}')
+				}
+			})
+		)
+		notifications = res
+			.filter((r) => r.status === 'fulfilled')
+			.map((r) => r.value)
+		failedTags = res
+			.filter((r) => r.status === 'rejected')
+			.map((r) => r.reason)
+	} catch (e) {
+		throw new Error(
+			`Failed due to exception in fetching article with slug ${articleSlug}, ${e}.`
+		)
 	}
-	dbClient.release()
+
+	if (!notifications) throw new Error('Article has no tags to notify by.')
+
+	notifications.sort((a, b) => a.tag.rank - b.tag.rank)
+
+	await Promise.all(
+		notifications
+			// .slice(0, 3)
+			.map((notification) => fireNotification(notification.notificationId))
+	)
+
+	return { sentTags: notifications.map(({ tag }) => tag.slug), failedTags }
 }
 
 export default {
@@ -170,5 +204,6 @@ export default {
 	updateSettings,
 	checkToken,
 	deleteToken,
-	postDirect,
+	postGeneralNotification,
+	postArticleNotification,
 }

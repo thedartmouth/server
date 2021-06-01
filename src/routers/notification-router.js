@@ -2,6 +2,7 @@ import express from 'express'
 import asyncHandler from 'express-async-handler'
 import { requireToken } from '../modules/auth'
 import { notificationController } from '../controllers'
+import { Notification } from '../modules/notifications'
 
 const notificationRouter = express()
 
@@ -30,28 +31,45 @@ notificationRouter
 		})
 	)
 
-notificationRouter.route('/direct').post(
+notificationRouter.route('/general').post(
 	requireToken({}),
 	asyncHandler(async (req, res) => {
-		await notificationController.postDirect(req.body)
-		res.sendStatus(201)
+		try {
+			await notificationController.postGeneralNotification(
+				req.body.title,
+				req.body.body
+			)
+			res.sendStatus(201)
+		} catch (e) {
+			res.status(500).send(e.message)
+		}
 	})
 )
 
-notificationRouter
-	.route('/pool')
-	.get(
-		requireToken({}),
-		asyncHandler(async (_, res) => {
-			res.json(await notificationController.getPool())
-		})
-	)
-	.post(
-		requireToken({}),
-		asyncHandler(async (req, res) => {
-			await notificationController.postDirect(req.body.type)
-			res.sendStatus(201)
-		})
-	)
+notificationRouter.route('/article').post(
+	requireToken({}),
+	asyncHandler(async (req, res) => {
+		try {
+			const result = await notificationController.postArticleNotification(
+				req.body.articleSlug
+			)
+			res.status(201).json(result)
+		} catch (e) {
+			res.status(500).send(e.message)
+		}
+	})
+)
+
+notificationRouter.route('/:notificationId').get(
+	asyncHandler(async (req, res) => {
+		try {
+			res.status(200).json(
+				await Notification.fetchById(req.params.notificationId)
+			)
+		} catch (e) {
+			res.status(500).send(e.message)
+		}
+	})
+)
 
 export default notificationRouter

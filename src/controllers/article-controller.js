@@ -9,7 +9,7 @@ async function fetchMetaArticle(slug, userId = null) {
 	const bookmarked = userId
 		? (
 				await query(
-					'SELECT EXISTS(SELECT 1 FROM bookmarks WHERE articleSlug = $1 AND userId = $2)',
+					'SELECT EXISTS(SELECT FROM bookmarks WHERE articleSlug = $1 AND userId = $2 LIMIT 1)',
 					[slug, userId]
 				)
 		  ).rows[0].exists
@@ -17,7 +17,7 @@ async function fetchMetaArticle(slug, userId = null) {
 	const read = userId
 		? (
 				await query(
-					'SELECT EXISTS(SELECT 1 FROM reads WHERE articleSlug = $1 AND userId = $2)',
+					'SELECT EXISTS(SELECT FROM reads WHERE articleSlug = $1 AND userId = $2 LIMIT 1)',
 					[slug, userId]
 				)
 		  ).rows[0].exists
@@ -46,7 +46,7 @@ async function readArticle(slug, userId) {
 
 	let metaArticle = (
 		await dbClient.query(
-			'SELECT EXISTS(SELECT 1 FROM metaArticles WHERE slug = $1)',
+			'SELECT EXISTS(SELECT FROM metaArticles WHERE slug = $1 LIMIT 1)',
 			[slug]
 		)
 	).rows[0].exists
@@ -98,7 +98,7 @@ async function bookmarkArticle(slug, userId) {
 	const dbClient = await getClient()
 	const bookmarkExists = (
 		await dbClient.query(
-			'SELECT EXISTS(SELECT 1 FROM bookmarks WHERE articleSlug = $1 AND userId = $2)',
+			'SELECT EXISTS(SELECT FROM bookmarks WHERE articleSlug = $1 AND userId = $2 LIMIT 1)',
 			[slug, userId]
 		)
 	).rows[0].exists
