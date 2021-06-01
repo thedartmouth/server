@@ -6,7 +6,8 @@ const ceoRouter = express()
 
 ceoRouter.route('/connector').post(
 	asyncHandler(async (req, res) => {
-		ceoController.handleData(req.body)
+		if (process.env.CEO_CONNECTOR_ENABLED === 'true')
+			ceoController.handleData(req.body)
 		res.sendStatus(200)
 	})
 )
