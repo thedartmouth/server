@@ -40,8 +40,11 @@ async function checkToken(token, userId) {
 				[token]
 			)
 		}
-		Array.from(DEFAULT_NOTIFICATION_TAGS).forEach(slug => {
-			query('INSERT INTO notificationSettings (notificationToken, active, tagSlug) VALUES ($1, $2, $3)', [token, false, slug])
+		Array.from(DEFAULT_NOTIFICATION_TAGS).forEach((slug) => {
+			query(
+				'INSERT INTO notificationSettings (notificationToken, active, tagSlug) VALUES ($1, $2, $3)',
+				[token, false, slug]
+			)
 		})
 	} else {
 		if (userId) {
