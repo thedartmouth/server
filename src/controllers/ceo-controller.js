@@ -5,6 +5,10 @@ async function handleData(data) {
 	const { type, action } = data
 	console.log('type', type)
 	console.log('action', action)
+	query(
+		'INSERT INTO ceoConnectorData (type, data, timestamp) VALUES ($1, $2, $3)',
+		[type, JSON.stringify(data), new Date().toUTCString()]
+	)
 	switch (type) {
 		case 'article':
 			const { slug, published_at: publishedAt } = data
