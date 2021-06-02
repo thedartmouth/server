@@ -3,9 +3,13 @@ import notificationController from './notification-controller'
 
 async function handleData(data) {
 	const { type, action } = data
+	console.log('type', type)
+	console.log('action', action)
 	switch (type) {
 		case 'article':
 			const { slug, published_at: publishedAt } = data
+			console.log('slug', slug)
+			console.log('published_at', publishedAt)
 			if (!slug)
 				throw new Error(
 					'Missing articleSlug in Connector API create event.'
