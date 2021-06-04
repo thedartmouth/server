@@ -4,3 +4,4 @@ node_modules/
 *.swp
 db.sh
 *.env
+src/controllers/ceo-connector-sample-data.json
