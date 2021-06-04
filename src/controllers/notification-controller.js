@@ -4,19 +4,19 @@ import { Notification, fireNotification } from '../modules/notifications'
 import { fetchArticle } from '../modules/ceo'
 
 const DEFAULT_NOTIFICATION_TAGS = new Set([
-	'top-story',
-	'top-picture',
-	'cartoon-of-the-day',
-	'featured',
-	'student-spotlights',
-	'verbum-ultimum',
-	'news',
-	'covid-19',
-	'opinion',
-	'sports',
-	'arts',
-	'mirror',
-	'cartoon',
+	['top-story', true]
+	['top-picture', false]
+	['cartoon-of-the-day', true]
+	['featured', false]
+	['student-spotlights', false]
+	['verbum-ultimum', false]
+	['news', false]
+	['covid-19', true]
+	['opinion', false]
+	['sports', false]
+	['arts', false]
+	['mirror', false]
+	['cartoon', false]
 ])
 
 async function checkToken(token, userId) {
@@ -40,10 +40,10 @@ async function checkToken(token, userId) {
 				[token]
 			)
 		}
-		Array.from(DEFAULT_NOTIFICATION_TAGS).forEach((slug) => {
+		Array.from(DEFAULT_NOTIFICATION_TAGS).forEach(([slug, active]) => {
 			query(
 				'INSERT INTO notificationSettings (notificationToken, active, tagSlug) VALUES ($1, $2, $3)',
-				[token, false, slug]
+				[token, active, slug]
 			)
 		})
 	} else {
