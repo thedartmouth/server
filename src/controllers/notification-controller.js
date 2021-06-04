@@ -4,19 +4,19 @@ import { Notification, fireNotification } from '../modules/notifications'
 import { fetchArticle } from '../modules/ceo'
 
 const DEFAULT_NOTIFICATION_TAGS = new Set([
-	['top-story', true]
-	['top-picture', false]
-	['cartoon-of-the-day', true]
-	['featured', false]
-	['student-spotlights', false]
-	['verbum-ultimum', false]
-	['news', false]
-	['covid-19', true]
-	['opinion', false]
-	['sports', false]
-	['arts', false]
-	['mirror', false]
-	['cartoon', false]
+	['top-story', true],
+	['top-picture', false],
+	['cartoon-of-the-day', true],
+	['featured', false],
+	['student-spotlights', false],
+	['verbum-ultimum', false],
+	['news', false],
+	['covid-19', true],
+	['opinion', false],
+	['sports', false],
+	['arts', false],
+	['mirror', false],
+	['cartoon', false],
 ])
 
 async function checkToken(token, userId) {
