@@ -1,8 +1,11 @@
 import { query } from '../db'
 import notificationController from './notification-controller'
+import jwt from 'jsonwebtoken'
 
-async function handleData(data) {
-	const { type, action } = data
+async function handleData(token, data) {
+	if (!token || !data) return
+	console.log(token)
+	const { type, action } = jwt.verify(token, process.env.CEO_CONNECTOR_API_KEY)
 	console.log('type', type)
 	console.log('action', action)
 	query(
