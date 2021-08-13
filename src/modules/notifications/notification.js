@@ -1,4 +1,7 @@
+import Expo from 'expo-server-sdk'
+import { tagController } from '../../controllers'
 import { query } from '../../db'
+import { fetchArticle } from '../ceo'
 export class Notification {
 	id
 	type
@@ -7,17 +10,15 @@ export class Notification {
 	targetTime // when this notification should trigger on client devices
 	createdTime // when this notification was created
 	triggered
-	tagSlug
 	articleSlug
 
-	constructor(id, type, { title, body, tagSlug, articleSlug }, targetTime) {
+	constructor(id, type, { title, body, articleSlug }, targetTime) {
 		this.id = id
 		this.type = type
 		switch (type) {
 			case 'ARTICLE':
-				this.title = title
+				this.title = 'NEWS'
 				this.body = body
-				this.tagSlug = tagSlug
 				this.articleSlug = articleSlug
 				break
 			case 'GENERAL':
@@ -46,13 +47,12 @@ export class Notification {
 			case 'ARTICLE':
 				this.id = (
 					await query(
-						'INSERT INTO notifications (type, title, body, createdTime, tagSlug, articleSlug) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id',
+						'INSERT INTO notifications (type, title, body, createdTime, articleSlug) VALUES ($1, $2, $3, $4, $5) RETURNING id',
 						[
 							this.type,
 							this.title,
 							this.body,
 							new Date().toUTCString(),
-							this.tagSlug,
 							this.articleSlug,
 						]
 					)
@@ -92,7 +92,6 @@ export class Notification {
 					notification = new Notification(id, res.type, {
 						title: res.title,
 						body: res.body,
-						tagSlug: res['tagSlug'.toLowerCase()],
 						articleSlug: res['articleSlug'.toLowerCase()],
 					})
 					break
@@ -110,5 +109,87 @@ export class Notification {
 			console.error(e)
 			throw new Error(e)
 		}
+	}
+
+	async generateTargetAudience() {
+		const audience = {}
+		switch (this.type) {
+			case 'ARTICLE': {
+				const article = await fetchArticle(this.articleSlug)
+				const tags = (
+					await Promise.allSettled(
+						article.tags?.map(({ slug }) => tagController.getTag(slug))
+					)
+				)
+					.filter(({ status }) => status === 'fulfilled')
+					.map(({ value }) => value)
+				await Promise.allSettled(
+					tags
+						.sort((a, b) => a.rank - b.rank)
+						.map(async (tag) => {
+							if (tag) {
+								let title
+								switch (tag.type) {
+									case 'AUTHOR':
+										title = 'Author you follow'
+										break
+									case 'ARTICLE':
+										title = tag.name ?? tag.slug.toUpperCase()
+										break
+								}
+
+								const tagAudience = (
+									await query(
+										"SELECT token FROM (SELECT notificationToken FROM notificationSettings WHERE tagSlug = $1 AND active = 'true') AS targetUsers LEFT JOIN notificationTokens ON targetUsers.notificationToken = notificationTokens.token",
+										[tag.slug]
+									)
+								).rows
+
+								if (tagAudience.length) {
+									console.log(tag.slug)
+								}
+
+								tagAudience
+									.filter(({ token }) => Expo.isExpoPushToken(token))
+									.forEach(({ token }) => {
+										if (!(token in audience)) {
+											audience[token] = {
+												to: token,
+												sound: 'default',
+												title,
+												body: this.body,
+												data: {
+													notificationId: this.id,
+													token,
+													articleSlug: this.articleSlug,
+												},
+											}
+										}
+									})
+							}
+						})
+				)
+				break
+			}
+			case 'GENERAL':
+				const initialAudience = (
+					await query('SELECT token FROM notificationTokens')
+				).rows
+				initialAudience
+					.filter(({ token }) => Expo.isExpoPushToken(token))
+					.forEach(({ token }) => {
+						if (!(token in audience)) {
+							audience[token] = {
+								to: token,
+								sound: 'default',
+								title: this.title,
+								body: this.body,
+								data: { notificationId: this.id, token },
+							}
+						}
+					})
+				break
+		}
+		return Object.values(audience)
 	}
 }

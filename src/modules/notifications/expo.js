@@ -1,7 +1,6 @@
 import { Expo } from 'expo-server-sdk'
 import { Notification } from './notification'
 import { getClient } from '../../db'
-import { notificationController } from '../../controllers'
 
 let expo = new Expo({ accessToken: process.env.EXPO_ACCESS_TOKEN })
 
@@ -12,46 +11,9 @@ let expo = new Expo({ accessToken: process.env.EXPO_ACCESS_TOKEN })
 export async function fire(notificationId) {
 	const dbClient = await getClient()
 	let notification = await Notification.fetchById(notificationId)
-	let audience
-	let messages
-	switch (notification.type) {
-		case 'ARTICLE':
-			audience = (
-				await dbClient.query(
-					"SELECT token FROM (SELECT notificationToken FROM notificationSettings WHERE tagSlug = $1 AND active = 'true') AS targetUsers LEFT JOIN notificationTokens ON targetUsers.notificationToken = notificationTokens.token",
-					[notification.tagSlug]
-				)
-			).rows
-			console.log(audience)
-			messages = audience
-				.filter(({ token }) => Expo.isExpoPushToken(token))
-				.map(({ token }) => ({
-					to: token,
-					sound: 'default',
-					title: notification.title,
-					body: notification.body,
-					data: {
-						notificationId: notification.id,
-						token,
-						articleSlug: notification.articleSlug,
-					},
-				}))
-			break
-		case 'GENERAL':
-			audience = (
-				await dbClient.query('SELECT token FROM notificationTokens')
-			).rows
-			messages = audience
-				.filter(({ token }) => Expo.isExpoPushToken(token))
-				.map(({ token }) => ({
-					to: token,
-					sound: 'default',
-					title: notification.title,
-					body: notification.body,
-					data: { notificationId: notification.id, token },
-				}))
-			break
-	}
+	let messages = await notification.generateTargetAudience()
+	console.log(messages)
+
 	if (!messages?.length) {
 		dbClient.release()
 		return

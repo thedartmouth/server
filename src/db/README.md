@@ -21,8 +21,7 @@ CREATE TABLE users (
 	lastname text,
 	email text NOT NULL UNIQUE,
 	passhash text,
-	reads integer DEFAULT 0,
-	requested
+	reads integer DEFAULT 0
 );
 ```
 
@@ -68,7 +67,6 @@ CREATE TABLE notifications (
 	targetTime timestamp,
 	createdTime timestamp NOT NULL,
 	triggered boolean DEFAULT 'false' NOT NULL,
-	tagSlug text NOT NULL REFERENCES tags ON DELETE CASCADE,
 	articleSlug text
 );
 ```

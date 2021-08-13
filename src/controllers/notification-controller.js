@@ -122,81 +122,29 @@ async function postGeneralNotification(title, body) {
 	if (!title || !body)
 		throw new Error('Missing title and body for notitification.')
 
-	const createdNotification = new Notification(null, 'GENERAL', {
+	const notificationId = await new Notification(null, 'GENERAL', {
 		title,
 		body,
-	})
-
-	const notificationId = await createdNotification.save()
+	}).save()
 
 	await fireNotification(notificationId)
 }
 
 async function postArticleNotification(articleSlug) {
-	let notifications
-	let failedTags
-
 	if (!articleSlug) throw new Error('Missing articleSlug.')
 
 	const article = await fetchArticle(articleSlug)
 	try {
-		const res = await Promise.allSettled(
-			article.tags?.map(async ({ slug: tagSlug }) => {
-				const tag = await tagController.getTag(tagSlug)
-				if (tag) {
-					let title
-					switch (tag.type) {
-						case 'AUTHOR':
-							title = 'Author you follow'
-							break
-						case 'ARTICLE':
-							title = tag.name ?? tag.slug.toUpperCase()
-							break
-					}
-					const createdNotification = new Notification(null, 'ARTICLE', {
-						title,
-						body: article.headline,
-						tagSlug,
-						articleSlug,
-					})
-					const notificationId = await createdNotification.save()
-					if (tag.rank > -1) {
-						return { notificationId, tag }
-					} else {
-						throw new Error(
-							`Notification for tag ${tagSlug} has unset rank.`
-						)
-					}
-				} else {
-					throw new Error(
-						`Notification for tag with slug ${tagSlug} not found.`
-					)
-				}
-			})
-		)
-		notifications = res
-			.filter((r) => r.status === 'fulfilled')
-			.map((r) => r.value)
-		failedTags = res
-			.filter((r) => r.status === 'rejected')
-			.map((r) => r.reason)
+		const notificationId = await new Notification(null, 'ARTICLE', {
+			body: article.headline,
+			articleSlug,
+		}).save()
+		fireNotification(notificationId)
 	} catch (e) {
 		throw new Error(
 			`Failed due to exception in fetching article with slug ${articleSlug}, ${e}.`
 		)
 	}
-
-	if (!notifications) throw new Error('Article has no tags to notify by.')
-
-	notifications.sort((a, b) => a.tag.rank - b.tag.rank)
-
-	await Promise.all(
-		notifications
-			// .slice(0, 3)
-			.map((notification) => fireNotification(notification.notificationId))
-	)
-
-	return { sentTags: notifications.map(({ tag }) => tag.slug), failedTags }
 }
 
 export default {

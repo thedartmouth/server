@@ -1,13 +1,17 @@
 import { query, getClient } from '../db'
 
 async function getTag(slug) {
-	const res = (
-		await query('SELECT * FROM tags WHERE slug = $1 LIMIT 1', [slug])
-	).rows[0]
-	if (!res) {
-		await query('INSERT INTO tags (slug) VALUES ($1)', [slug])
+	if (slug) {
+		const res = (
+			await query('SELECT * FROM tags WHERE slug = $1 LIMIT 1', [slug])
+		).rows[0]
+		if (!res) {
+			await query('INSERT INTO tags (slug) VALUES ($1)', [slug])
+		} else {
+			return res
+		}
 	} else {
-		return res
+		return null
 	}
 }
 
