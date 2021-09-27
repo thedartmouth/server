@@ -1,5 +1,19 @@
 # PostgreSQL database
 
+## Extensions
+
+### `pgcrypto`
+
+```SQL
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+```
+
+### `uuid-ossp`
+
+```SQL
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+```
+
 ## Tables
 
 ### `metaArticles`
@@ -99,20 +113,6 @@ CREATE TABLE bookmarks (
 	userId uuid REFERENCES users ON DELETE CASCADE,
 	timestamp timestamp NOT NULL
 );
-```
-
-## Extensions
-
-### `pgcrypto`
-
-```SQL
-CREATE EXTENSION IF NOT EXISTS "pgcrypto";
-```
-
-### `uuid-ossp`
-
-```SQL
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 ```
 
 ## Seed data
