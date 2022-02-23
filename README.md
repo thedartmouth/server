@@ -16,7 +16,7 @@ Use `yarn build` to compile to CommonJS modules, and `yarn prod` to run those mo
 
 ## File structure
 
-```
+```shell
 root
 │   package.json # Node.js project configs
 │   .babelrc # Babel transpiler configs    
