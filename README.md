@@ -1,22 +1,80 @@
-# PostgreSQL database
+## Scripts
 
-## Extensions
+Initialize the Node.js repository with `yarn install` to get dependencies.
 
-### `pgcrypto`
+Use `yarn format` to adhere to code syntax and formatting standards. This will edit your files. Use `yarn lint` to adhere to ES standards.
+
+Use `yarn test` to run testing suites.
+
+Use `yarn dev` to start a development instance of the server. Ensure that your local PostgreSQL database is started (`brew services start postgres`), tables initialized, and data seeded (see below commands).
+
+Use `yarn staging` to start a staging instance of the server, which will connect to the staging database hosted on Heroku.
+
+Use `yarn start` to start a production instance of the server. **This should only be used in production containers.**
+
+Use `yarn build` to compile to CommonJS modules, and `yarn prod` to run those modules. **This command is really only reserved for build scripts in production containers.**
+
+## File structure
+
+```
+root
+│   package.json # Node.js project configs
+│   .babelrc # Babel transpiler configs    
+│   .editorconfig # VSCode configs  
+│   .eslintrc.json # linter configs     
+│   .gitignore # git ignore list    
+│   .prettierrc.json # formatter config    
+│   .logs.sh # helper script to read logs from Heroku deployment    
+│
+└───src/
+│   │   app.js # root file
+│   │   server.js # Express.js client and configs
+│   │   __tests__/ # all test suite scripts
+│   │
+│   └───controllers/ # business logic, organized by feature
+│   │   │   article-controller.js
+│   │   │   ceo-controller.js
+│   │   │   feed-controller.js
+│   │   │   ...
+│   │   │   
+│   └───routers/ # map HTTP calls to controllers
+│   │   │   article-router.js
+│   │   │   ceo-router.js
+│   │   │   feed-router.js
+│   │   │   ...
+│   │   │   
+│   └───modules/ # misc helper functions
+│   │   │   auth/
+│   │   │   notifications/
+│   │   │   ...
+│   │   │   
+│   └───db/ # database client and configs
+│   │   │   index.js
+│   │   │   
+└────────   
+```
+
+## PostgreSQL database
+
+### Extensions
+
+#### `pgcrypto`
 
 ```SQL
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 ```
 
-### `uuid-ossp`
+#### `uuid-ossp`
 
 ```SQL
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 ```
 
-## Tables
+### Tables
 
-### `metaArticles`
+Run these table initialization commands in order.
+
+#### `metaArticles`
 
 ```SQL
 CREATE TABLE metaArticles (
@@ -26,7 +84,7 @@ CREATE TABLE metaArticles (
 );
 ```
 
-### `users`
+#### `users`
 
 ```SQL
 CREATE TABLE users (
@@ -39,7 +97,7 @@ CREATE TABLE users (
 );
 ```
 
-### `tags`
+#### `tags`
 
 ```SQL
 CREATE TABLE tags (
@@ -51,7 +109,7 @@ CREATE TABLE tags (
 );
 ```
 
-### `notificationTokens`
+#### `notificationTokens`
 
 ```SQL
 CREATE TABLE notificationTokens (
@@ -60,7 +118,7 @@ CREATE TABLE notificationTokens (
 );
 ```
 
-### `notificationSettings`
+#### `notificationSettings`
 
 ```SQL
 CREATE TABLE notificationSettings (
@@ -70,7 +128,7 @@ CREATE TABLE notificationSettings (
 );
 ```
 
-### `notifications`
+#### `notifications`
 
 ```SQL
 CREATE TABLE notifications (
@@ -85,7 +143,7 @@ CREATE TABLE notifications (
 );
 ```
 
-### `notificationFires`
+#### `notificationFires`
 
 ```SQL
 CREATE TABLE notificationFires (
@@ -95,7 +153,7 @@ CREATE TABLE notificationFires (
 );
 ```
 
-### `reads`
+#### `reads`
 
 ```SQL
 CREATE TABLE reads (
@@ -105,7 +163,7 @@ CREATE TABLE reads (
 );
 ```
 
-### `bookmarks`
+#### `bookmarks`
 
 ```SQL
 CREATE TABLE bookmarks (
@@ -115,9 +173,11 @@ CREATE TABLE bookmarks (
 );
 ```
 
-## Seed data
+### Seed data
 
-### tags
+This data must be seeded on first deployment.
+
+#### tags
 
 ```SQL
 INSERT INTO tags (slug, type, name, rank) VALUES ('top-story', 'ARTICLE', 'Top Story', 0);
