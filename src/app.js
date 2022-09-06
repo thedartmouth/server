@@ -23,7 +23,7 @@ const app = express()
 app.use(cors())
 
 // configure logging
-app.use(morgan('dev'))
+app.use(morgan('prod'))
 
 // configure data type
 app.use(bodyParser.urlencoded({ extended: true }))

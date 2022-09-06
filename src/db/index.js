@@ -16,7 +16,7 @@ export const dotenvConfig = dotenv.config({
 })
 
 const pool = new Pool({
-	...(process.env.DEPLOY_TAG === 'prod'
+	...(process.env.DEPLOY_TAG === 'dev'
 		? {
 				user: process.env.PGUSER,
 				password: process.env.PGPASSWORD,
@@ -26,7 +26,7 @@ const pool = new Pool({
 		  }
 		: { connectionString: process.env.DATABASE_URL }),
 	ssl:
-		process.env.DEPLOY_TAG === 'prod'
+		process.env.DEPLOY_TAG === 'dev'
 			? false
 			: {
 					rejectUnauthorized: false,
